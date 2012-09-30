@@ -14,6 +14,9 @@ Note = function() {
 
   this.duration = RTTTL.QUARTER_NOTE;
 
+  // Time until the next note can play.
+  this.spacing = 0.02;
+
   // If this is true, then frequency will be ignored and we'll "rest" instead
   // of playing for the specified duration.
   this.pause = false;
@@ -26,6 +29,199 @@ RTTTL = function() {
   this.defaultTempo = 63;
 
   this.song = [];
+}
+
+RTTTL.prototype.parseComposer = function(name, tempo, composer) {
+  var spaceTokens = composer.split(" ");
+  this.name = name;
+  this.defaultTempo = tempo;
+
+  for (var i = 0; i < spaceTokens.length; i++) {
+    this.parseComposerNote(spaceTokens[i]);
+  }
+}
+
+// 4- 4.c2 4.#c2 ("4.-" doesn't seem possible to enter)
+// optional: . #
+RTTTL.prototype.parseComposerNote = function(note) {
+  var noteToAdd = new Note();
+  var regexNum = /\d/;
+  var regexNote = /[cdefgab#]/;
+  var i = 0;
+  var start = 0;
+
+  // Until we reach a non-digit
+  while (regexNum.test(note.charAt(i))) {
+    i++;
+  }
+  // i may point to the first non-digit or the beginning of the string
+  var duration = note.substring(start, i);
+  start = i;
+  if (duration != "") {
+    noteToAdd.duration = parseInt(duration, 10);
+  } else {
+    // Don't add an invalid note.
+    return;
+  }
+
+  // Is current character a '.'?
+  if (note.charAt(i) == ".") {
+    noteToAdd.duration *= RTTTL.DOT;
+    i++;
+    start = i;
+  }
+
+  // Is current character a '-'?
+  if (note.charAt(i) == "-") {
+    noteToAdd.pause = true;
+    this.song.push(noteToAdd);
+    return;
+  }
+
+  // Until we reach a non-note
+  while (regexNote.test(note.charAt(i))) {
+    i++;
+  }
+  // i may point to the first non-digit or the end of the string
+  var whichNote = note.substring(start, i);
+  start = i;
+
+  // Until we reach a non-number
+  while (regexNum.test(note.charAt(i))) {
+    i++;
+  }
+  var octave = note.substring(start, i);
+  noteToAdd.octave = parseInt(octave, 10) + 5;
+
+  if (whichNote == "c") {
+    if (noteToAdd.octave == 5) {
+      noteToAdd.frequency = RTTTL.NOTE_C5;
+    } else if (noteToAdd.octave == 6) {
+      noteToAdd.frequency = RTTTL.NOTE_C6;
+    } else if (noteToAdd.octave == 7) {
+      noteToAdd.frequency = RTTTL.NOTE_C7;
+    } else {
+      noteToAdd.pause = true;
+    }
+  } else if (whichNote == "#c") {
+    if (noteToAdd.octave == 5) {
+      noteToAdd.frequency = RTTTL.NOTE_CS5;
+    } else if (noteToAdd.octave == 6) {
+      noteToAdd.frequency = RTTTL.NOTE_CS6;
+    } else if (noteToAdd.octave == 7) {
+      noteToAdd.frequency = RTTTL.NOTE_CS7;
+    } else {
+      noteToAdd.pause = true;
+    }
+  } else if (whichNote == "d") {
+    if (noteToAdd.octave == 5) {
+      noteToAdd.frequency = RTTTL.NOTE_D5;
+    } else if (noteToAdd.octave == 6) {
+      noteToAdd.frequency = RTTTL.NOTE_D6;
+    } else if (noteToAdd.octave == 7) {
+      noteToAdd.frequency = RTTTL.NOTE_D7;
+    } else {
+      noteToAdd.pause = true;
+    }
+  } else if (whichNote == "#d") {
+    if (noteToAdd.octave == 5) {
+      noteToAdd.frequency = RTTTL.NOTE_DS5;
+    } else if (noteToAdd.octave == 6) {
+      noteToAdd.frequency = RTTTL.NOTE_DS6;
+    } else if (noteToAdd.octave == 7) {
+      noteToAdd.frequency = RTTTL.NOTE_DS7;
+    } else {
+      noteToAdd.pause = true;
+    }
+  } else if (whichNote == "e") {
+    if (noteToAdd.octave == 5) {
+      noteToAdd.frequency = RTTTL.NOTE_E5;
+    } else if (noteToAdd.octave == 6) {
+      noteToAdd.frequency = RTTTL.NOTE_E6;
+    } else if (noteToAdd.octave == 7) {
+      noteToAdd.frequency = RTTTL.NOTE_E7;
+    } else {
+      noteToAdd.pause = true;
+    }
+  } else if (whichNote == "f") {
+    if (noteToAdd.octave == 5) {
+      noteToAdd.frequency = RTTTL.NOTE_F5;
+    } else if (noteToAdd.octave == 6) {
+      noteToAdd.frequency = RTTTL.NOTE_F6;
+    } else if (noteToAdd.octave == 7) {
+      noteToAdd.frequency = RTTTL.NOTE_F7;
+    } else {
+      noteToAdd.pause = true;
+    }
+  } else if (whichNote == "#f") {
+    if (noteToAdd.octave == 5) {
+      noteToAdd.frequency = RTTTL.NOTE_FS5;
+    } else if (noteToAdd.octave == 6) {
+      noteToAdd.frequency = RTTTL.NOTE_FS6;
+    } else if (noteToAdd.octave == 7) {
+      noteToAdd.frequency = RTTTL.NOTE_FS7;
+    } else {
+      noteToAdd.pause = true;
+    }
+  } else if (whichNote == "g") {
+    if (noteToAdd.octave == 5) {
+      noteToAdd.frequency = RTTTL.NOTE_G5;
+    } else if (noteToAdd.octave == 6) {
+      noteToAdd.frequency = RTTTL.NOTE_G6;
+    } else if (noteToAdd.octave == 7) {
+      noteToAdd.frequency = RTTTL.NOTE_G7;
+    } else {
+      noteToAdd.pause = true;
+    }
+  } else if (whichNote == "#g") {
+    if (noteToAdd.octave == 5) {
+      noteToAdd.frequency = RTTTL.NOTE_GS5;
+    } else if (noteToAdd.octave == 6) {
+      noteToAdd.frequency = RTTTL.NOTE_GS6;
+    } else if (noteToAdd.octave == 7) {
+      noteToAdd.frequency = RTTTL.NOTE_GS7;
+    } else {
+      noteToAdd.pause = true;
+    }
+  } else if (whichNote == "a") {
+    if (noteToAdd.octave == 4) {
+      noteToAdd.frequency = RTTTL.NOTE_A4;
+    } else if (noteToAdd.octave == 5) {
+      noteToAdd.frequency = RTTTL.NOTE_A5;
+    } else if (noteToAdd.octave == 6) {
+      noteToAdd.frequency = RTTTL.NOTE_A6;
+    } else if (noteToAdd.octave == 7) {
+      noteToAdd.frequency = RTTTL.NOTE_A7;
+    } else {
+      noteToAdd.pause = true;
+    }
+  } else if (whichNote == "#a") {
+    if (noteToAdd.octave == 4) {
+      noteToAdd.frequency = RTTTL.NOTE_AS4;
+    } else if (noteToAdd.octave == 5) {
+      noteToAdd.frequency = RTTTL.NOTE_AS5;
+    } else if (noteToAdd.octave == 6) {
+      noteToAdd.frequency = RTTTL.NOTE_AS6;
+    } else if (noteToAdd.octave == 7) {
+      noteToAdd.frequency = RTTTL.NOTE_AS7;
+    } else {
+      noteToAdd.pause = true;
+    }
+  } else if (whichNote == "b") {
+    if (noteToAdd.octave == 4) {
+      noteToAdd.frequency = RTTTL.NOTE_B4;
+    } else if (noteToAdd.octave == 5) {
+      noteToAdd.frequency = RTTTL.NOTE_B5;
+    } else if (noteToAdd.octave == 6) {
+      noteToAdd.frequency = RTTTL.NOTE_B6;
+    } else if (noteToAdd.octave == 7) {
+      noteToAdd.frequency = RTTTL.NOTE_B7;
+    } else {
+      noteToAdd.pause = true;
+    }
+  }
+
+  this.song.push(noteToAdd);
 }
 
 RTTTL.prototype.parse = function(rtttl) {
@@ -57,7 +253,6 @@ RTTTL.prototype.parseSong = function(song) {
 
 RTTTL.prototype.parseNote = function(note) {
   var noteToAdd = new Note();
-  var passedNote = false;
   var regexNum = /\d/;
   var regexNote = /[PCDEFGAB#]/;
   var regexDot = /./;
@@ -71,7 +266,7 @@ RTTTL.prototype.parseNote = function(note) {
   var duration = note.substring(start, i);
   start = i;
   if (duration != "") {
-    noteToAdd.duration = parseInt(note.substring(0, i), 10);
+    noteToAdd.duration = parseInt(duration, 10);
   } else {
     noteToAdd.duration = this.defaultDuration;
   }
@@ -166,8 +361,8 @@ RTTTL.prototype.parseNote = function(note) {
       noteToAdd.frequency = RTTTL.NOTE_FS7;
     }
   } else if (whichNote == "G") {
-      noteToAdd.pause = true; // A4 is the lowest note.
     if (octave == "4") {
+      noteToAdd.pause = true; // A4 is the lowest note.
     } else if (octave == "5") {
       noteToAdd.frequency = RTTTL.NOTE_G5;
     } else if (octave == "6") {
@@ -225,7 +420,7 @@ RTTTL.prototype.parseNote = function(note) {
 }
 
 RTTTL.prototype.play = function(when) {
-  var beatLength = 4.0 * 60.0 / 220.0;
+  var beatLength = 4.0 * 60.0 / this.defaultTempo;
   var then = when;
   for (var i = 0; i < this.song.length; i++) {
     var note = this.song[i];
@@ -233,7 +428,7 @@ RTTTL.prototype.play = function(when) {
     if (!note.pause) {
       beep(then, note.frequency, duration);
     }
-    then += duration;
+    then += duration + note.spacing;
   }
 }
 
@@ -330,9 +525,20 @@ function init() {
 
   squarewave.noteOn(0);
 
-  //playNokia(0);
   rtttl = new RTTTL();
-  rtttl.parse("nokia:o=5,d=8,b=220:E6,D6,4F#,4G#,C#6,B,4D,4E,B,A,4C#,4E,2A.");
+  //rtttl.parse("nokia:o=5,d=8,b=220:E6,D6,4F#,4G#,C#6,B,4D,4E,B,A,4C#,4E,2A.");
+  rtttl.parseComposer(
+    "Epic Sax",
+    63,
+    "8a1 8- 16a1 32a1 32a1 32g1 16a1 32- 8a1 8- 16a1 32a1 32a1 32g1 16a1 32-" +
+    " 8a1 16- 8c2 8a1 8g1 16f1 16- 16d1 16d1 16e1 16f1 16d1"
+  );
+  ///rtttl.parseComposer(
+  ///  "Chromatic",
+  ///  220,
+  ///  "4c1 4- 4#c1 4- 4d1 4- 4#d1 4- 4e1 4- 4f1 4- 4#f1 4- 4g1 4- 4#g1 4- 4a1" +
+  ///  " 4- 4#a1 4- 4b1 4- 4c2"
+  ///);
 
   // Nokia Composer Nyan Cat
   // http://www.youtube.com/watch?v=eMD6hThdFFo
@@ -373,116 +579,6 @@ function playMetronome(when, tempo, duration)
   }
 }
 
-function playNokia(when)
-{
-  //
-  // Key
-  //  C#
-  //  F#
-  //  G#
-  // 8E6,8D6,4FS5,4GS5,8CS6,8B5,4D5,4E5,8B5,8A5,4CS5,4E5,2A5.
-  // Tempo (BPM) = 220?
-  // RTTTL:
-  //  nokia:o=5,d=8,b=220:E6,D6,4F#,4G#,C#6,B,4D,4E,B,A,4C#,4E,2A.
-  var beatLength = 4.0 * 60.0 / 220.0;
-
-  var then = when;
-  var duration;
-  duration = beatLength / RTTTL.EIGHTH_NOTE;
-  beep(then, RTTTL.NOTE_E6, duration);
-  then += duration;
-  duration = beatLength / RTTTL.EIGHTH_NOTE;
-  beep(then, RTTTL.NOTE_D6, duration);
-  then += duration;
-  duration = beatLength / RTTTL.QUARTER_NOTE;
-  beep(then, RTTTL.NOTE_FS5, duration);
-  then += duration;
-  duration = beatLength / RTTTL.QUARTER_NOTE;
-  beep(then, RTTTL.NOTE_GS5, duration);
-  then += duration;
-  duration = beatLength / RTTTL.EIGHTH_NOTE;
-  beep(then, RTTTL.NOTE_CS6, duration);
-  then += duration;
-  duration = beatLength / RTTTL.EIGHTH_NOTE;
-  beep(then, RTTTL.NOTE_B5, duration);
-  then += duration;
-  duration = beatLength / RTTTL.QUARTER_NOTE;
-  beep(then, RTTTL.NOTE_D5, duration);
-  then += duration;
-  duration = beatLength / RTTTL.QUARTER_NOTE;
-  beep(then, RTTTL.NOTE_E5, duration);
-  then += duration;
-  duration = beatLength / RTTTL.EIGHTH_NOTE;
-  beep(then, RTTTL.NOTE_B5, duration);
-  then += duration;
-  duration = beatLength / RTTTL.EIGHTH_NOTE;
-  beep(then, RTTTL.NOTE_A5, duration);
-  then += duration;
-  duration = beatLength / RTTTL.QUARTER_NOTE;
-  beep(then, RTTTL.NOTE_CS5, duration);
-  then += duration;
-  duration = beatLength / RTTTL.QUARTER_NOTE;
-  beep(then, RTTTL.NOTE_E5, duration);
-  then += duration;
-  duration = beatLength / RTTTL.HALF_NOTE * RTTTL.DOT;
-  beep(then, RTTTL.NOTE_A5, duration);
-  then += duration;
-}
-
-function playScale(when)
-{
-  beep(when + 0, RTTTL.NOTE_A3, 0.1);
-  beep(when + 0.5, RTTTL.NOTE_AS3, 0.1);
-  beep(when + 1.0, RTTTL.NOTE_B3, 0.1);
-  beep(when + 1.5, RTTTL.NOTE_C4, 0.1);
-  beep(when + 2.0, RTTTL.NOTE_CS4, 0.1);
-  beep(when + 2.5, RTTTL.NOTE_D4, 0.1);
-  beep(when + 3.0, RTTTL.NOTE_DS4, 0.1);
-  beep(when + 3.5, RTTTL.NOTE_E4, 0.1);
-  beep(when + 4.0, RTTTL.NOTE_F4, 0.1);
-  beep(when + 4.5, RTTTL.NOTE_FS4, 0.1);
-  beep(when + 5.0, RTTTL.NOTE_G4, 0.1);
-  beep(when + 5.5, RTTTL.NOTE_GS4, 0.1);
-  beep(when + 6.0, RTTTL.NOTE_A4, 0.1);
-  beep(when + 6.5, RTTTL.NOTE_AS4, 0.1);
-  beep(when + 7.0, RTTTL.NOTE_B4, 0.1);
-  beep(when + 7.5, RTTTL.NOTE_C5, 0.1);
-  beep(when + 8.0, RTTTL.NOTE_CS5, 0.1);
-  beep(when + 8.5, RTTTL.NOTE_D5, 0.1);
-  beep(when + 9.0, RTTTL.NOTE_DS5, 0.1);
-  beep(when + 9.5, RTTTL.NOTE_E5, 0.1);
-  beep(when + 10.0, RTTTL.NOTE_F5, 0.1);
-  beep(when + 10.5, RTTTL.NOTE_FS5, 0.1);
-  beep(when + 11.0, RTTTL.NOTE_G5, 0.1);
-  beep(when + 11.5, RTTTL.NOTE_GS5, 0.1);
-  beep(when + 12.0, RTTTL.NOTE_A5, 0.1);
-  beep(when + 12.5, RTTTL.NOTE_AS5, 0.1);
-  beep(when + 13.0, RTTTL.NOTE_B5, 0.1);
-  beep(when + 13.5, RTTTL.NOTE_C6, 0.1);
-  beep(when + 14.0, RTTTL.NOTE_CS6, 0.1);
-  beep(when + 14.5, RTTTL.NOTE_D6, 0.1);
-  beep(when + 15.0, RTTTL.NOTE_DS6, 0.1);
-  beep(when + 15.5, RTTTL.NOTE_E6, 0.1);
-  beep(when + 16.0, RTTTL.NOTE_F6, 0.1);
-  beep(when + 16.5, RTTTL.NOTE_FS6, 0.1);
-  beep(when + 17.0, RTTTL.NOTE_G6, 0.1);
-  beep(when + 17.5, RTTTL.NOTE_GS6, 0.1);
-  beep(when + 18.0, RTTTL.NOTE_A6, 0.1);
-  beep(when + 18.5, RTTTL.NOTE_AS6, 0.1);
-  beep(when + 19.0, RTTTL.NOTE_B6, 0.1);
-  beep(when + 19.5, RTTTL.NOTE_C7, 0.1);
-  beep(when + 20.0, RTTTL.NOTE_CS7, 0.1);
-  beep(when + 20.5, RTTTL.NOTE_D7, 0.1);
-  beep(when + 21.0, RTTTL.NOTE_DS7, 0.1);
-  beep(when + 21.5, RTTTL.NOTE_E7, 0.1);
-  beep(when + 22.0, RTTTL.NOTE_F7, 0.1);
-  beep(when + 22.5, RTTTL.NOTE_FS7, 0.1);
-  beep(when + 23.0, RTTTL.NOTE_G7, 0.1);
-  beep(when + 23.5, RTTTL.NOTE_GS7, 0.1);
-  beep(when + 24.0, RTTTL.NOTE_A7, 0.1);
-  beep(when + 24.5, RTTTL.NOTE_AS7, 0.1);
-  beep(when + 25.0, RTTTL.NOTE_B7, 0.1);
-}
 </script>
 
 </body>
