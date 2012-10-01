@@ -6,16 +6,17 @@
 </head>
 <body>
 
-<img src="Nokia_1100.jpg" width="400">
+<img id="phone" style="position: absolute;"
+src="Nokia_1100.jpg" width="2" height="2">
 <canvas id="waveform" width="400" height="100"></canvas>
 <pre id="debug"></pre>
 
 
 <script>
 Note = function() {
-  this.frequency = RTTTL.NOTE_C4;
+  this.frequency = Song.NOTE_C4;
 
-  this.duration = RTTTL.QUARTER_NOTE;
+  this.duration = Song.QUARTER_NOTE;
 
   // Time until the next note can play.
   this.spacing = 0.01;
@@ -25,7 +26,7 @@ Note = function() {
   this.pause = false;
 }
 
-RTTTL = function() {
+Song = function() {
   // http://merwin.bespin.org/t4a/specs/nokia_rtttl.txt
   this.defaultOctave = 6;
   this.defaultDuration = 4;
@@ -34,7 +35,7 @@ RTTTL = function() {
   this.song = [];
 }
 
-RTTTL.prototype.parseComposer = function(name, tempo, composer) {
+Song.prototype.parseComposer = function(name, tempo, composer) {
   var spaceTokens = composer.split(" ");
   this.name = name;
   this.defaultTempo = tempo;
@@ -46,7 +47,7 @@ RTTTL.prototype.parseComposer = function(name, tempo, composer) {
 
 // 4- 4.c2 4.#c2 ("4.-" doesn't seem possible to enter)
 // optional: . #
-RTTTL.prototype.parseComposerNote = function(note) {
+Song.prototype.parseComposerNote = function(note) {
   var noteToAdd = new Note();
   var regexNum = /\d/;
   var regexNote = /[cdefgab#]/;
@@ -69,7 +70,7 @@ RTTTL.prototype.parseComposerNote = function(note) {
 
   // Is current character a '.'?
   if (note.charAt(i) == ".") {
-    noteToAdd.duration *= RTTTL.DOT;
+    noteToAdd.duration *= Song.DOT;
     i++;
     start = i;
   }
@@ -98,127 +99,127 @@ RTTTL.prototype.parseComposerNote = function(note) {
 
   if (whichNote == "c") {
     if (noteToAdd.octave == 5) {
-      noteToAdd.frequency = RTTTL.NOTE_C5;
+      noteToAdd.frequency = Song.NOTE_C5;
     } else if (noteToAdd.octave == 6) {
-      noteToAdd.frequency = RTTTL.NOTE_C6;
+      noteToAdd.frequency = Song.NOTE_C6;
     } else if (noteToAdd.octave == 7) {
-      noteToAdd.frequency = RTTTL.NOTE_C7;
+      noteToAdd.frequency = Song.NOTE_C7;
     } else {
       noteToAdd.pause = true;
     }
   } else if (whichNote == "#c") {
     if (noteToAdd.octave == 5) {
-      noteToAdd.frequency = RTTTL.NOTE_CS5;
+      noteToAdd.frequency = Song.NOTE_CS5;
     } else if (noteToAdd.octave == 6) {
-      noteToAdd.frequency = RTTTL.NOTE_CS6;
+      noteToAdd.frequency = Song.NOTE_CS6;
     } else if (noteToAdd.octave == 7) {
-      noteToAdd.frequency = RTTTL.NOTE_CS7;
+      noteToAdd.frequency = Song.NOTE_CS7;
     } else {
       noteToAdd.pause = true;
     }
   } else if (whichNote == "d") {
     if (noteToAdd.octave == 5) {
-      noteToAdd.frequency = RTTTL.NOTE_D5;
+      noteToAdd.frequency = Song.NOTE_D5;
     } else if (noteToAdd.octave == 6) {
-      noteToAdd.frequency = RTTTL.NOTE_D6;
+      noteToAdd.frequency = Song.NOTE_D6;
     } else if (noteToAdd.octave == 7) {
-      noteToAdd.frequency = RTTTL.NOTE_D7;
+      noteToAdd.frequency = Song.NOTE_D7;
     } else {
       noteToAdd.pause = true;
     }
   } else if (whichNote == "#d") {
     if (noteToAdd.octave == 5) {
-      noteToAdd.frequency = RTTTL.NOTE_DS5;
+      noteToAdd.frequency = Song.NOTE_DS5;
     } else if (noteToAdd.octave == 6) {
-      noteToAdd.frequency = RTTTL.NOTE_DS6;
+      noteToAdd.frequency = Song.NOTE_DS6;
     } else if (noteToAdd.octave == 7) {
-      noteToAdd.frequency = RTTTL.NOTE_DS7;
+      noteToAdd.frequency = Song.NOTE_DS7;
     } else {
       noteToAdd.pause = true;
     }
   } else if (whichNote == "e") {
     if (noteToAdd.octave == 5) {
-      noteToAdd.frequency = RTTTL.NOTE_E5;
+      noteToAdd.frequency = Song.NOTE_E5;
     } else if (noteToAdd.octave == 6) {
-      noteToAdd.frequency = RTTTL.NOTE_E6;
+      noteToAdd.frequency = Song.NOTE_E6;
     } else if (noteToAdd.octave == 7) {
-      noteToAdd.frequency = RTTTL.NOTE_E7;
+      noteToAdd.frequency = Song.NOTE_E7;
     } else {
       noteToAdd.pause = true;
     }
   } else if (whichNote == "f") {
     if (noteToAdd.octave == 5) {
-      noteToAdd.frequency = RTTTL.NOTE_F5;
+      noteToAdd.frequency = Song.NOTE_F5;
     } else if (noteToAdd.octave == 6) {
-      noteToAdd.frequency = RTTTL.NOTE_F6;
+      noteToAdd.frequency = Song.NOTE_F6;
     } else if (noteToAdd.octave == 7) {
-      noteToAdd.frequency = RTTTL.NOTE_F7;
+      noteToAdd.frequency = Song.NOTE_F7;
     } else {
       noteToAdd.pause = true;
     }
   } else if (whichNote == "#f") {
     if (noteToAdd.octave == 5) {
-      noteToAdd.frequency = RTTTL.NOTE_FS5;
+      noteToAdd.frequency = Song.NOTE_FS5;
     } else if (noteToAdd.octave == 6) {
-      noteToAdd.frequency = RTTTL.NOTE_FS6;
+      noteToAdd.frequency = Song.NOTE_FS6;
     } else if (noteToAdd.octave == 7) {
-      noteToAdd.frequency = RTTTL.NOTE_FS7;
+      noteToAdd.frequency = Song.NOTE_FS7;
     } else {
       noteToAdd.pause = true;
     }
   } else if (whichNote == "g") {
     if (noteToAdd.octave == 5) {
-      noteToAdd.frequency = RTTTL.NOTE_G5;
+      noteToAdd.frequency = Song.NOTE_G5;
     } else if (noteToAdd.octave == 6) {
-      noteToAdd.frequency = RTTTL.NOTE_G6;
+      noteToAdd.frequency = Song.NOTE_G6;
     } else if (noteToAdd.octave == 7) {
-      noteToAdd.frequency = RTTTL.NOTE_G7;
+      noteToAdd.frequency = Song.NOTE_G7;
     } else {
       noteToAdd.pause = true;
     }
   } else if (whichNote == "#g") {
     if (noteToAdd.octave == 5) {
-      noteToAdd.frequency = RTTTL.NOTE_GS5;
+      noteToAdd.frequency = Song.NOTE_GS5;
     } else if (noteToAdd.octave == 6) {
-      noteToAdd.frequency = RTTTL.NOTE_GS6;
+      noteToAdd.frequency = Song.NOTE_GS6;
     } else if (noteToAdd.octave == 7) {
-      noteToAdd.frequency = RTTTL.NOTE_GS7;
+      noteToAdd.frequency = Song.NOTE_GS7;
     } else {
       noteToAdd.pause = true;
     }
   } else if (whichNote == "a") {
     if (noteToAdd.octave == 4) {
-      noteToAdd.frequency = RTTTL.NOTE_A4;
+      noteToAdd.frequency = Song.NOTE_A4;
     } else if (noteToAdd.octave == 5) {
-      noteToAdd.frequency = RTTTL.NOTE_A5;
+      noteToAdd.frequency = Song.NOTE_A5;
     } else if (noteToAdd.octave == 6) {
-      noteToAdd.frequency = RTTTL.NOTE_A6;
+      noteToAdd.frequency = Song.NOTE_A6;
     } else if (noteToAdd.octave == 7) {
-      noteToAdd.frequency = RTTTL.NOTE_A7;
+      noteToAdd.frequency = Song.NOTE_A7;
     } else {
       noteToAdd.pause = true;
     }
   } else if (whichNote == "#a") {
     if (noteToAdd.octave == 4) {
-      noteToAdd.frequency = RTTTL.NOTE_AS4;
+      noteToAdd.frequency = Song.NOTE_AS4;
     } else if (noteToAdd.octave == 5) {
-      noteToAdd.frequency = RTTTL.NOTE_AS5;
+      noteToAdd.frequency = Song.NOTE_AS5;
     } else if (noteToAdd.octave == 6) {
-      noteToAdd.frequency = RTTTL.NOTE_AS6;
+      noteToAdd.frequency = Song.NOTE_AS6;
     } else if (noteToAdd.octave == 7) {
-      noteToAdd.frequency = RTTTL.NOTE_AS7;
+      noteToAdd.frequency = Song.NOTE_AS7;
     } else {
       noteToAdd.pause = true;
     }
   } else if (whichNote == "b") {
     if (noteToAdd.octave == 4) {
-      noteToAdd.frequency = RTTTL.NOTE_B4;
+      noteToAdd.frequency = Song.NOTE_B4;
     } else if (noteToAdd.octave == 5) {
-      noteToAdd.frequency = RTTTL.NOTE_B5;
+      noteToAdd.frequency = Song.NOTE_B5;
     } else if (noteToAdd.octave == 6) {
-      noteToAdd.frequency = RTTTL.NOTE_B6;
+      noteToAdd.frequency = Song.NOTE_B6;
     } else if (noteToAdd.octave == 7) {
-      noteToAdd.frequency = RTTTL.NOTE_B7;
+      noteToAdd.frequency = Song.NOTE_B7;
     } else {
       noteToAdd.pause = true;
     }
@@ -227,14 +228,14 @@ RTTTL.prototype.parseComposerNote = function(note) {
   this.song.push(noteToAdd);
 }
 
-RTTTL.prototype.parse = function(rtttl) {
+Song.prototype.parseRTTTL = function(rtttl) {
   var colonTokens = rtttl.split(":");
   this.name = colonTokens[0];
   this.parseDefaults(colonTokens[1]);
   this.parseSong(colonTokens[2]);
 }
 
-RTTTL.prototype.parseDefaults = function(defaults) {
+Song.prototype.parseDefaults = function(defaults) {
   var commaTokens = defaults.split(",");
   for (var i = 0; i < commaTokens.length; i++) {
     if (commaTokens[i][0] == "o") {
@@ -247,14 +248,14 @@ RTTTL.prototype.parseDefaults = function(defaults) {
   }
 }
 
-RTTTL.prototype.parseSong = function(song) {
+Song.prototype.parseSong = function(song) {
   var commaTokens = song.split(",");
   for (var i = 0; i < commaTokens.length; i++) {
     this.parseNote(commaTokens[i]);
   }
 }
 
-RTTTL.prototype.parseNote = function(note) {
+Song.prototype.parseNote = function(note) {
   var noteToAdd = new Note();
   var regexNum = /\d/;
   var regexNote = /[PCDEFGAB#]/;
@@ -297,132 +298,132 @@ RTTTL.prototype.parseNote = function(note) {
     if (octave == "4") {
       noteToAdd.pause = true; // A4 is the lowest note.
     } else if (octave == "5") {
-      noteToAdd.frequency = RTTTL.NOTE_C5;
+      noteToAdd.frequency = Song.NOTE_C5;
     } else if (octave == "6") {
-      noteToAdd.frequency = RTTTL.NOTE_C6;
+      noteToAdd.frequency = Song.NOTE_C6;
     } else if (octave == "7") {
-      noteToAdd.frequency = RTTTL.NOTE_C7;
+      noteToAdd.frequency = Song.NOTE_C7;
     }
   } else if (whichNote == "C#") {
     if (octave == "4") {
       noteToAdd.pause = true; // A4 is the lowest note.
     } else if (octave == "5") {
-      noteToAdd.frequency = RTTTL.NOTE_CS5;
+      noteToAdd.frequency = Song.NOTE_CS5;
     } else if (octave == "6") {
-      noteToAdd.frequency = RTTTL.NOTE_CS6;
+      noteToAdd.frequency = Song.NOTE_CS6;
     } else if (octave == "7") {
-      noteToAdd.frequency = RTTTL.NOTE_CS7;
+      noteToAdd.frequency = Song.NOTE_CS7;
     }
   } else if (whichNote == "D") {
     if (octave == "4") {
       noteToAdd.pause = true; // A4 is the lowest note.
     } else if (octave == "5") {
-      noteToAdd.frequency = RTTTL.NOTE_D5;
+      noteToAdd.frequency = Song.NOTE_D5;
     } else if (octave == "6") {
-      noteToAdd.frequency = RTTTL.NOTE_D6;
+      noteToAdd.frequency = Song.NOTE_D6;
     } else if (octave == "7") {
-      noteToAdd.frequency = RTTTL.NOTE_D7;
+      noteToAdd.frequency = Song.NOTE_D7;
     }
   } else if (whichNote == "D#") {
     if (octave == "4") {
       noteToAdd.pause = true; // A4 is the lowest note.
     } else if (octave == "5") {
-      noteToAdd.frequency = RTTTL.NOTE_DS5;
+      noteToAdd.frequency = Song.NOTE_DS5;
     } else if (octave == "6") {
-      noteToAdd.frequency = RTTTL.NOTE_DS6;
+      noteToAdd.frequency = Song.NOTE_DS6;
     } else if (octave == "7") {
-      noteToAdd.frequency = RTTTL.NOTE_DS7;
+      noteToAdd.frequency = Song.NOTE_DS7;
     }
   } else if (whichNote == "E") {
     if (octave == "4") {
       noteToAdd.pause = true; // A4 is the lowest note.
     } else if (octave == "5") {
-      noteToAdd.frequency = RTTTL.NOTE_E5;
+      noteToAdd.frequency = Song.NOTE_E5;
     } else if (octave == "6") {
-      noteToAdd.frequency = RTTTL.NOTE_E6;
+      noteToAdd.frequency = Song.NOTE_E6;
     } else if (octave == "7") {
-      noteToAdd.frequency = RTTTL.NOTE_E7;
+      noteToAdd.frequency = Song.NOTE_E7;
     }
   } else if (whichNote == "F") {
     if (octave == "4") {
       noteToAdd.pause = true; // A4 is the lowest note.
     } else if (octave == "5") {
-      noteToAdd.frequency = RTTTL.NOTE_F5;
+      noteToAdd.frequency = Song.NOTE_F5;
     } else if (octave == "6") {
-      noteToAdd.frequency = RTTTL.NOTE_F6;
+      noteToAdd.frequency = Song.NOTE_F6;
     } else if (octave == "7") {
-      noteToAdd.frequency = RTTTL.NOTE_F7;
+      noteToAdd.frequency = Song.NOTE_F7;
     }
   } else if (whichNote == "F#") {
     if (octave == "4") {
       noteToAdd.pause = true; // A4 is the lowest note.
     } else if (octave == "5") {
-      noteToAdd.frequency = RTTTL.NOTE_FS5;
+      noteToAdd.frequency = Song.NOTE_FS5;
     } else if (octave == "6") {
-      noteToAdd.frequency = RTTTL.NOTE_FS6;
+      noteToAdd.frequency = Song.NOTE_FS6;
     } else if (octave == "7") {
-      noteToAdd.frequency = RTTTL.NOTE_FS7;
+      noteToAdd.frequency = Song.NOTE_FS7;
     }
   } else if (whichNote == "G") {
     if (octave == "4") {
       noteToAdd.pause = true; // A4 is the lowest note.
     } else if (octave == "5") {
-      noteToAdd.frequency = RTTTL.NOTE_G5;
+      noteToAdd.frequency = Song.NOTE_G5;
     } else if (octave == "6") {
-      noteToAdd.frequency = RTTTL.NOTE_G6;
+      noteToAdd.frequency = Song.NOTE_G6;
     } else if (octave == "7") {
-      noteToAdd.frequency = RTTTL.NOTE_G7;
+      noteToAdd.frequency = Song.NOTE_G7;
     }
   } else if (whichNote == "G#") {
     if (octave == "4") {
       noteToAdd.pause = true; // A4 is the lowest note.
     } else if (octave == "5") {
-      noteToAdd.frequency = RTTTL.NOTE_GS5;
+      noteToAdd.frequency = Song.NOTE_GS5;
     } else if (octave == "6") {
-      noteToAdd.frequency = RTTTL.NOTE_GS6;
+      noteToAdd.frequency = Song.NOTE_GS6;
     } else if (octave == "7") {
-      noteToAdd.frequency = RTTTL.NOTE_GS7;
+      noteToAdd.frequency = Song.NOTE_GS7;
     }
   } else if (whichNote == "A") {
     if (octave == "4") {
-      noteToAdd.frequency = RTTTL.NOTE_A4;
+      noteToAdd.frequency = Song.NOTE_A4;
     } else if (octave == "5") {
-      noteToAdd.frequency = RTTTL.NOTE_A5;
+      noteToAdd.frequency = Song.NOTE_A5;
     } else if (octave == "6") {
-      noteToAdd.frequency = RTTTL.NOTE_A6;
+      noteToAdd.frequency = Song.NOTE_A6;
     } else if (octave == "7") {
-      noteToAdd.frequency = RTTTL.NOTE_A7;
+      noteToAdd.frequency = Song.NOTE_A7;
     }
   } else if (whichNote == "A#") {
     if (octave == "4") {
-      noteToAdd.frequency = RTTTL.NOTE_AS4;
+      noteToAdd.frequency = Song.NOTE_AS4;
     } else if (octave == "5") {
-      noteToAdd.frequency = RTTTL.NOTE_AS5;
+      noteToAdd.frequency = Song.NOTE_AS5;
     } else if (octave == "6") {
-      noteToAdd.frequency = RTTTL.NOTE_AS6;
+      noteToAdd.frequency = Song.NOTE_AS6;
     } else if (octave == "7") {
-      noteToAdd.frequency = RTTTL.NOTE_AS7;
+      noteToAdd.frequency = Song.NOTE_AS7;
     }
   } else if (whichNote == "B") {
     if (octave == "4") {
-      noteToAdd.frequency = RTTTL.NOTE_B4;
+      noteToAdd.frequency = Song.NOTE_B4;
     } else if (octave == "5") {
-      noteToAdd.frequency = RTTTL.NOTE_B5;
+      noteToAdd.frequency = Song.NOTE_B5;
     } else if (octave == "6") {
-      noteToAdd.frequency = RTTTL.NOTE_B6;
+      noteToAdd.frequency = Song.NOTE_B6;
     } else if (octave == "7") {
-      noteToAdd.frequency = RTTTL.NOTE_B7;
+      noteToAdd.frequency = Song.NOTE_B7;
     }
   }
 
   if (note.charAt(i) == ".") {
-    noteToAdd.duration *= RTTTL.DOT;
+    noteToAdd.duration *= Song.DOT;
   }
 
   this.song.push(noteToAdd);
 }
 
-RTTTL.prototype.play = function(when) {
+Song.prototype.play = function(when) {
   var beatLength = 4.0 * 60.0 / this.defaultTempo;
   var then = when;
   for (var i = 0; i < this.song.length; i++) {
@@ -435,69 +436,69 @@ RTTTL.prototype.play = function(when) {
   }
 }
 
-RTTTL.prototype.pause = function() {
+Song.prototype.pause = function() {
 }
 
 // http://www.phy.mtu.edu/~suits/notefreqs.html
-RTTTL.NOTE_A3 = 220;
-RTTTL.NOTE_AS3 = 233.08;
-RTTTL.NOTE_B3 = 246.94;
-RTTTL.NOTE_C4 = 261.63;
-RTTTL.NOTE_CS4 = 277.18;
-RTTTL.NOTE_D4 = 293.66;
-RTTTL.NOTE_DS4 = 311.13;
-RTTTL.NOTE_E4 = 329.63;
-RTTTL.NOTE_F4 = 349.23;
-RTTTL.NOTE_FS4 = 369.99;
-RTTTL.NOTE_G4 = 392.00;
-RTTTL.NOTE_GS4 = 415.30;
-RTTTL.NOTE_A4 = 440.00;
-RTTTL.NOTE_AS4 = 466.16;
-RTTTL.NOTE_B4 = 493.88;
-RTTTL.NOTE_C5 = 523.25; // This is "c1" in Nokia Composer.
-RTTTL.NOTE_CS5 = 554.37;
-RTTTL.NOTE_D5 = 587.33;
-RTTTL.NOTE_DS5 = 622.25;
-RTTTL.NOTE_E5 = 659.26;
-RTTTL.NOTE_F5 = 698.46;
-RTTTL.NOTE_FS5 = 739.99;
-RTTTL.NOTE_G5 = 783.99;
-RTTTL.NOTE_GS5 = 830.61;
-RTTTL.NOTE_A5 = 880.00;
-RTTTL.NOTE_AS5 = 932.33;
-RTTTL.NOTE_B5 = 987.77;
-RTTTL.NOTE_C6 = 1046.50;
-RTTTL.NOTE_CS6 = 1108.73;
-RTTTL.NOTE_D6 = 1174.66;
-RTTTL.NOTE_DS6 = 1244.51;
-RTTTL.NOTE_E6 = 1318.51;
-RTTTL.NOTE_F6 = 1396.91;
-RTTTL.NOTE_FS6 = 1479.98;
-RTTTL.NOTE_G6 = 1567.98;
-RTTTL.NOTE_GS6 = 1661.22;
-RTTTL.NOTE_A6 = 1760.00;
-RTTTL.NOTE_AS6 = 1864.66;
-RTTTL.NOTE_B6 = 1975.53;
-RTTTL.NOTE_C7 = 2093.00;
-RTTTL.NOTE_CS7 = 2217.46;
-RTTTL.NOTE_D7 = 2349.32;
-RTTTL.NOTE_DS7 = 2489.02;
-RTTTL.NOTE_E7 = 2637.02;
-RTTTL.NOTE_F7 = 2793.83;
-RTTTL.NOTE_FS7 = 2959.96;
-RTTTL.NOTE_G7 = 3135.96;
-RTTTL.NOTE_GS7 = 3322.44;
-RTTTL.NOTE_A7 = 3520.00;
-RTTTL.NOTE_AS7 = 3729.31;
-RTTTL.NOTE_B7 = 3951.07;
+Song.NOTE_A3 = 220;
+Song.NOTE_AS3 = 233.08;
+Song.NOTE_B3 = 246.94;
+Song.NOTE_C4 = 261.63;
+Song.NOTE_CS4 = 277.18;
+Song.NOTE_D4 = 293.66;
+Song.NOTE_DS4 = 311.13;
+Song.NOTE_E4 = 329.63;
+Song.NOTE_F4 = 349.23;
+Song.NOTE_FS4 = 369.99;
+Song.NOTE_G4 = 392.00;
+Song.NOTE_GS4 = 415.30;
+Song.NOTE_A4 = 440.00;
+Song.NOTE_AS4 = 466.16;
+Song.NOTE_B4 = 493.88;
+Song.NOTE_C5 = 523.25; // This is "c1" in Nokia Composer.
+Song.NOTE_CS5 = 554.37;
+Song.NOTE_D5 = 587.33;
+Song.NOTE_DS5 = 622.25;
+Song.NOTE_E5 = 659.26;
+Song.NOTE_F5 = 698.46;
+Song.NOTE_FS5 = 739.99;
+Song.NOTE_G5 = 783.99;
+Song.NOTE_GS5 = 830.61;
+Song.NOTE_A5 = 880.00;
+Song.NOTE_AS5 = 932.33;
+Song.NOTE_B5 = 987.77;
+Song.NOTE_C6 = 1046.50;
+Song.NOTE_CS6 = 1108.73;
+Song.NOTE_D6 = 1174.66;
+Song.NOTE_DS6 = 1244.51;
+Song.NOTE_E6 = 1318.51;
+Song.NOTE_F6 = 1396.91;
+Song.NOTE_FS6 = 1479.98;
+Song.NOTE_G6 = 1567.98;
+Song.NOTE_GS6 = 1661.22;
+Song.NOTE_A6 = 1760.00;
+Song.NOTE_AS6 = 1864.66;
+Song.NOTE_B6 = 1975.53;
+Song.NOTE_C7 = 2093.00;
+Song.NOTE_CS7 = 2217.46;
+Song.NOTE_D7 = 2349.32;
+Song.NOTE_DS7 = 2489.02;
+Song.NOTE_E7 = 2637.02;
+Song.NOTE_F7 = 2793.83;
+Song.NOTE_FS7 = 2959.96;
+Song.NOTE_G7 = 3135.96;
+Song.NOTE_GS7 = 3322.44;
+Song.NOTE_A7 = 3520.00;
+Song.NOTE_AS7 = 3729.31;
+Song.NOTE_B7 = 3951.07;
 
-RTTTL.WHOLE_NOTE = 1;
-RTTTL.HALF_NOTE = 2;
-RTTTL.QUARTER_NOTE = 4;
-RTTTL.EIGHTH_NOTE = 8;
-RTTTL.SIXTEENTH_NOTE = 16;
-RTTTL.THIRTY_SECOND_NOTE = 32;
-RTTTL.DOT = 1.5;
+Song.WHOLE_NOTE = 1;
+Song.HALF_NOTE = 2;
+Song.QUARTER_NOTE = 4;
+Song.EIGHTH_NOTE = 8;
+Song.SIXTEENTH_NOTE = 16;
+Song.THIRTY_SECOND_NOTE = 32;
+Song.DOT = 1.5;
 
 var context;
 var nokiawave;
@@ -589,7 +590,11 @@ function showAxes(context, axes) {
 }
 
 window.addEventListener('load', init, false);
+window.addEventListener('resize', resizePhone, false);
 function init() {
+
+  resizePhone();
+
   try {
     context = new webkitAudioContext();
   } catch(e) {
@@ -602,7 +607,7 @@ function init() {
   nokiawave = context.createOscillator();
   //var generatedSeries = generateSquareSeries(4096);
   //var generatedSeries = generateNokiaSeries(4096);
-  var generatedSeries = nokiaSampleFFT32_Norm;
+  var generatedSeries = nokiaSampleFFT32;
   loadWaveTable(generatedSeries, nokiawave);
   globalGain = context.createGainNode();
   globalGain.gain.value = 1.0;
@@ -618,13 +623,33 @@ function init() {
   now = context.currentTime;
   nokiawave.noteOn(now);
 
-  rtttl = new RTTTL();
-  rtttl.parse(rtttlNokiaTune);
-  rtttl.play(now);
+  song = new Song();
+  //song.parseRTTTL(rtttlNokiaTune);
+  song.parseComposer("Nyan Cat", 140, nokiaComposerNyanCat);
+  song.play(now);
   if (debugMode) {
     printWavetableSweep(generatedSeries, 0, 2 * Math.PI, 256);
     plotWaveform(generatedSeries);
   }
+}
+
+function resizePhone() {
+  var actualWidth = 2704;
+  var actualHeight = 4064;
+  var actualRatio = actualWidth / actualHeight;
+  var windowRatio = window.innerWidth / window.innerHeight;
+  var phone = document.getElementById('phone');
+  if (windowRatio > actualRatio) {
+    // Window is wider than actual phone.
+    phone.height = window.innerHeight;
+    phone.width = phone.height / actualHeight * actualWidth;
+  } else {
+    // Window is not wider than actual phone.
+    phone.width = window.innerWidth;
+    phone.height = phone.width / actualWidth * actualHeight;
+  }
+  phone.style.left = (window.innerWidth / 2 - phone.width / 2) + "px";
+  phone.style.top = (window.innerHeight / 2 - phone.height / 2) + "px";
 }
 
 function beep(when, freq, duration)
@@ -646,7 +671,7 @@ function playMetronome(when, tempo, duration)
   var then = when;
   while (then <= when + duration)
   {
-    var noteDuration = beatLength / RTTTL.QUARTER_NOTE;
+    var noteDuration = beatLength / Song.QUARTER_NOTE;
     beep(then, clickFrequency, clickDuration);
     then += noteDuration;
   }
@@ -690,76 +715,6 @@ function wavetableAtTime(wavetableArray, t) {
 // Fourier series co-efficients for a damped square wave. I'm not sure if this
 // response is characteristic of the Nokia sound for all frequencies the
 // classic Nokia phone can generate.
-var nokiaSampleFFT32_Norm = {
-  'real': [
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-  ],
-  'imag': [
-    -37.94 / 1024,
-    -40.96 / 1024,
-    -40.96 / 1024,
-    -49.22 / 1024,
-    -49.22 / 1024,
-    -43.27 / 1024,
-    -38.59 / 1024,
-    -41.41 / 1024,
-    -49.88 / 1024,
-    -52.91 / 1024,
-    -47.16 / 1024,
-    -39.06 / 1024,
-    -42.05 / 1024,
-    -53.96 / 1024,
-    -60.83 / 1024,
-    -56.99 / 1024,
-    -54.95 / 1024,
-    -65.73 / 1024,
-    -70.99 / 1024,
-    -67.25 / 1024,
-    -70.98 / 1024,
-    -72.94 / 1024,
-    -71.99 / 1024,
-    -71.80 / 1024,
-    -76.07 / 1024,
-    -76.28 / 1024,
-    -79.35 / 1024,
-    -78.06 / 1024,
-    -81.61 / 1024,
-    0,
-    0,
-    0,
-  ],
-}
 var nokiaSampleFFT32 = {
   'real': [
     0,
@@ -833,15 +788,16 @@ var nokiaSampleFFT32 = {
 
 // Nokia Composer Nyan Cat
 // http://www.youtube.com/watch?v=eMD6hThdFFo
+// Tempo 180
 var nokiaComposerNyanCat = "8#f3 8#g3 16#c3 8#d3 16#c3 16d3 16#c3 8b2 8b2" +
 " 8#c3 8d3 16d3 16#c3 16b2 16#c3 16#d3 16#f3 16#g3 16#d3 16#f3 16#c3 16#d3" +
 " 16b2 16#c3 16b2 8#d3 8#f3 16#g3 16#d3 16#f3 16#c3 16#d3 16b2 16#c3 16#d3" +
 " 16d3 16#c3 16b2 16#c3 8d3 16b2 16#c3 16#d3 16#f3 16#c3 16d3 16#c3 16b2" +
 " 8#c3 8b2";
 
-
 // Nokia Composer Epic Sax
 // http://www.youtube.com/watch?v=hsX3wPawqZI
+// Tempo 63
 var nokiaComposerEpicSax = "8a1 8- 16a1 32a1 32a1 32g1 16a1 32- 8a1 8- 16a1" +
 " 32a1 32a1 32g1 16a1 32- 8a1 16- 8c2 8a1 8g1 16f1 16- 16d1 16d1 16e1 16f1" +
 " 16d1";
