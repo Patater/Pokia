@@ -7,6 +7,9 @@
 <body>
 
 <img src="Nokia_1100.jpg" width="400">
+<canvas id="waveform" width="400" height="100"></canvas>
+<pre id="debug"></pre>
+
 
 <script>
 Note = function() {
@@ -15,7 +18,7 @@ Note = function() {
   this.duration = RTTTL.QUARTER_NOTE;
 
   // Time until the next note can play.
-  this.spacing = 0.02;
+  this.spacing = 0.01;
 
   // If this is true, then frequency will be ignored and we'll "rest" instead
   // of playing for the specified duration.
@@ -91,7 +94,7 @@ RTTTL.prototype.parseComposerNote = function(note) {
     i++;
   }
   var octave = note.substring(start, i);
-  noteToAdd.octave = parseInt(octave, 10) + 5;
+  noteToAdd.octave = parseInt(octave, 10) + 4;
 
   if (whichNote == "c") {
     if (noteToAdd.octave == 5) {
@@ -448,10 +451,10 @@ RTTTL.NOTE_F4 = 349.23;
 RTTTL.NOTE_FS4 = 369.99;
 RTTTL.NOTE_G4 = 392.00;
 RTTTL.NOTE_GS4 = 415.30;
-RTTTL.NOTE_A4 = 440.00; // A1 Nokia Composer
+RTTTL.NOTE_A4 = 440.00;
 RTTTL.NOTE_AS4 = 466.16;
 RTTTL.NOTE_B4 = 493.88;
-RTTTL.NOTE_C5 = 523.25;
+RTTTL.NOTE_C5 = 523.25; // This is "c1" in Nokia Composer.
 RTTTL.NOTE_CS5 = 554.37;
 RTTTL.NOTE_D5 = 587.33;
 RTTTL.NOTE_DS5 = 622.25;
@@ -497,9 +500,94 @@ RTTTL.THIRTY_SECOND_NOTE = 32;
 RTTTL.DOT = 1.5;
 
 var context;
-var squarewave;
+var nokiawave;
 var globalGain;
 var songGain;
+var debugMode = false;
+
+var wavetable;
+var frequencyData;
+// Modified from
+// https://chromium.googlecode.com/svn/trunk/samples/audio/oscillator.html
+function loadWaveTable(wavetableArray, oscillator) {
+  // Copy into more efficient Float32Arrays.
+  var n = wavetableArray.real.length;
+  frequencyData = {
+    "real": new Float32Array(n),
+    "imag": new Float32Array(n)
+  };
+
+  for (var i = 0; i < n; ++i) {
+    frequencyData.real[i] = wavetableArray.real[i];
+    frequencyData.imag[i] = wavetableArray.imag[i];
+  }
+
+  wavetable = context.createWaveTable(frequencyData.real, frequencyData.imag);
+  oscillator.setWaveTable(wavetable);
+}
+
+// Modified from http://www.javascripter.net/faq/plotafunctiongraph.htm
+// TODO: Plot x from 0 to 2 * Math.PI and y from -2 to 2
+function plotWaveform(wavetableArray) {
+  var canvas = document.getElementById("waveform");
+  var axes = {};
+  var context = canvas.getContext("2d");
+  //axes.x0 = 0.5 + 0.5 * canvas.width;
+  axes.x0 = 0;
+  axes.y0 = 0 + 0.5 * canvas.height;
+  axes.scale = 40;
+  axes.doNegativeX = false;
+
+  showAxes(context, axes);
+  funGraph(context, axes,
+    function(x) { return wavetableAtTime(wavetableArray, x); },
+    "rgb(13, 13, 13)", 2
+  );
+}
+
+function funGraph (context, axes, func, color, thick) {
+  var xx;
+  var yy;
+  var dx = 1;
+  var x0 = axes.x0;
+  var y0 = axes.y0;
+  var scale = axes.scale;
+  var iMin = 0;
+  var iMax = Math.round((context.canvas.width - x0) / dx);
+  context.beginPath();
+  context.lineWidth = thick;
+  context.strokeStyle = color;
+
+  for (var i = iMin; i <= iMax; i++) {
+    xx = dx * i;
+    yy = scale * func(xx / scale);
+    if (i == iMin) {
+      context.moveTo(x0 + xx, y0 - yy);
+    } else {
+      context.lineTo(x0 + xx, y0 - yy);
+    }
+  }
+  context.stroke();
+}
+
+function showAxes(context, axes) {
+ var x0 = axes.x0;
+ var w = context.canvas.width;
+ var y0 = axes.y0;
+ var h = context.canvas.height;
+ var xmin = axes.doNegativeX ? 0 : x0;
+
+ context.beginPath();
+ context.strokeStyle = "rgb(128,128,128)";
+ context.moveTo(xmin,y0);
+
+ context.lineTo(w,y0);  // X axis
+ context.moveTo(x0,0);
+
+ context.lineTo(x0,h);  // Y axis
+ context.stroke();
+}
+
 window.addEventListener('load', init, false);
 function init() {
   try {
@@ -511,52 +599,37 @@ function init() {
     );
     return;
   }
-  squarewave = context.createOscillator();
-  squarewave.type = squarewave.SQUARE;
+  nokiawave = context.createOscillator();
+  //var generatedSeries = generateSquareSeries(4096);
+  //var generatedSeries = generateNokiaSeries(4096);
+  var generatedSeries = nokiaSampleFFT32_Norm;
+  loadWaveTable(generatedSeries, nokiawave);
   globalGain = context.createGainNode();
-  globalGain.gain.value = 0.1;
+  globalGain.gain.value = 1.0;
 
   songGain = context.createGainNode();
   songGain.gain.value = 0;
 
-  squarewave.connect(songGain);
+  nokiawave.connect(songGain);
   songGain.connect(globalGain);
   globalGain.connect(context.destination);
 
-  squarewave.noteOn(0);
+  var now = 0;
+  now = context.currentTime;
+  nokiawave.noteOn(now);
 
   rtttl = new RTTTL();
-  //rtttl.parse("nokia:o=5,d=8,b=220:E6,D6,4F#,4G#,C#6,B,4D,4E,B,A,4C#,4E,2A.");
-  rtttl.parseComposer(
-    "Epic Sax",
-    63,
-    "8a1 8- 16a1 32a1 32a1 32g1 16a1 32- 8a1 8- 16a1 32a1 32a1 32g1 16a1 32-" +
-    " 8a1 16- 8c2 8a1 8g1 16f1 16- 16d1 16d1 16e1 16f1 16d1"
-  );
-  ///rtttl.parseComposer(
-  ///  "Chromatic",
-  ///  220,
-  ///  "4c1 4- 4#c1 4- 4d1 4- 4#d1 4- 4e1 4- 4f1 4- 4#f1 4- 4g1 4- 4#g1 4- 4a1" +
-  ///  " 4- 4#a1 4- 4b1 4- 4c2"
-  ///);
-
-  // Nokia Composer Nyan Cat
-  // http://www.youtube.com/watch?v=eMD6hThdFFo
-  // 8#f3 8#g3 16#c3 8#d3 16#c3 16d3 16#c3 8b2 8b2 8#c3 8d3 16d3 16#c3 16b2
-  // 16#c3 16#d3 16#f3 16#g3 16#d3 16#f3 16#c3 16#d3 16b2 16#c3 16b2 8#d3 8#f3
-  // 16#g3 16#d3 16#f3 16#c3 16#d3 16b2 16#c3 16#d3 16d3 16#c3 16b2 16#c3 8d3
-  // 16b2 16#c3 16#d3 16#f3 16#c3 16d3 16#c3 16b2 8#c3 8b2
-
-  // Nokia Composer Epic Sax
-  // http://www.youtube.com/watch?v=hsX3wPawqZI
-  // 8a1 8- 16a1 32a1 32a1 32g1 16a1 32- 8a1 8- 16a1 32a1 32a1 32g1 16a1 32-
-  // 8a1 16- 8c2 8a1 8g1 16f1 16- 16d1 16d1 16e1 16f1 16d1
-  rtttl.play(0);
+  rtttl.parse(rtttlNokiaTune);
+  rtttl.play(now);
+  if (debugMode) {
+    printWavetableSweep(generatedSeries, 0, 2 * Math.PI, 256);
+    plotWaveform(generatedSeries);
+  }
 }
 
 function beep(when, freq, duration)
 {
-  squarewave.frequency.setValueAtTime(freq, when);
+  nokiawave.frequency.setValueAtTime(freq, when);
 
   songGain.gain.setValueAtTime(1, when);
   songGain.gain.setValueAtTime(0, when + duration);
@@ -578,6 +651,213 @@ function playMetronome(when, tempo, duration)
     then += noteDuration;
   }
 }
+
+function printWavetableSweep(wavetableArray, start, end, steps) {
+  var debug = document.getElementById("debug");
+  for (var i = start; i < end; i += (end - start) / steps) {
+    debug.textContent += wavetableAtTime(wavetableArray, i) + "\n";
+  }
+}
+
+function generateSquareSeries(samples) {
+  var series = {};
+  series.real = [];
+  series.imag = [];
+  for (var n = 0; n < samples; n++) {
+    if (n % 2 == 1) {
+      series.imag.push(4.0 / Math.PI * (1 / n));
+    } else {
+      series.imag.push(0);
+    }
+    series.real.push(0);
+  }
+  return series;
+}
+
+function wavetableAtTime(wavetableArray, t) {
+  var value = 0;
+  var n = wavetableArray.real.length;
+  for (var i = 0; i < n; ++i) {
+    value += wavetableArray.real[i] * Math.cos(i * t);
+    value += wavetableArray.imag[i] * Math.sin(i * t);
+  }
+  value += wavetableArray.real[0] / 2;
+
+  return value;
+}
+
+// We can just use math if we come up with an equation for generating the
+// Fourier series co-efficients for a damped square wave. I'm not sure if this
+// response is characteristic of the Nokia sound for all frequencies the
+// classic Nokia phone can generate.
+var nokiaSampleFFT32_Norm = {
+  'real': [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+  ],
+  'imag': [
+    -37.94 / 1024,
+    -40.96 / 1024,
+    -40.96 / 1024,
+    -49.22 / 1024,
+    -49.22 / 1024,
+    -43.27 / 1024,
+    -38.59 / 1024,
+    -41.41 / 1024,
+    -49.88 / 1024,
+    -52.91 / 1024,
+    -47.16 / 1024,
+    -39.06 / 1024,
+    -42.05 / 1024,
+    -53.96 / 1024,
+    -60.83 / 1024,
+    -56.99 / 1024,
+    -54.95 / 1024,
+    -65.73 / 1024,
+    -70.99 / 1024,
+    -67.25 / 1024,
+    -70.98 / 1024,
+    -72.94 / 1024,
+    -71.99 / 1024,
+    -71.80 / 1024,
+    -76.07 / 1024,
+    -76.28 / 1024,
+    -79.35 / 1024,
+    -78.06 / 1024,
+    -81.61 / 1024,
+    0,
+    0,
+    0,
+  ],
+}
+var nokiaSampleFFT32 = {
+  'real': [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+  ],
+  'imag': [
+    -37.94,
+    -40.96,
+    -40.96,
+    -49.22,
+    -49.22,
+    -43.27,
+    -38.59,
+    -41.41,
+    -49.88,
+    -52.91,
+    -47.16,
+    -39.06,
+    -42.05,
+    -53.96,
+    -60.83,
+    -56.99,
+    -54.95,
+    -65.73,
+    -70.99,
+    -67.25,
+    -70.98,
+    -72.94,
+    -71.99,
+    -71.80,
+    -76.07,
+    -76.28,
+    -79.35,
+    -78.06,
+    -81.61,
+    0,
+    0,
+    0,
+  ],
+}
+
+// Nokia Composer Nyan Cat
+// http://www.youtube.com/watch?v=eMD6hThdFFo
+var nokiaComposerNyanCat = "8#f3 8#g3 16#c3 8#d3 16#c3 16d3 16#c3 8b2 8b2" +
+" 8#c3 8d3 16d3 16#c3 16b2 16#c3 16#d3 16#f3 16#g3 16#d3 16#f3 16#c3 16#d3" +
+" 16b2 16#c3 16b2 8#d3 8#f3 16#g3 16#d3 16#f3 16#c3 16#d3 16b2 16#c3 16#d3" +
+" 16d3 16#c3 16b2 16#c3 8d3 16b2 16#c3 16#d3 16#f3 16#c3 16d3 16#c3 16b2" +
+" 8#c3 8b2";
+
+
+// Nokia Composer Epic Sax
+// http://www.youtube.com/watch?v=hsX3wPawqZI
+var nokiaComposerEpicSax = "8a1 8- 16a1 32a1 32a1 32g1 16a1 32- 8a1 8- 16a1" +
+" 32a1 32a1 32g1 16a1 32- 8a1 16- 8c2 8a1 8g1 16f1 16- 16d1 16d1 16e1 16f1" +
+" 16d1";
+
+// Nokia Composer Chromatic Scale
+// This is longer than 50 notes, so real Nokia phones can't play it.
+var nokiaComposerChromaticScale = "4c1 4- 4#c1 4- 4d1 4- 4#d1 4- 4e1 4- 4f1" +
+" 4- 4#f1 4- 4g1 4- 4#g1 4- 4a1 4- 4#a1 4- 4b1 4- 4c2 4- 4#c2 4- 4d2 4-" +
+" 4#d2 4- 4e2 4- 4f2 4- 4#f2 4- 4g2 4- 4#g2 4- 4a2 4- 4#a2 4- 4b2 4- 4c3" +
+" 4- 4#c3 4- 4d3 4- 4#d3 4- 4e3 4- 4f3 4- 4#f3 4- 4g3 4- 4#g3 4- 4a3 4-" +
+" 4#a3 4- 4b3 4-";
+
+// RTTTL Nokia Tune
+// https://en.wikipedia.org/wiki/Nokia_tune
+var rtttlNokiaTune =
+"Nokia:o=5,d=8,b=240:E6,D6,4F#,4G#,C#6,B,4D,4E,B,A,4C#,4E,2A.";
 
 </script>
 
