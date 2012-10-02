@@ -828,35 +828,53 @@ function renderScreen() {
   context.shadowBlur = 6;
   context.shadowOffsetX = -6;
   context.shadowOffsetY = 4;
-  var renderFunc;
-  if (evenNotOdd) {
-    renderFunc = function(i, j) {
-      if ((i % 2 == 0) && (j % 2 == 0)) {
+
+  // Alternating pattern
+  ///var renderFunc;
+  ///if (evenNotOdd) {
+  ///  renderFunc = function(i, j) {
+  ///    if ((i % 2 == 0) && (j % 2 == 0)) {
+  ///      context.fillRect(
+  ///        i * pixel.horizonalSpace + i * pixel.width,
+  ///        j * pixel.verticalSpace + j * pixel.height,
+  ///        pixel.width,
+  ///        pixel.height
+  ///      );
+  ///    }
+  ///  }
+  ///  evenNotOdd = false;
+  ///} else {
+  ///  renderFunc = function(i, j) {
+  ///    if ((i % 2 == 1) && (j % 2 == 1)) {
+  ///      context.fillRect(
+  ///        i * pixel.horizonalSpace + i * pixel.width,
+  ///        j * pixel.verticalSpace + j * pixel.height,
+  ///        pixel.width,
+  ///        pixel.height
+  ///      );
+  ///    }
+  ///  }
+  ///  evenNotOdd = true;
+  ///}
+  ///for (var i = 0; i < screen.pixelWidth; i++) {
+  ///  for (var j = 0; j < screen.pixelHeight; j++) {
+  ///    renderFunc(i, j);
+  ///  }
+  ///}
+
+  // Notes bitmap
+  var destX = 1;
+  var destY = 0;
+  for (var i = 0; i < composerNotesBitmap.width; i++) {
+    for (var j = 0; j < composerNotesBitmap.height; j++) {
+      if (composerNotesBitmap.view[j * composerNotesBitmap.width + i] == 1) {
         context.fillRect(
-          i * pixel.horizonalSpace + i * pixel.width,
-          j * pixel.verticalSpace + j * pixel.height,
+          (destX + i) * pixel.horizonalSpace + (destX + i) * pixel.width,
+          (destY + j) * pixel.verticalSpace + (destY + j) * pixel.height,
           pixel.width,
           pixel.height
         );
       }
-    }
-    evenNotOdd = false;
-  } else {
-    renderFunc = function(i, j) {
-      if ((i % 2 == 1) && (j % 2 == 1)) {
-        context.fillRect(
-          i * pixel.horizonalSpace + i * pixel.width,
-          j * pixel.verticalSpace + j * pixel.height,
-          pixel.width,
-          pixel.height
-        );
-      }
-    }
-    evenNotOdd = true;
-  }
-  for (var i = 0; i < screen.pixelWidth; i++) {
-    for (var j = 0; j < screen.pixelHeight; j++) {
-      renderFunc(i, j);
     }
   }
 
@@ -1039,6 +1057,51 @@ var nokiaSampleFFT32 = {
     0,
   ],
 }
+
+var composerNotesBitmap = {};
+composerNotesBitmap.width = 16;
+composerNotesBitmap.height = 6;
+composerNotesBitmap.buffer = new ArrayBuffer(
+  composerNotesBitmap.width * composerNotesBitmap.height
+);
+composerNotesBitmap.view = new Uint8Array(composerNotesBitmap.buffer);
+// XXX Assume initialized to zero. If it isn't, we'll have to fix that.
+composerNotesBitmap.view[0 * composerNotesBitmap.width + 3] = 1;
+composerNotesBitmap.view[0 * composerNotesBitmap.width + 8] = 1;
+composerNotesBitmap.view[0 * composerNotesBitmap.width + 13] = 1;
+composerNotesBitmap.view[0 * composerNotesBitmap.width + 14] = 1;
+composerNotesBitmap.view[1 * composerNotesBitmap.width + 3] = 1;
+composerNotesBitmap.view[1 * composerNotesBitmap.width + 8] = 1;
+composerNotesBitmap.view[1 * composerNotesBitmap.width + 13] = 1;
+composerNotesBitmap.view[1 * composerNotesBitmap.width + 15] = 1;
+composerNotesBitmap.view[2 * composerNotesBitmap.width + 3] = 1;
+composerNotesBitmap.view[2 * composerNotesBitmap.width + 8] = 1;
+composerNotesBitmap.view[2 * composerNotesBitmap.width + 13] = 1;
+composerNotesBitmap.view[3 * composerNotesBitmap.width + 1] = 1;
+composerNotesBitmap.view[3 * composerNotesBitmap.width + 2] = 1;
+composerNotesBitmap.view[3 * composerNotesBitmap.width + 3] = 1;
+composerNotesBitmap.view[3 * composerNotesBitmap.width + 6] = 1;
+composerNotesBitmap.view[3 * composerNotesBitmap.width + 7] = 1;
+composerNotesBitmap.view[3 * composerNotesBitmap.width + 8] = 1;
+composerNotesBitmap.view[3 * composerNotesBitmap.width + 11] = 1;
+composerNotesBitmap.view[3 * composerNotesBitmap.width + 12] = 1;
+composerNotesBitmap.view[3 * composerNotesBitmap.width + 13] = 1;
+composerNotesBitmap.view[4 * composerNotesBitmap.width + 0] = 1;
+composerNotesBitmap.view[4 * composerNotesBitmap.width + 3] = 1;
+composerNotesBitmap.view[4 * composerNotesBitmap.width + 5] = 1;
+composerNotesBitmap.view[4 * composerNotesBitmap.width + 6] = 1;
+composerNotesBitmap.view[4 * composerNotesBitmap.width + 7] = 1;
+composerNotesBitmap.view[4 * composerNotesBitmap.width + 8] = 1;
+composerNotesBitmap.view[4 * composerNotesBitmap.width + 10] = 1;
+composerNotesBitmap.view[4 * composerNotesBitmap.width + 11] = 1;
+composerNotesBitmap.view[4 * composerNotesBitmap.width + 12] = 1;
+composerNotesBitmap.view[4 * composerNotesBitmap.width + 13] = 1;
+composerNotesBitmap.view[5 * composerNotesBitmap.width + 1] = 1;
+composerNotesBitmap.view[5 * composerNotesBitmap.width + 2] = 1;
+composerNotesBitmap.view[5 * composerNotesBitmap.width + 6] = 1;
+composerNotesBitmap.view[5 * composerNotesBitmap.width + 7] = 1;
+composerNotesBitmap.view[5 * composerNotesBitmap.width + 11] = 1;
+composerNotesBitmap.view[5 * composerNotesBitmap.width + 12] = 1;
 
 // Nokia Composer Nyan Cat
 // http://www.youtube.com/watch?v=eMD6hThdFFo
