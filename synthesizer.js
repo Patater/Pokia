@@ -496,7 +496,7 @@ Song.prototype.playNote = function(note, when) {
   var beatLength = 4.0 * 60.0 / this.defaultTempo;
   var duration = beatLength / note.duration;
   if (note.dot === '.') {
-    duration /= Song.DOT;
+    duration *= Song.DOT;
   }
   if (!note.pause) {
     // Every tone starts after a short delay.
