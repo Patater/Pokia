@@ -1,6 +1,10 @@
 // XXX TODO Overload ctrl v and ctrl c for setting and copying composerSong
 // state.
 
+// XXX TODO Whenever any button is pressed, turn on the backlight. Turn it off
+// after 15 seconds of no button presses. When backlight is on, the background
+// should be a bit green and there should be no dropshadow.
+
 var notesRemaining = 50;
 var context;
 var composerSong = new Song();
@@ -398,7 +402,7 @@ function enterNote(whichNote, button) {
       note.toggleDot();
       var now = audioContext.currentTime;
       composerSong.playNote(note, now);
-      console.log(note.duration);
+      renderScreen();
       console.log(composerSong.toComposer());
     },
     500
@@ -408,11 +412,6 @@ function enterNote(whichNote, button) {
 function initScreen() {
   context = screen.element.getContext("2d");
   context.clearRect(0, 0, screen.element.width, screen.element.height);
-  context.fillStyle = "rgb(0, 0, 0)";
-  context.shadowColor = "rgba(0, 0, 0, 0.25)";
-  context.shadowBlur = 6;
-  context.shadowOffsetX = -6;
-  context.shadowOffsetY = 4;
 
   blinkCursor();
 }
@@ -422,13 +421,30 @@ function blinkCursor() {
   window.setTimeout(blinkCursor, 500);
 }
 
+var backlit = true;
+var renderScreenAction;
 function renderScreen() {
   context.clearRect(0, 0, screen.element.width, screen.element.height);
+  // Display the backlight when backlit.
+  backlit = !backlit;
+  if (backlit) {
+    context.fillStyle = "rgba(127, 255, 0, 0.20)";
+    context.fillRect(0, 0, screen.element.width, screen.element.height);
+  }
+
   context.fillStyle = "rgb(0, 0, 0)";
-  context.shadowColor = "rgba(0, 0, 0, 0.25)";
-  context.shadowBlur = 6;
-  context.shadowOffsetX = -6;
-  context.shadowOffsetY = 4;
+  // Display a shadow when not backlit.
+  if (backlit) {
+    context.shadowColor = "rgba(0, 0, 0, 0)";
+    context.shadowBlur = 0;
+    context.shadowOffsetX = 0;
+    context.shadowOffsetY = 0;
+  } else {
+    context.shadowColor = "rgba(0, 0, 0, 0.25)";
+    context.shadowBlur = 6;
+    context.shadowOffsetX = -6;
+    context.shadowOffsetY = 4;
+  }
 
   renderBitmap(context, 1, 0, composerNotesBitmap);
   displayNotes(composerSong.notes);
@@ -436,7 +452,10 @@ function renderScreen() {
   displayNotesRemaining(context);
   displaySoftButton(context, "Play");
 
-  window.setTimeout(renderScreen, 500);
+  //if (renderScreenAction) {
+  //}
+  window.clearTimeout(renderScreenAction);
+  renderScreenAction = window.setTimeout(renderScreen, 500);
 }
 
 function displaySoftButton(context, name) {

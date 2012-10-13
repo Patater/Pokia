@@ -538,7 +538,7 @@ composer_y.bitmap = [
 ];
 
 var composer_Space = {};
-composer_Space.width = 5;
+composer_Space.width = 4;
 composer_Space.height = 0;
 
 var composerFont = [];
