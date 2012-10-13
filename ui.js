@@ -453,13 +453,11 @@ function renderScreen() {
   }
 
   renderBitmap(context, 1, 0, composerNotesBitmap);
+  displayNotesRemaining(context);
   displayNotes(composerSong.notes);
   displayCursor(context);
-  displayNotesRemaining(context);
   displaySoftButton(context, "Play");
 
-  //if (renderScreenAction) {
-  //}
   window.clearTimeout(renderScreenAction);
   renderScreenAction = window.setTimeout(renderScreen, 500);
 }
@@ -499,17 +497,14 @@ function getComposerStringWidth(text) {
 function displayNotes(notes) {
   var lines = [];
   var currentLineIndex = 0;
-  if (notes.length > 0) {
-    lines[currentLineIndex] = {};
-    lines[currentLineIndex].notes = [];
-  }
+  lines[currentLineIndex] = {};
+  lines[currentLineIndex].notes = [];
 
   for (var i = 0; i < notes.length; i++) {
     lines[currentLineIndex].notes.push(notes[i]);
     var composer = toComposer(lines[currentLineIndex].notes).trim();
     var newWidth = getComposerStringWidth(composer);
     if (newWidth > screen.pixelWidth) {
-      // XXX Test me
       lines[currentLineIndex].notes.splice(-1, 1);
       lines[currentLineIndex].endNoteIndex = i;
       currentLineIndex += 1;
@@ -519,10 +514,23 @@ function displayNotes(notes) {
     }
   }
 
-  for (var i = 0; i < lines.length; i++) {
-    var composer = toComposer(lines[i].notes).trim();
-    var destY = (i + 1) * (composer_y.height + 1);
-    displayComposerString(composer, 0, destY);
+  cursor.line = 0;
+  while (cursor.position > lines[cursor.line].endNoteIndex) {
+    cursor.line += 1;
+  }
+
+  var startLine = cursor.line - 2;
+  if (startLine < 0) {
+    startLine = 0;
+  }
+  var endLine = startLine + 3;
+  for (var i = startLine; i < endLine; i++) {
+    var line = lines[i];
+    if (line) {
+      var composer = toComposer(line.notes).trim();
+      var destY = (i - startLine + 1) * (composer_y.height + 1);
+      displayComposerString(composer, 0, destY);
+    }
   }
 }
 
