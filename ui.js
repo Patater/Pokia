@@ -8,6 +8,7 @@
 var notesRemaining = 50;
 var context;
 var composerSong = new Song();
+composerSong.defaultTempo = 112; // Default nokia composer tempo
 
 var phone = {};
 phone.actualWidth = 1663;
