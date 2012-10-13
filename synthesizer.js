@@ -517,6 +517,15 @@ function initSynthesizer() {
       "Web Audio API is not supported in this browser.\n\nWhy aren't you" +
       "using Google Chrome yet?"
     );
+    // Hacks to make composing work without webaudio (and without sound).
+    audioContext = {};
+    audioContext.currentTime = 0;
+    songGain = {};
+    songGain.gain = {};
+    songGain.gain.setValueAtTime = function() {};
+    nokiawave = {};
+    nokiawave.frequency = {};
+    nokiawave.frequency.setValueAtTime = function() {};
     return;
   }
   nokiawave = audioContext.createOscillator();
