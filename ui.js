@@ -260,9 +260,28 @@ nine.actualLeft = 1056;
 nine.actualTop = 3074;
 nine.actualWidth = 1441 - nine.actualLeft;
 nine.actualHeight = 3322 - nine.actualTop;
-nine.action = function() {
-  notesRemaining -= 1;
-};
+nine.element.addEventListener(
+  'mousedown',
+  function() {
+    var note = composerSong.notes[cursor.position - 1];
+    if (note) {
+      note.duration /= 2;
+      if (note.duration < 1) {
+        note.duration = 32;
+      }
+
+      // Only change the cursor duration if we are on a note, not a rest.
+      if (!note.pause) {
+        cursor.duration = note.duration;
+        var now = audioContext.currentTime;
+        composerSong.playNote(note, now);
+      }
+
+      renderScreen();
+    }
+  },
+  false
+);
 buttons.push(nine);
 
 var asterisk = {};
