@@ -425,14 +425,13 @@ function blinkCursor() {
   window.setTimeout(blinkCursor, 500);
 }
 
-var backlit = false;
+var backlit = true;
 var renderScreenAction;
 function renderScreen() {
   context.clearRect(0, 0, screen.element.width, screen.element.height);
   // Display the backlight when backlit.
   if (backlit) {
-    // XXX This needs to be more yellow.
-    context.fillStyle = "rgba(127, 255, 0, 0.20)";
+    context.fillStyle = "rgba(216, 235, 49, 0.20)";
     // This doesn't bleed to the full surface of the screen, unfortunately.
     // This can be done by making the screen background a separate image from
     // the phone image, placing the canvas between the screen background and
