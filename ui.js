@@ -229,15 +229,18 @@ eight.element.addEventListener(
   function() {
     var note = composerSong.notes[cursor.position - 1];
     if (note) {
-      cursor.duration *= 2;
-      if (cursor.duration > 32) {
-        cursor.duration = 1;
+      note.duration *= 2;
+      if (note.duration > 32) {
+        note.duration = 1;
       }
 
-      note.duration = cursor.duration;
-      note.setComposerNote(note.note, note.getComposerOctave());
-      var now = audioContext.currentTime;
-      composerSong.playNote(note, now);
+      // Only change the cursor duration if we are on a note, not a rest.
+      if (!note.pause) {
+        cursor.duration = note.duration;
+        var now = audioContext.currentTime;
+        composerSong.playNote(note, now);
+      }
+
       console.log("decreaseDuration");
       console.log(composerSong.toComposer());
       renderScreen();
@@ -293,6 +296,23 @@ zero.actualTop = 3344;
 zero.actualWidth = 1001 - zero.actualLeft;
 zero.actualHeight = 3597 - zero.actualTop;
 // XXX Changing the duration of a pause does not change the cursor duration.
+zero.element.addEventListener(
+  'mousedown',
+  function() {
+    if (notesRemaining > 0) {
+      var note = new Note();
+      note.pause = true;
+      note.duration = cursor.duration;
+      // XXX Insert, don't replace.
+      composerSong.notes[cursor.position] = note;
+      notesRemaining -= 1;
+      cursor.position += 1;
+      console.log(composerSong.toComposer());
+      renderScreen();
+    }
+  },
+  false
+);
 buttons.push(zero);
 
 var hash = {};
