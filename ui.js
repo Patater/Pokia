@@ -300,8 +300,7 @@ zero.element.addEventListener(
       var note = new Note();
       note.pause = true;
       note.duration = cursor.duration;
-      // XXX Insert, don't replace.
-      composerSong.notes[cursor.position] = note;
+      composerSong.notes.splice(cursor.position, 0, note);
       notesRemaining -= 1;
       cursor.position += 1;
       renderScreen();
@@ -373,8 +372,7 @@ function enterNote(whichNote, button) {
     note.setComposerNote(whichNote, cursor.composerOctave);
     var now = audioContext.currentTime;
     composerSong.playNote(note, now);
-    // XXX Insert, don't replace.
-    composerSong.notes[cursor.position] = note;
+    composerSong.notes.splice(cursor.position, 0, note);
     notesRemaining -= 1;
     cursor.position += 1;
     renderScreen();
