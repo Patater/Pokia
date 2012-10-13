@@ -237,6 +237,21 @@ composer_8.bitmap = [
   0, 1, 1, 1, 1, 0, 0,
 ];
 
+var composer_Dash = {};
+composer_Dash.width = 5;
+composer_Dash.height = 9;
+composer_Dash.bitmap = [
+  0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0,
+  1, 1, 1, 1, 1,
+  0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0,
+];
+
 var composer_Hash = {};
 composer_Hash.width = 8;
 composer_Hash.height = 9;
@@ -548,6 +563,7 @@ composerFont['3'] = composer_3;
 composerFont['4'] = composer_4;
 composerFont['6'] = composer_6;
 composerFont['8'] = composer_8;
+composerFont['-'] = composer_Dash;
 composerFont['#'] = composer_Hash;
 composerFont['.'] = composer_Dot;
 composerFont['|'] = composer_Cursor;

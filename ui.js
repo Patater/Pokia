@@ -294,7 +294,6 @@ zero.actualLeft = 616;
 zero.actualTop = 3344;
 zero.actualWidth = 1001 - zero.actualLeft;
 zero.actualHeight = 3597 - zero.actualTop;
-// XXX Changing the duration of a pause does not change the cursor duration.
 zero.element.addEventListener(
   'mousedown',
   function() {
@@ -524,6 +523,8 @@ function displayNotes(notes) {
   }
 
   // Display the lines.
+  // XXX Figure out why it takes forever for the lines to scroll up when adding
+  // or sharping a note that causes a scroll.
   for (var i = startLine; i < endLine; i++) {
     var line = lines[i];
     if (line) {
@@ -535,12 +536,6 @@ function displayNotes(notes) {
 }
 
 function displayCursor(context) {
-  var rowHeight = composerNotesBitmap.height + 6;
-  // XXX cursor position is not right. It is actually impossible to compute its
-  // position based on cursor.position. The cursor position has to be updated
-  // manually when stuff is printed or we need a nice textual dimensions query
-  // mechanism. The latter is probably better, since we need to support cursor
-  // movement, too, not just insertions.
   if (cursor.isBlinkedOn) {
     renderBitmap(context, cursor.destX, cursor.destY, composer_Cursor);
   }
