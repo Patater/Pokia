@@ -93,6 +93,8 @@ clear.actualHeight = 2475 - clear.actualTop;
 clear.element.addEventListener(
   'mousedown',
   function() {
+    // XXX TODO Cancel any currently scheduled notes.
+
     if (notesRemaining < 50) {
       if (cursor.position > 0) {
         composerSong.notes.splice(cursor.position - 1, 1);
@@ -339,6 +341,8 @@ var Cursor = function() {
   this.isBlinkedOn = true;
   this.composerOctave = 1;
   this.duration = 4;
+  this.destX = 0;
+  this.line = 0;
 }
 var cursor = new Cursor();
 
@@ -493,18 +497,33 @@ function displayNotes(notes) {
       lines[currentLineIndex].notes = [];
       lines[currentLineIndex].notes.push(notes[i]);
     }
+    lines[currentLineIndex].endNoteIndex = i + 1;
   }
 
-  cursor.line = 0;
-  while (cursor.position > lines[cursor.line].endNoteIndex) {
-    cursor.line += 1;
-  }
-
+  // Figure out which lines to display.
   var startLine = cursor.line - 2;
   if (startLine < 0) {
     startLine = 0;
   }
   var endLine = startLine + 3;
+
+  // Position the cursor.
+  cursor.line = 0;
+  while (cursor.position > lines[cursor.line].endNoteIndex) {
+    cursor.line += 1;
+  }
+  var line = lines[cursor.line];
+  if (line.notes.length > 0) {
+    var localX = cursor.position - (line.endNoteIndex - line.notes.length);
+    var composer = toComposer(line.notes.slice(0, localX)).trim();
+    cursor.destX = getComposerStringWidth(composer);
+    cursor.destY = (1 + cursor.line - startLine) * (composer_y.height + 1);
+  } else {
+    cursor.destX = 0;
+    cursor.destY = composer_y.height;
+  }
+
+  // Display the lines.
   for (var i = startLine; i < endLine; i++) {
     var line = lines[i];
     if (line) {
@@ -522,10 +541,8 @@ function displayCursor(context) {
   // manually when stuff is printed or we need a nice textual dimensions query
   // mechanism. The latter is probably better, since we need to support cursor
   // movement, too, not just insertions.
-  var cursorX = composer_Hash.width * cursor.position % 4;
-  var cursorY = 1 + Math.floor(cursor.position / 4);
   if (cursor.isBlinkedOn) {
-    renderBitmap(context, cursorX, cursorY * rowHeight, composer_Cursor);
+    renderBitmap(context, cursor.destX, cursor.destY, composer_Cursor);
   }
 }
 
