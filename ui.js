@@ -70,7 +70,6 @@ up.element.addEventListener(
         }
         renderScreen();
       }
-      console.log("cursor.position: " + cursor.position);
     }();
     up.heldAction = window.setTimeout(moveCursorUpAgain, 500);
   },
@@ -101,7 +100,6 @@ clear.element.addEventListener(
         notesRemaining += 1;
         cursor.position -= 1;
         renderScreen();
-        console.log(composerSong.toComposer());
       }
     }
     clear.heldAction = window.setTimeout(
@@ -110,7 +108,6 @@ clear.element.addEventListener(
         notesRemaining = 50;
         cursor = new Cursor();
         renderScreen();
-        console.log(composerSong.toComposer());
       },
       500
     );
@@ -147,7 +144,6 @@ down.element.addEventListener(
         }
         renderScreen();
       }
-      console.log("cursor.position: " + cursor.position);
     }();
     down.heldAction = window.setTimeout(moveCursorDownAgain, 500);
   },
@@ -248,8 +244,6 @@ eight.element.addEventListener(
         composerSong.playNote(note, now);
       }
 
-      console.log("decreaseDuration");
-      console.log(composerSong.toComposer());
       renderScreen();
     }
   },
@@ -285,10 +279,6 @@ asterisk.element.addEventListener(
       note.setComposerNote(note.note, octave);
       var now = audioContext.currentTime;
       composerSong.playNote(note, now);
-      console.log(
-        "increaseOctave" + " note: " + note.note + " octave: " + note.octave
-      );
-      console.log(composerSong.toComposer());
       renderScreen();
     }
   },
@@ -314,7 +304,6 @@ zero.element.addEventListener(
       composerSong.notes[cursor.position] = note;
       notesRemaining -= 1;
       cursor.position += 1;
-      console.log(composerSong.toComposer());
       renderScreen();
     }
   },
@@ -339,10 +328,6 @@ hash.element.addEventListener(
         var now = audioContext.currentTime;
         composerSong.playNote(note, now);
       }
-      console.log(
-        "toggleSharp" + " note: " + note.note + " octave: " + note.octave
-      );
-      console.log(composerSong.toComposer());
       renderScreen();
     }
   },
@@ -393,7 +378,6 @@ function enterNote(whichNote, button) {
     notesRemaining -= 1;
     cursor.position += 1;
     renderScreen();
-    console.log(composerSong.toComposer());
   }
 
   button.heldAction = window.setTimeout(
@@ -403,7 +387,6 @@ function enterNote(whichNote, button) {
       var now = audioContext.currentTime;
       composerSong.playNote(note, now);
       renderScreen();
-      console.log(composerSong.toComposer());
     },
     500
   );
