@@ -1,5 +1,6 @@
 var notesRemaining = 50;
 var context;
+var composerSong = new Song();
 
 var phone = {};
 phone.actualWidth = 1663;
@@ -34,7 +35,8 @@ soft.actualHeight = 2530 - soft.actualTop;
 soft.element.addEventListener(
   'mousedown',
   function() {
-    playSong();
+    var now = audioContext.currentTime;
+    composerSong.play(now);
   },
   false
 );
@@ -46,6 +48,34 @@ up.actualLeft = 1045;
 up.actualTop = 1964;
 up.actualWidth = 1402 - up.actualLeft;
 up.actualHeight = 2194 - up.actualTop;
+up.element.addEventListener(
+  'mousedown',
+  function() {
+    var moveCursorUpAgain = function() {
+      moveCursorUp();
+      up.heldAction = window.setTimeout(moveCursorUpAgain, 150);
+    }
+    var moveCursorUp = function() {
+      if (composerSong.notes.length > 0) {
+        cursor.position -= 1;
+        if (cursor.position < 0) {
+          cursor.position = composerSong.notes.length;
+        }
+        renderScreen();
+      }
+      console.log("cursor.position: " + cursor.position);
+    }();
+    up.heldAction = window.setTimeout(moveCursorUpAgain, 500);
+  },
+  false
+);
+up.element.addEventListener(
+  'mouseup',
+  function() {
+    window.clearTimeout(up.heldAction);
+  },
+  false
+);
 buttons.push(up);
 
 var clear = {};
@@ -58,13 +88,22 @@ clear.element.addEventListener(
   'mousedown',
   function() {
     if (notesRemaining < 50) {
-      notesRemaining += 1;
-      renderScreen();
+      if (cursor.position > 0) {
+        composerSong.notes.splice(cursor.position - 1, 1);
+        composerSong.notes[cursor.position - 1];
+        notesRemaining += 1;
+        cursor.position -= 1;
+        renderScreen();
+        console.log(composerSong.toComposer());
+      }
     }
     clear.heldAction = window.setTimeout(
       function() {
+        composerSong.notes = [];
         notesRemaining = 50;
+        cursor = new Cursor();
         renderScreen();
+        console.log(composerSong.toComposer());
       },
       500
     );
@@ -86,6 +125,34 @@ down.actualLeft = 1034;
 down.actualTop = 2233;
 down.actualWidth = 1436 - down.actualLeft;
 down.actualHeight = 2486 - down.actualTop;
+down.element.addEventListener(
+  'mousedown',
+  function() {
+    var moveCursorDownAgain = function() {
+      moveCursorDown();
+      down.heldAction = window.setTimeout(moveCursorDownAgain, 150);
+    }
+    var moveCursorDown = function() {
+      if (composerSong.notes.length > 0) {
+        cursor.position += 1;
+        if (cursor.position > composerSong.notes.length) {
+          cursor.position = 0;
+        }
+        renderScreen();
+      }
+      console.log("cursor.position: " + cursor.position);
+    }();
+    down.heldAction = window.setTimeout(moveCursorDownAgain, 500);
+  },
+  false
+);
+down.element.addEventListener(
+  'mouseup',
+  function() {
+    window.clearTimeout(down.heldAction);
+  },
+  false
+);
 buttons.push(down);
 
 var one = {};
@@ -94,16 +161,7 @@ one.actualLeft = 187;
 one.actualTop = 2519;
 one.actualWidth = 572 - one.actualLeft;
 one.actualHeight = 2766 - one.actualTop;
-one.element.addEventListener(
-  'mousedown',
-  function() {
-    if (notesRemaining > 0) {
-      notesRemaining -= 1;
-      renderScreen();
-    }
-  },
-  false
-);
+registerNoteButton('c', one);
 buttons.push(one);
 
 var two = {};
@@ -112,9 +170,7 @@ two.actualLeft = 622;
 two.actualTop = 2552;
 two.actualWidth = 1012 - two.actualLeft;
 two.actualHeight = 2810 - two.actualTop;
-two.action = function() {
-  notesRemaining -= 1;
-};
+registerNoteButton('d', two);
 buttons.push(two);
 
 var three = {};
@@ -123,9 +179,7 @@ three.actualLeft = 1067;
 three.actualTop = 2530;
 three.actualWidth = 1452 - three.actualLeft;
 three.actualHeight = 2794 - three.actualTop;
-three.action = function() {
-  notesRemaining -= 1;
-};
+registerNoteButton('e', three);
 buttons.push(three);
 
 var four = {};
@@ -134,9 +188,7 @@ four.actualLeft = 187;
 four.actualTop = 2800;
 four.actualWidth = 572 - four.actualLeft;
 four.actualHeight = 3058 - four.actualTop;
-four.action = function() {
-  notesRemaining -= 1;
-};
+registerNoteButton('f', four);
 buttons.push(four);
 
 var five = {};
@@ -145,9 +197,7 @@ five.actualLeft = 616;
 five.actualTop = 2822;
 five.actualWidth = 1001 - five.actualLeft;
 five.actualHeight = 3080 - five.actualTop;
-five.action = function() {
-  notesRemaining -= 1;
-};
+registerNoteButton('g', five);
 buttons.push(five);
 
 var six = {};
@@ -156,9 +206,7 @@ six.actualLeft = 1067;
 six.actualTop = 2805;
 six.actualWidth = 1446 - six.actualLeft;
 six.actualHeight = 3064 - six.actualTop;
-six.action = function() {
-  notesRemaining -= 1;
-};
+registerNoteButton('a', six);
 buttons.push(six);
 
 var seven = {};
@@ -167,9 +215,7 @@ seven.actualLeft = 204;
 seven.actualTop = 3069;
 seven.actualWidth = 572 - seven.actualLeft;
 seven.actualHeight = 3316 - seven.actualTop;
-seven.action = function() {
-  notesRemaining -= 1;
-};
+registerNoteButton('b', seven);
 buttons.push(seven);
 
 var eight = {};
@@ -178,9 +224,27 @@ eight.actualLeft = 616;
 eight.actualTop = 3096;
 eight.actualWidth = 996 - eight.actualLeft;
 eight.actualHeight = 3350 - eight.actualTop;
-eight.action = function() {
-  notesRemaining -= 1;
-};
+eight.element.addEventListener(
+  'mousedown',
+  function() {
+    var note = composerSong.notes[cursor.position - 1];
+    if (note) {
+      cursor.duration *= 2;
+      if (cursor.duration > 32) {
+        cursor.duration = 1;
+      }
+
+      note.duration = cursor.duration;
+      note.setComposerNote(note.note, note.getComposerOctave());
+      var now = audioContext.currentTime;
+      composerSong.playNote(note, now);
+      console.log("decreaseDuration");
+      console.log(composerSong.toComposer());
+      renderScreen();
+    }
+  },
+  false
+);
 buttons.push(eight);
 
 var nine = {};
@@ -200,6 +264,26 @@ asterisk.actualLeft = 187;
 asterisk.actualTop = 3322;
 asterisk.actualWidth = 572 - asterisk.actualLeft;
 asterisk.actualHeight = 3575 - asterisk.actualTop;
+asterisk.element.addEventListener(
+  'mousedown',
+  function() {
+    var note = composerSong.notes[cursor.position - 1];
+    if (note) {
+      var octave = note.getComposerOctave();
+      octave = octave % 3 + 1;
+      cursor.composerOctave = octave;
+      note.setComposerNote(note.note, octave);
+      var now = audioContext.currentTime;
+      composerSong.playNote(note, now);
+      console.log(
+        "increaseOctave" + " note: " + note.note + " octave: " + note.octave
+      );
+      console.log(composerSong.toComposer());
+      renderScreen();
+    }
+  },
+  false
+);
 buttons.push(asterisk);
 
 var zero = {};
@@ -208,6 +292,7 @@ zero.actualLeft = 616;
 zero.actualTop = 3344;
 zero.actualWidth = 1001 - zero.actualLeft;
 zero.actualHeight = 3597 - zero.actualTop;
+// XXX Changing the duration of a pause does not change the cursor duration.
 buttons.push(zero);
 
 var hash = {};
@@ -216,13 +301,35 @@ hash.actualLeft = 1056;
 hash.actualTop = 3328;
 hash.actualWidth = 1436 - hash.actualLeft;
 hash.actualHeight = 3586 - hash.actualTop;
+hash.element.addEventListener(
+  'mousedown',
+  function() {
+    var note = composerSong.notes[cursor.position - 1];
+    if (note) {
+      var prevNote = note.note;
+      note.toggleSharp();
+      if (prevNote !== note.note) {
+        var now = audioContext.currentTime;
+        composerSong.playNote(note, now);
+      }
+      console.log(
+        "toggleSharp" + " note: " + note.note + " octave: " + note.octave
+      );
+      console.log(composerSong.toComposer());
+      renderScreen();
+    }
+  },
+  false
+);
 buttons.push(hash);
 
-var cursor = {};
-cursor.position = 0;
-cursor.isBlinkedOn = true;
-cursor.octave = '4';
-cursor.duration = '1';
+var Cursor = function() {
+  this.position = 0;
+  this.isBlinkedOn = true;
+  this.composerOctave = 1;
+  this.duration = 4;
+}
+var cursor = new Cursor();
 
 var pixel = {};
 pixel.width = 9;
@@ -230,6 +337,50 @@ pixel.height = 11;
 pixel.horizonalSpace = 3;
 pixel.verticalSpace = 2;
 
+function registerNoteButton(note, button) {
+  button.element.addEventListener(
+    'mousedown',
+    function() {
+      return enterNote(note, button);
+    },
+    false
+  );
+  button.element.addEventListener(
+    'mouseup',
+    function() {
+      window.clearTimeout(button.heldAction);
+    },
+    false
+  );
+}
+
+function enterNote(whichNote, button) {
+  if (notesRemaining > 0) {
+    var note = new Note();
+    note.duration = cursor.duration;
+    note.setComposerNote(whichNote, cursor.composerOctave);
+    var now = audioContext.currentTime;
+    composerSong.playNote(note, now);
+    // XXX Insert, don't replace.
+    composerSong.notes[cursor.position] = note;
+    notesRemaining -= 1;
+    cursor.position += 1;
+    renderScreen();
+    console.log(composerSong.toComposer());
+  }
+
+  button.heldAction = window.setTimeout(
+    function() {
+      var note = composerSong.notes[cursor.position - 1];
+      note.toggleDot();
+      var now = audioContext.currentTime;
+      composerSong.playNote(note, now);
+      console.log(note.duration);
+      console.log(composerSong.toComposer());
+    },
+    500
+  );
+}
 
 function initScreen() {
   context = screen.element.getContext("2d");
@@ -281,8 +432,13 @@ function displaySoftButton(context, name) {
 
 function displayCursor(context) {
   var rowHeight = composerNotesBitmap.height + 6;
-  var cursorX = 0;
-  var cursorY = 1 + cursor.position % 4;
+  // XXX cursor position is not right. It is actually impossible to compute its
+  // position based on cursor.position. The cursor position has to be updated
+  // manually when stuff is printed or we need a nice textual dimensions query
+  // mechanism. The latter is probably better, since we need to support cursor
+  // movement, too, not just insertions.
+  var cursorX = composer_Hash.width * cursor.position % 4;
+  var cursorY = 1 + Math.floor(cursor.position / 4);
   if (cursor.isBlinkedOn) {
     renderBitmap(context, cursorX, cursorY * rowHeight, composer_Cursor);
   }
@@ -335,12 +491,17 @@ function renderBitmap(context, destX, destY, bitmap) {
   for (var i = 0; i < bitmap.width; i++) {
     for (var j = 0; j < bitmap.height; j++) {
       if (bitmap.bitmap[j * bitmap.width + i] == 1) {
-        context.fillRect(
-          (destX + i) * pixel.horizonalSpace + (destX + i) * pixel.width,
-          (destY + j) * pixel.verticalSpace + (destY + j) * pixel.height,
-          pixel.width,
-          pixel.height
-        );
+        if (i < screen.pixelWidth &&
+            j < screen.pixelHeight &&
+            i >= 0 &&
+            j >= 0) {
+          context.fillRect(
+            (destX + i) * pixel.horizonalSpace + (destX + i) * pixel.width,
+            (destY + j) * pixel.verticalSpace + (destY + j) * pixel.height,
+            pixel.width,
+            pixel.height
+          );
+        }
       }
     }
   }
