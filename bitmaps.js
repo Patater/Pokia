@@ -537,6 +537,10 @@ composer_y.bitmap = [
   0, 1, 1, 1, 1, 0, 0,
 ];
 
+var composer_Space = {};
+composer_Space.width = 5;
+composer_Space.height = 0;
+
 var composerFont = [];
 composerFont['1'] = composer_1;
 composerFont['2'] = composer_2;
@@ -564,6 +568,7 @@ composerFont['s'] = composer_s;
 composerFont['P'] = composer_P;
 composerFont['l'] = composer_l;
 composerFont['y'] = composer_y;
+composerFont[' '] = composer_Space;
 
 var notesRemainingFont = [];
 notesRemainingFont['0'] = notesRemaining_0;

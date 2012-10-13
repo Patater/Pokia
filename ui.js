@@ -1,3 +1,6 @@
+// XXX TODO Overload ctrl v and ctrl c for setting and copying composerSong
+// state.
+
 var notesRemaining = 50;
 var context;
 var composerSong = new Song();
@@ -428,6 +431,7 @@ function renderScreen() {
   context.shadowOffsetY = 4;
 
   renderBitmap(context, 1, 0, composerNotesBitmap);
+  displayNotes(composerSong.notes);
   displayCursor(context);
   displayNotesRemaining(context);
   displaySoftButton(context, "Play");
@@ -443,10 +447,57 @@ function displaySoftButton(context, name) {
   var destX = Math.floor(screen.pixelWidth / 2) - Math.floor(width / 2);
   var destY = screen.pixelHeight - composer_y.height;
 
-  for (var i = 0; i < name.length; i++) {
-    var bitmap = composerFont[name.charAt(i)];
-    renderBitmap(context, destX, destY, bitmap);
-    destX += bitmap.width;
+  displayComposerString(name, destX, destY);
+}
+
+function displayComposerString(text, destX, destY) {
+  for (var i = 0; i < text.length; i++) {
+    var bitmap = composerFont[text.charAt(i)];
+    if (bitmap) {
+      renderBitmap(context, destX, destY, bitmap);
+      destX += bitmap.width;
+    }
+  }
+}
+
+function getComposerStringWidth(text) {
+  var width = 0;
+  for (var i = 0; i < text.length; i++) {
+    var bitmap = composerFont[text.charAt(i)];
+    if (bitmap) {
+      width += bitmap.width;
+    }
+  }
+  return width;
+}
+
+function displayNotes(notes) {
+  var lines = [];
+  var currentLineIndex = 0;
+  if (notes.length > 0) {
+    lines[currentLineIndex] = {};
+    lines[currentLineIndex].notes = [];
+  }
+
+  for (var i = 0; i < notes.length; i++) {
+    lines[currentLineIndex].notes.push(notes[i]);
+    var composer = toComposer(lines[currentLineIndex].notes).trim();
+    var newWidth = getComposerStringWidth(composer);
+    if (newWidth > screen.pixelWidth) {
+      // XXX Test me
+      lines[currentLineIndex].notes.splice(-1, 1);
+      lines[currentLineIndex].endNoteIndex = i;
+      currentLineIndex += 1;
+      lines[currentLineIndex] = {};
+      lines[currentLineIndex].notes = [];
+      lines[currentLineIndex].notes.push(notes[i]);
+    }
+  }
+
+  for (var i = 0; i < lines.length; i++) {
+    var composer = toComposer(lines[i].notes).trim();
+    var destY = (i + 1) * (composer_y.height + 1);
+    displayComposerString(composer, 0, destY);
   }
 }
 
@@ -508,6 +559,10 @@ function renderNotesRemainingDigit(context, destX, destY, digit) {
 }
 
 function renderBitmap(context, destX, destY, bitmap) {
+  if (!bitmap) {
+    return;
+  }
+
   for (var i = 0; i < bitmap.width; i++) {
     for (var j = 0; j < bitmap.height; j++) {
       if (bitmap.bitmap[j * bitmap.width + i] == 1) {

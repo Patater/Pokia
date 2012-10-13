@@ -202,9 +202,13 @@ Song = function() {
 }
 
 Song.prototype.toComposer = function() {
+  return toComposer(this.notes);
+}
+
+function toComposer(notes) {
   var composer = "";
-  for (var i = 0; i < this.notes.length; i++) {
-    var note = this.notes[i];
+  for (var i = 0; i < notes.length; i++) {
+    var note = notes[i];
     composer += note.duration;
     if (note.pause === true) {
       composer += '-';
@@ -479,6 +483,8 @@ Song.prototype.parseNote = function(note) {
 }
 
 Song.prototype.play = function(when) {
+  // XXX TODO Cancel all other scheduled notes.
+
   var then = when;
   for (var i = 0; i < this.notes.length; i++) {
     var note = this.notes[i];
