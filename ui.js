@@ -1,10 +1,6 @@
 // XXX TODO Overload ctrl v and ctrl c for setting and copying composerSong
 // state.
 
-// XXX TODO Whenever any button is pressed, turn on the backlight. Turn it off
-// after 15 seconds of no button presses. When backlight is on, the background
-// should be a bit green and there should be no dropshadow.
-
 var notesRemaining = 50;
 var context;
 var composerSong = new Song();
@@ -45,6 +41,7 @@ soft.element.addEventListener(
   function() {
     var now = audioContext.currentTime;
     composerSong.play(now);
+    turnOnBacklight();
   },
   false
 );
@@ -114,6 +111,8 @@ clear.element.addEventListener(
       },
       500
     );
+
+    turnOnBacklight();
   },
   false
 );
@@ -149,6 +148,8 @@ down.element.addEventListener(
       }
     }();
     down.heldAction = window.setTimeout(moveCursorDownAgain, 500);
+
+    turnOnBacklight();
   },
   false
 );
@@ -248,6 +249,8 @@ eight.element.addEventListener(
       }
 
       renderScreen();
+
+      turnOnBacklight();
     }
   },
   false
@@ -278,6 +281,8 @@ nine.element.addEventListener(
       }
 
       renderScreen();
+
+      turnOnBacklight();
     }
   },
   false
@@ -302,6 +307,8 @@ asterisk.element.addEventListener(
       var now = audioContext.currentTime;
       composerSong.playNote(note, now);
       renderScreen();
+
+      turnOnBacklight();
     }
   },
   false
@@ -325,6 +332,8 @@ zero.element.addEventListener(
       notesRemaining -= 1;
       cursor.position += 1;
       renderScreen();
+
+      turnOnBacklight();
     }
   },
   false
@@ -349,6 +358,8 @@ hash.element.addEventListener(
         composerSong.playNote(note, now);
       }
       renderScreen();
+
+      turnOnBacklight();
     }
   },
   false
@@ -411,6 +422,8 @@ function enterNote(whichNote, button) {
     },
     500
   );
+
+  turnOnBacklight();
 }
 
 function initScreen() {
@@ -422,11 +435,23 @@ function initScreen() {
 
 function blinkCursor() {
   cursor.isBlinkedOn = !cursor.isBlinkedOn;
+  renderScreen();
   window.setTimeout(blinkCursor, 500);
 }
 
-var backlit = true;
-var renderScreenAction;
+var backlightTimeoutAction;
+var backlit = false;
+function turnOffBacklight() {
+  backlit = false;
+}
+function turnOnBacklight() {
+  backlit = true;
+
+  // Turn off the backlight after 15 seconds.
+  window.clearTimeout(backlightTimeoutAction);
+  backlightTimeoutAction = window.setTimeout(turnOffBacklight, 15000);
+}
+
 function renderScreen() {
   context.clearRect(0, 0, screen.element.width, screen.element.height);
   // Display the backlight when backlit.
@@ -460,9 +485,6 @@ function renderScreen() {
   displayNotes(composerSong.notes);
   displayCursor(context);
   displaySoftButton(context, "Play");
-
-  window.clearTimeout(renderScreenAction);
-  renderScreenAction = window.setTimeout(renderScreen, 500);
 }
 
 function displaySoftButton(context, name) {
