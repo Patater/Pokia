@@ -48,14 +48,13 @@ src="Nokia_1100_Backlit_Foreground.png" width="1" height="1">
 <script>
 
 window.addEventListener('load', init, false);
-window.addEventListener('resize', resizePhone, false);
 
 var debugMode = false;
 
 function init() {
   displayButtons();
-  resizePhone();
   initScreen();
+  resizePhone();
   renderScreen();
   loadSong(composerSong);
   initSynthesizer();

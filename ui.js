@@ -1,4 +1,4 @@
-var autoscale = false;
+var autoscale = true;
 var notesRemaining = 50;
 var context;
 var composerSong = new Song();
@@ -18,8 +18,8 @@ screen.actualWidth = 1420 - screen.actualLeft;
 screen.actualHeight = 1800 - screen.actualTop;
 screen.visibleLeft = 304;
 screen.visibleTop = 950;
-screen.visibleWidth = 1350 - screen.visibleLeft;
-screen.visibleHeight = 1722 - screen.visibleTop;
+screen.visibleWidth = 1376 - screen.visibleLeft;
+screen.visibleHeight = 1802 - screen.visibleTop;
 screen.pixelWidth = 96;
 screen.pixelHeight = 65;
 screen.on = true;
@@ -478,6 +478,8 @@ function initScreen() {
   deadScreenInit(screen.pixelWidth, screen.pixelHeight);
 
   blinkCursor();
+
+  window.addEventListener('resize', resizePhone, false);
 }
 
 function blinkCursor() {
@@ -500,6 +502,9 @@ function turnOnBacklight() {
 }
 
 function renderScreen() {
+  var ratioX = phone.width / phone.actualWidth;
+  var ratioY = phone.height / phone.actualHeight;
+
   // Disable the drop shadow.
   context.shadowColor = "rgba(0, 0, 0, 0)";
   context.shadowBlur = 0;
@@ -532,8 +537,8 @@ function renderScreen() {
   if (!backlit) {
     context.shadowColor = "rgba(0, 0, 0, 0.25)";
     context.shadowBlur = 6;
-    context.shadowOffsetX = -6;
-    context.shadowOffsetY = 4;
+    context.shadowOffsetX = -6 * ratioX;
+    context.shadowOffsetY = 4 * ratioY;
   }
 
   context.fillStyle = "rgb(0, 0, 0)";
@@ -680,6 +685,10 @@ function renderBitmap(context, destX, destY, bitmap) {
   if (!bitmap) {
     return;
   }
+  var ratioX = screen.width / screen.actualWidth;
+  var ratioY = screen.height / screen.actualHeight;
+  var visibleRatioX = (screen.visibleWidth / screen.actualWidth) * ratioX;
+  var visibleRatioY = (screen.visibleHeight / screen.actualHeight) * ratioY;
 
   for (var i = 0; i < bitmap.width; i++) {
     for (var j = 0; j < bitmap.height; j++) {
@@ -692,11 +701,11 @@ function renderBitmap(context, destX, destY, bitmap) {
             (destY + j) * pixel.height;
           var width = pixel.width;
           var height = pixel.height;
-          var visibleRatioX = screen.visibleWidth / screen.actualWidth;
-          var visibleRatioY = screen.visibleHeight / screen.actualHeight;
           context.fillRect(
-            x * visibleRatioX + screen.visibleLeft - screen.actualLeft,
-            y * visibleRatioY + screen.visibleTop - screen.actualTop,
+            x * visibleRatioX + (screen.visibleLeft - screen.actualLeft) *
+              ratioX,
+            y * visibleRatioY + (screen.visibleTop - screen.actualTop) *
+              ratioY,
             pixel.width * visibleRatioX,
             pixel.height * visibleRatioY
           );
@@ -751,7 +760,32 @@ function resizePhone() {
   for (var i = 0; i < buttons.length; i++) {
     resizePhoneElement(buttons[i], phone);
   }
-  resizePhoneElement(screen, phone);
+  resizeScreen(screen, phone);
+}
+
+function resizeScreen(screen, phone)
+{
+  var ratioX = phone.width / phone.actualWidth;
+  var ratioY = phone.height / phone.actualHeight;
+  screen.left = screen.actualLeft * ratioX + phone.left;
+  screen.top = screen.actualTop * ratioY + phone.top;
+  screen.width = screen.actualWidth * ratioX;
+  screen.height = screen.actualHeight * ratioY;
+
+  // Apply
+  screen.element.style.left = screen.left + "px";
+  screen.element.style.top = screen.top + "px";
+  var resized = false;
+  if (screen.width !== screen.element.width) {
+    screen.element.width = screen.width;
+    resized = true;
+  }
+  if (screen.height !== screen.element.height) {
+    screen.element.height = screen.height;
+  }
+  if (resized) {
+    context.clearRect(0, 0, screen.element.width, screen.element.height);
+  }
 }
 
 function resizePhoneElement(phoneElement, phone)
