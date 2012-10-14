@@ -28,7 +28,6 @@ function deadLCDInit(width, height) {
 }
 
 var notesRemaining_0 = {};
-// XXX I'm not sure if I want to include any spacing here or not.
 notesRemaining_0.width = 5;
 notesRemaining_0.height = 7;
 notesRemaining_0.bitmap = [

@@ -512,16 +512,11 @@ Song.prototype.play = function(when) {
 
 Song.prototype.stop = function() {
   // Disconnect nokiawave from its output.
-  // Try note off now.
-  //nokiawave.noteOff(now);
   nokiawave.disconnect();
 
   // Recreate it.
   nokiawave = audioContext.createOscillator();
-  //var generatedSeries = generateSquareSeries(4096);
-  //var generatedSeries = generateNokiaSeries(4096);
-  var generatedSeries = nokiaSampleFFT32;
-  loadWaveTable(generatedSeries, nokiawave);
+  loadWaveTable(nokiaSampleFFT32, nokiawave);
 
   // Disconnect the song gain node.
   nokiawave.disconnect();
