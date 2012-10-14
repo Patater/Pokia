@@ -40,7 +40,13 @@ power.element.addEventListener(
       function () {
         screen.on = !screen.on;
         if (screen.on === false) {
-          // XXX TODO Phone turned off, so turn off sound, too.
+          // Phone turned off, so turn off sound, too.
+          composerSong.stop();
+        } else {
+          // Start with a fresh state.
+          composerSong.notes = [];
+          notesRemaining = 50;
+          cursor = new Cursor();
         }
         renderScreen();
       },
@@ -120,7 +126,9 @@ clear.actualHeight = 2475 - clear.actualTop;
 clear.element.addEventListener(
   'mousedown',
   function() {
-    // XXX TODO Cancel any currently scheduled notes.
+    // Cancel any currently scheduled notes.
+    composerSong.stop();
+
     turnOnBacklight();
 
     if (notesRemaining < 50) {
@@ -271,6 +279,7 @@ eight.element.addEventListener(
       // Only change the cursor duration if we are on a note, not a rest.
       if (!note.pause) {
         cursor.duration = note.duration;
+        composerSong.stop();
         var now = audioContext.currentTime;
         composerSong.playNote(note, now);
       }
@@ -303,6 +312,7 @@ nine.element.addEventListener(
       // Only change the cursor duration if we are on a note, not a rest.
       if (!note.pause) {
         cursor.duration = note.duration;
+        composerSong.stop();
         var now = audioContext.currentTime;
         composerSong.playNote(note, now);
       }
@@ -331,6 +341,7 @@ asterisk.element.addEventListener(
       octave = octave % 3 + 1;
       cursor.composerOctave = octave;
       note.setComposerNote(note.note, octave);
+      composerSong.stop();
       var now = audioContext.currentTime;
       composerSong.playNote(note, now);
     }
@@ -384,6 +395,7 @@ hash.element.addEventListener(
       var prevNote = note.note;
       note.toggleSharp();
       if (prevNote !== note.note) {
+        composerSong.stop();
         var now = audioContext.currentTime;
         composerSong.playNote(note, now);
       }
@@ -435,6 +447,7 @@ function enterNote(whichNote, button) {
     var note = new Note();
     note.duration = cursor.duration;
     note.setComposerNote(whichNote, cursor.composerOctave);
+    composerSong.stop();
     var now = audioContext.currentTime;
     composerSong.playNote(note, now);
     composerSong.notes.splice(cursor.position, 0, note);
@@ -445,6 +458,7 @@ function enterNote(whichNote, button) {
       function() {
         var note = composerSong.notes[cursor.position - 1];
         note.toggleDot();
+        composerSong.stop();
         var now = audioContext.currentTime;
         composerSong.playNote(note, now);
         renderScreen();

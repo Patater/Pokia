@@ -350,10 +350,11 @@ Song.prototype.parseNote = function(note) {
   if (!regexNum.test(octave)) {
     octave = this.defaultOctave;
   }
-  if (whichNote == "P")
-  {
+  noteToAdd.octave = parseInt(octave, 10);
+  if (whichNote == "P") {
     noteToAdd.pause = true;
   } else if (whichNote == "C") {
+    noteToAdd.note = 'c';
     if (octave == "4") {
       noteToAdd.pause = true; // A4 is the lowest note.
     } else if (octave == "5") {
@@ -364,6 +365,8 @@ Song.prototype.parseNote = function(note) {
       noteToAdd.frequency = Song.NOTE_C7;
     }
   } else if (whichNote == "C#") {
+    noteToAdd.note = 'c';
+    noteToAdd.toggleSharp();
     if (octave == "4") {
       noteToAdd.pause = true; // A4 is the lowest note.
     } else if (octave == "5") {
@@ -374,6 +377,7 @@ Song.prototype.parseNote = function(note) {
       noteToAdd.frequency = Song.NOTE_CS7;
     }
   } else if (whichNote == "D") {
+    noteToAdd.note = 'd';
     if (octave == "4") {
       noteToAdd.pause = true; // A4 is the lowest note.
     } else if (octave == "5") {
@@ -384,6 +388,8 @@ Song.prototype.parseNote = function(note) {
       noteToAdd.frequency = Song.NOTE_D7;
     }
   } else if (whichNote == "D#") {
+    noteToAdd.note = 'd';
+    noteToAdd.toggleSharp();
     if (octave == "4") {
       noteToAdd.pause = true; // A4 is the lowest note.
     } else if (octave == "5") {
@@ -394,6 +400,7 @@ Song.prototype.parseNote = function(note) {
       noteToAdd.frequency = Song.NOTE_DS7;
     }
   } else if (whichNote == "E") {
+    noteToAdd.note = 'e';
     if (octave == "4") {
       noteToAdd.pause = true; // A4 is the lowest note.
     } else if (octave == "5") {
@@ -404,6 +411,7 @@ Song.prototype.parseNote = function(note) {
       noteToAdd.frequency = Song.NOTE_E7;
     }
   } else if (whichNote == "F") {
+    noteToAdd.note = 'f';
     if (octave == "4") {
       noteToAdd.pause = true; // A4 is the lowest note.
     } else if (octave == "5") {
@@ -414,6 +422,8 @@ Song.prototype.parseNote = function(note) {
       noteToAdd.frequency = Song.NOTE_F7;
     }
   } else if (whichNote == "F#") {
+    noteToAdd.note = 'f';
+    noteToAdd.toggleSharp();
     if (octave == "4") {
       noteToAdd.pause = true; // A4 is the lowest note.
     } else if (octave == "5") {
@@ -424,6 +434,7 @@ Song.prototype.parseNote = function(note) {
       noteToAdd.frequency = Song.NOTE_FS7;
     }
   } else if (whichNote == "G") {
+    noteToAdd.note = 'g';
     if (octave == "4") {
       noteToAdd.pause = true; // A4 is the lowest note.
     } else if (octave == "5") {
@@ -434,6 +445,8 @@ Song.prototype.parseNote = function(note) {
       noteToAdd.frequency = Song.NOTE_G7;
     }
   } else if (whichNote == "G#") {
+    noteToAdd.note = 'g';
+    noteToAdd.toggleSharp();
     if (octave == "4") {
       noteToAdd.pause = true; // A4 is the lowest note.
     } else if (octave == "5") {
@@ -444,6 +457,7 @@ Song.prototype.parseNote = function(note) {
       noteToAdd.frequency = Song.NOTE_GS7;
     }
   } else if (whichNote == "A") {
+    noteToAdd.note = 'a';
     if (octave == "4") {
       noteToAdd.frequency = Song.NOTE_A4;
     } else if (octave == "5") {
@@ -454,6 +468,8 @@ Song.prototype.parseNote = function(note) {
       noteToAdd.frequency = Song.NOTE_A7;
     }
   } else if (whichNote == "A#") {
+    noteToAdd.note = 'a';
+    noteToAdd.toggleSharp();
     if (octave == "4") {
       noteToAdd.frequency = Song.NOTE_AS4;
     } else if (octave == "5") {
@@ -464,6 +480,7 @@ Song.prototype.parseNote = function(note) {
       noteToAdd.frequency = Song.NOTE_AS7;
     }
   } else if (whichNote == "B") {
+    noteToAdd.note = 'b';
     if (octave == "4") {
       noteToAdd.frequency = Song.NOTE_B4;
     } else if (octave == "5") {
@@ -475,7 +492,7 @@ Song.prototype.parseNote = function(note) {
     }
   }
 
-  if (note.charAt(i) == ".") {
+  if (note.charAt(i - 1) == ".") {
     noteToAdd.toggleDot();
   }
 
@@ -483,13 +500,43 @@ Song.prototype.parseNote = function(note) {
 }
 
 Song.prototype.play = function(when) {
-  // XXX TODO Cancel all other scheduled notes.
+  // Cancel all other scheduled notes.
+  this.stop();
 
   var then = when;
   for (var i = 0; i < this.notes.length; i++) {
     var note = this.notes[i];
     then += this.playNote(note, then);
   }
+}
+
+Song.prototype.stop = function() {
+  // Disconnect nokiawave from its output.
+  // Try note off now.
+  //nokiawave.noteOff(now);
+  nokiawave.disconnect();
+
+  // Recreate it.
+  nokiawave = audioContext.createOscillator();
+  //var generatedSeries = generateSquareSeries(4096);
+  //var generatedSeries = generateNokiaSeries(4096);
+  var generatedSeries = nokiaSampleFFT32;
+  loadWaveTable(generatedSeries, nokiawave);
+
+  // Disconnect the song gain node.
+  nokiawave.disconnect();
+  songGain.disconnect();
+
+  // Create a new one, hoping that the old one will go away and that no more
+  // sounds will come out of it.
+  songGain = audioContext.createGainNode();
+  songGain.gain.value = 0;
+
+  nokiawave.connect(songGain);
+  songGain.connect(globalGain);
+
+  var now = audioContext.currentTime;
+  nokiawave.noteOn(now);
 }
 
 Song.prototype.playNote = function(note, when) {
@@ -534,7 +581,7 @@ function initSynthesizer() {
   var generatedSeries = nokiaSampleFFT32;
   loadWaveTable(generatedSeries, nokiawave);
   globalGain = audioContext.createGainNode();
-  globalGain.gain.value = 1.0;
+  globalGain.gain.value = 0.6;
 
   songGain = audioContext.createGainNode();
   songGain.gain.value = 0;
