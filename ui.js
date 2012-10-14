@@ -475,6 +475,8 @@ function initScreen() {
   context = screen.element.getContext("2d");
   context.clearRect(0, 0, screen.element.width, screen.element.height);
 
+  deadScreenInit(screen.pixelWidth, screen.pixelHeight);
+
   blinkCursor();
 }
 
@@ -498,19 +500,11 @@ function turnOnBacklight() {
 }
 
 function renderScreen() {
-  // Display a shadow when not backlit.
-  if (backlit) {
-    context.shadowColor = "rgba(0, 0, 0, 0)";
-    context.shadowBlur = 0;
-    context.shadowOffsetX = 0;
-    context.shadowOffsetY = 0;
-  } else {
-    context.shadowColor = "rgba(0, 0, 0, 0.25)";
-    context.shadowBlur = 6;
-    context.shadowOffsetX = -6;
-    context.shadowOffsetY = 4;
-  }
-
+  // Disable the drop shadow.
+  context.shadowColor = "rgba(0, 0, 0, 0)";
+  context.shadowBlur = 0;
+  context.shadowOffsetX = 0;
+  context.shadowOffsetY = 0;
   context.clearRect(0, 0, screen.element.width, screen.element.height);
 
   // If the screen is turned off, we are done.
@@ -528,6 +522,18 @@ function renderScreen() {
     // canvas will be bigger than before, so we need to modify the code that
     // draws to the canvas to draw to the correct places.
     context.fillRect(0, 0, screen.element.width, screen.element.height);
+  }
+
+  // Display the visible area of the LCD.
+  context.fillStyle = "rgba(20, 20, 20, 0.06)";
+  renderBitmap(context, 0, 0, deadScreen);
+
+  // Display a shadow when not backlit when drawing pixels.
+  if (!backlit) {
+    context.shadowColor = "rgba(0, 0, 0, 0.25)";
+    context.shadowBlur = 6;
+    context.shadowOffsetX = -6;
+    context.shadowOffsetY = 4;
   }
 
   context.fillStyle = "rgb(0, 0, 0)";

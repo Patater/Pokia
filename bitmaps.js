@@ -16,6 +16,17 @@ composerNotesBitmap.bitmap = [
   0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0,
 ];
 
+var deadScreen = {};
+deadScreen.bitmap = [];
+function deadScreenInit(width, height) {
+  deadScreen.width = width;
+  deadScreen.height = height;
+  var size = width * height;
+  for (var i = 0; i < size; i++) {
+    deadScreen.bitmap[i] = 1;
+  }
+}
+
 var notesRemaining_0 = {};
 // XXX I'm not sure if I want to include any spacing here or not.
 notesRemaining_0.width = 5;
