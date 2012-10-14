@@ -1,5 +1,9 @@
-// XXX TODO Overload ctrl v and ctrl c for setting and copying composerSong
-// state.
+// TODO Overload ctrl v and ctrl c for setting and copying composerSong state.
+// Unfortunately, this turns out to be difficult, since browsers find it to be
+// a security issue or not very important. See
+// http://www.quirksmode.org/dom/events/cutcopypaste.html for details. And
+// anyway, why do you want copy paste? This is skeumorphism taken to its
+// obvious limits: an emulation of the real thing with all its limitations.
 
 var notesRemaining = 50;
 var context;
@@ -47,6 +51,7 @@ soft.element.addEventListener(
     var now = audioContext.currentTime;
     composerSong.play(now);
     turnOnBacklight();
+    renderScreen();
   },
   false
 );

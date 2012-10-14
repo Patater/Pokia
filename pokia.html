@@ -57,18 +57,20 @@ function init() {
   resizePhone();
   initScreen();
   renderScreen();
+  loadSong(composerSong);
   initSynthesizer();
-  //playSong();
 }
 
-function playSong()
+function loadSong(song)
 {
-  song = new Song();
   //song.parseRTTTL(rtttlNokiaTune);
   song.parseComposer("Nyan Cat", 140, nokiaComposerNyanCat);
   //song.parseComposer("Epic Sax", 63, nokiaComposerEpicSax);
-  var now = audioContext.currentTime;
-  song.play(now);
+  cursor.position = song.notes.length;
+  notesRemaining = 50 - song.notes.length;
+  if (notesRemaining < 0) {
+    notesRemaining = 0;
+  }
 }
 
 // Nokia Composer Nyan Cat
