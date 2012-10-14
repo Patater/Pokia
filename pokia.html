@@ -67,6 +67,8 @@ function loadSong(song)
   song.parseComposer("Nyan Cat", 140, nokiaComposerNyanCat);
   //song.parseComposer("Epic Sax", 63, nokiaComposerEpicSax);
   cursor.position = song.notes.length;
+  cursor.composerOctave = 2;
+  cursor.duration = 8;
   notesRemaining = 50 - song.notes.length;
   if (notesRemaining < 0) {
     notesRemaining = 0;

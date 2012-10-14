@@ -1,14 +1,7 @@
-// TODO Overload ctrl v and ctrl c for setting and copying composerSong state.
-// Unfortunately, this turns out to be difficult, since browsers find it to be
-// a security issue or not very important. See
-// http://www.quirksmode.org/dom/events/cutcopypaste.html for details. And
-// anyway, why do you want copy paste? This is skeumorphism taken to its
-// obvious limits: an emulation of the real thing with all its limitations.
-
 var notesRemaining = 50;
 var context;
 var composerSong = new Song();
-composerSong.defaultTempo = 112; // Default nokia composer tempo
+composerSong.defaultTempo = 112; // Default Nokia Composer tempo
 
 var phone = {};
 phone.actualWidth = 1663;
@@ -28,6 +21,7 @@ screen.visibleWidth = 1350 - screen.visibleLeft;
 screen.visibleHeight = 1722 - screen.visibleTop;
 screen.pixelWidth = 96;
 screen.pixelHeight = 65;
+screen.on = true;
 
 var buttons = [];
 
@@ -37,6 +31,33 @@ power.actualLeft = 220;
 power.actualTop = 1936;
 power.actualWidth = 627 - power.actualLeft;
 power.actualHeight = 2194 - power.actualTop;
+power.element.addEventListener(
+  'mousedown',
+  function() {
+    turnOnBacklight();
+
+    power.heldAction = window.setTimeout(
+      function () {
+        screen.on = !screen.on;
+        if (screen.on === false) {
+          // XXX TODO Phone turned off, so turn off sound, too.
+        }
+        renderScreen();
+      },
+      500
+    );
+
+    renderScreen();
+  },
+  false
+);
+power.element.addEventListener(
+  'mouseup',
+  function() {
+    window.clearTimeout(power.heldAction);
+  },
+  false
+);
 buttons.push(power);
 
 var soft = {};
@@ -68,19 +89,13 @@ up.element.addEventListener(
   function() {
     turnOnBacklight();
 
+    moveCursorUp();
+
     var moveCursorUpAgain = function() {
       moveCursorUp();
       renderScreen();
       up.heldAction = window.setTimeout(moveCursorUpAgain, 150);
     }
-    var moveCursorUp = function() {
-      if (composerSong.notes.length > 0) {
-        cursor.position -= 1;
-        if (cursor.position < 0) {
-          cursor.position = composerSong.notes.length;
-        }
-      }
-    }();
     up.heldAction = window.setTimeout(moveCursorUpAgain, 500);
 
     renderScreen();
@@ -150,19 +165,13 @@ down.element.addEventListener(
   function() {
     turnOnBacklight();
 
+    moveCursorDown();
+
     var moveCursorDownAgain = function() {
       moveCursorDown();
       renderScreen();
       down.heldAction = window.setTimeout(moveCursorDownAgain, 150);
     }
-    var moveCursorDown = function() {
-      if (composerSong.notes.length > 0) {
-        cursor.position += 1;
-        if (cursor.position > composerSong.notes.length) {
-          cursor.position = 0;
-        }
-      }
-    }();
     down.heldAction = window.setTimeout(moveCursorDownAgain, 500);
 
     renderScreen();
@@ -431,18 +440,18 @@ function enterNote(whichNote, button) {
     composerSong.notes.splice(cursor.position, 0, note);
     notesRemaining -= 1;
     cursor.position += 1;
-  }
 
-  button.heldAction = window.setTimeout(
-    function() {
-      var note = composerSong.notes[cursor.position - 1];
-      note.toggleDot();
-      var now = audioContext.currentTime;
-      composerSong.playNote(note, now);
-      renderScreen();
-    },
-    500
-  );
+    button.heldAction = window.setTimeout(
+      function() {
+        var note = composerSong.notes[cursor.position - 1];
+        note.toggleDot();
+        var now = audioContext.currentTime;
+        composerSong.playNote(note, now);
+        renderScreen();
+      },
+      500
+    );
+  }
 
   renderScreen();
 }
@@ -488,6 +497,12 @@ function renderScreen() {
   }
 
   context.clearRect(0, 0, screen.element.width, screen.element.height);
+
+  // If the screen is turned off, we are done.
+  if (screen.on !== true) {
+    return;
+  }
+
   // Display the backlight when backlit.
   if (backlit) {
     context.fillStyle = "rgba(216, 235, 49, 0.20)";
@@ -592,7 +607,7 @@ function displayNotes(notes) {
     if (line) {
       var composer = toComposer(line.notes).trim();
       var destY = (i - startLine + 1) * (composer_y.height + 1);
-      displayComposerString(composer, 0, destY);
+      displayComposerString(composer, 1, destY);
     }
   }
 }
@@ -600,6 +615,24 @@ function displayNotes(notes) {
 function displayCursor(context) {
   if (cursor.isBlinkedOn) {
     renderBitmap(context, cursor.destX, cursor.destY, composer_Cursor);
+  }
+}
+
+function moveCursorUp() {
+  if (composerSong.notes.length > 0) {
+    cursor.position -= 1;
+    if (cursor.position < 0) {
+      cursor.position = composerSong.notes.length;
+    }
+  }
+}
+
+function moveCursorDown() {
+  if (composerSong.notes.length > 0) {
+    cursor.position += 1;
+    if (cursor.position > composerSong.notes.length) {
+      cursor.position = 0;
+    }
   }
 }
 
@@ -733,3 +766,11 @@ function resizePhoneElement(phoneElement, phone)
   phoneElement.element.style.height = phoneElement.height + "px";
 }
 
+// TODO Overload ctrl v and ctrl c for setting and copying composerSong state.
+// Unfortunately, this turns out to be difficult, since browsers find it to be
+// a security issue or not very important. See
+// http://www.quirksmode.org/dom/events/cutcopypaste.html and
+// http://almaer.com/blog/supporting-the-system-clipboard-in-your-web-applications-what-a-pain
+// for details. And anyway, why do you want copy paste? This is skeuomorphism
+// taken to its obvious limits: an emulation of the real thing with all its
+// limitations.
