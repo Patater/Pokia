@@ -1,3 +1,4 @@
+var autoscale = false;
 var notesRemaining = 50;
 var context;
 var composerSong = new Song();
@@ -730,20 +731,27 @@ function displayButtons() {
 }
 
 function resizePhone() {
-  // Calculate for Phone
-  var actualRatio = phone.actualWidth / phone.actualHeight;
-  var windowRatio = window.innerWidth / window.innerHeight;
-  if (windowRatio > actualRatio) {
-    // Window is wider than actual phone.
-    phone.height = window.innerHeight;
-    phone.width = phone.height / phone.actualHeight * phone.actualWidth;
+  if (autoscale) {
+    // Calculate for Phone
+    var actualRatio = phone.actualWidth / phone.actualHeight;
+    var windowRatio = window.innerWidth / window.innerHeight;
+    if (windowRatio > actualRatio) {
+      // Window is wider than actual phone.
+      phone.height = window.innerHeight;
+      phone.width = phone.height / phone.actualHeight * phone.actualWidth;
+    } else {
+      // Window is not wider than actual phone.
+      phone.width = window.innerWidth;
+      phone.height = phone.width / phone.actualWidth * phone.actualHeight;
+    }
+    phone.left = window.innerWidth / 2 - phone.width / 2;
+    phone.top = window.innerHeight / 2 - phone.height / 2;
   } else {
-    // Window is not wider than actual phone.
-    phone.width = window.innerWidth;
-    phone.height = phone.width / phone.actualWidth * phone.actualHeight;
+    phone.height = phone.actualHeight;
+    phone.width = phone.actualWidth;
+    phone.left = window.innerWidth / 2 - phone.width / 2;
+    phone.top = 0;
   }
-  phone.left = window.innerWidth / 2 - phone.width / 2;
-  phone.top = window.innerHeight / 2 - phone.height / 2;
   // Apply
   if (phone.foregroundElement) {
     phone.foregroundElement.width = phone.width;
