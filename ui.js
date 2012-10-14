@@ -562,7 +562,7 @@ function renderLCD() {
 
   // Display the backlight when backlit.
   if (backlit) {
-    context.fillStyle = "rgba(216, 235, 49, 0.20)";
+    context.fillStyle = "rgba(216, 235, 49, 0.40)";
     // This doesn't bleed to the full surface of the lcd, unfortunately.
     // This can be done by making the lcd background a separate image from
     // the phone image, placing the canvas between the lcd background and
@@ -573,7 +573,7 @@ function renderLCD() {
   }
 
   // Display the visible area of the LCD.
-  context.fillStyle = "rgba(20, 20, 20, 0.06)";
+  context.fillStyle = "rgba(20, 20, 20, 0.05)";
   renderBitmap(context, 0, 0, deadLCD);
 
   // Display a shadow when not backlit when drawing pixels.
@@ -858,10 +858,3 @@ function resizePhoneElement(phoneElement, phone)
 // for details. And anyway, why do you want copy paste? This is skeuomorphism
 // taken to its obvious limits: an emulation of the real thing with all its
 // limitations.
-
-// XXX TODO use CSS media queries to load the correct images for the target
-// device.
-
-// XXX TODO Make the lcd canvas native resolution to whatever it should be.
-// The browser should not have to resize the canvas. When it does, it looks
-// awful.
