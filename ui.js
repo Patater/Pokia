@@ -9,14 +9,19 @@ composerSong.defaultTempo = 112; // Default nokia composer tempo
 var phone = {};
 phone.actualWidth = 1663;
 phone.actualHeight = 3857;
-phone.element = document.getElementById('phone');
+phone.backgroundElement = document.getElementById('phone-bg');
+phone.foregroundElement = document.getElementById('phone-fg');
 
 var screen = {};
 screen.element = document.getElementById('screen');
-screen.actualLeft = 304;
-screen.actualTop = 950;
-screen.actualWidth = 1350 - screen.actualLeft;
-screen.actualHeight = 1722 - screen.actualTop;
+screen.actualLeft = 240;
+screen.actualTop = 880;
+screen.actualWidth = 1420 - screen.actualLeft;
+screen.actualHeight = 1800 - screen.actualTop;
+screen.visibleLeft = 304;
+screen.visibleTop = 950;
+screen.visibleWidth = 1350 - screen.visibleLeft;
+screen.visibleHeight = 1722 - screen.visibleTop;
 screen.pixelWidth = 96;
 screen.pixelHeight = 65;
 
@@ -56,8 +61,11 @@ up.actualHeight = 2194 - up.actualTop;
 up.element.addEventListener(
   'mousedown',
   function() {
+    turnOnBacklight();
+
     var moveCursorUpAgain = function() {
       moveCursorUp();
+      renderScreen();
       up.heldAction = window.setTimeout(moveCursorUpAgain, 150);
     }
     var moveCursorUp = function() {
@@ -66,10 +74,11 @@ up.element.addEventListener(
         if (cursor.position < 0) {
           cursor.position = composerSong.notes.length;
         }
-        renderScreen();
       }
     }();
     up.heldAction = window.setTimeout(moveCursorUpAgain, 500);
+
+    renderScreen();
   },
   false
 );
@@ -92,6 +101,7 @@ clear.element.addEventListener(
   'mousedown',
   function() {
     // XXX TODO Cancel any currently scheduled notes.
+    turnOnBacklight();
 
     if (notesRemaining < 50) {
       if (cursor.position > 0) {
@@ -99,7 +109,6 @@ clear.element.addEventListener(
         composerSong.notes[cursor.position - 1];
         notesRemaining += 1;
         cursor.position -= 1;
-        renderScreen();
       }
     }
     clear.heldAction = window.setTimeout(
@@ -112,7 +121,7 @@ clear.element.addEventListener(
       500
     );
 
-    turnOnBacklight();
+    renderScreen();
   },
   false
 );
@@ -134,8 +143,11 @@ down.actualHeight = 2486 - down.actualTop;
 down.element.addEventListener(
   'mousedown',
   function() {
+    turnOnBacklight();
+
     var moveCursorDownAgain = function() {
       moveCursorDown();
+      renderScreen();
       down.heldAction = window.setTimeout(moveCursorDownAgain, 150);
     }
     var moveCursorDown = function() {
@@ -144,12 +156,11 @@ down.element.addEventListener(
         if (cursor.position > composerSong.notes.length) {
           cursor.position = 0;
         }
-        renderScreen();
       }
     }();
     down.heldAction = window.setTimeout(moveCursorDownAgain, 500);
 
-    turnOnBacklight();
+    renderScreen();
   },
   false
 );
@@ -234,6 +245,8 @@ eight.actualHeight = 3350 - eight.actualTop;
 eight.element.addEventListener(
   'mousedown',
   function() {
+    turnOnBacklight();
+
     var note = composerSong.notes[cursor.position - 1];
     if (note) {
       note.duration *= 2;
@@ -247,11 +260,9 @@ eight.element.addEventListener(
         var now = audioContext.currentTime;
         composerSong.playNote(note, now);
       }
-
-      renderScreen();
-
-      turnOnBacklight();
     }
+
+    renderScreen();
   },
   false
 );
@@ -266,6 +277,8 @@ nine.actualHeight = 3322 - nine.actualTop;
 nine.element.addEventListener(
   'mousedown',
   function() {
+    turnOnBacklight();
+
     var note = composerSong.notes[cursor.position - 1];
     if (note) {
       note.duration /= 2;
@@ -279,11 +292,9 @@ nine.element.addEventListener(
         var now = audioContext.currentTime;
         composerSong.playNote(note, now);
       }
-
-      renderScreen();
-
-      turnOnBacklight();
     }
+
+    renderScreen();
   },
   false
 );
@@ -298,6 +309,8 @@ asterisk.actualHeight = 3575 - asterisk.actualTop;
 asterisk.element.addEventListener(
   'mousedown',
   function() {
+    turnOnBacklight();
+
     var note = composerSong.notes[cursor.position - 1];
     if (note) {
       var octave = note.getComposerOctave();
@@ -306,10 +319,9 @@ asterisk.element.addEventListener(
       note.setComposerNote(note.note, octave);
       var now = audioContext.currentTime;
       composerSong.playNote(note, now);
-      renderScreen();
-
-      turnOnBacklight();
     }
+
+    renderScreen();
   },
   false
 );
@@ -324,6 +336,8 @@ zero.actualHeight = 3597 - zero.actualTop;
 zero.element.addEventListener(
   'mousedown',
   function() {
+    turnOnBacklight();
+
     if (notesRemaining > 0) {
       var note = new Note();
       note.pause = true;
@@ -331,10 +345,10 @@ zero.element.addEventListener(
       composerSong.notes.splice(cursor.position, 0, note);
       notesRemaining -= 1;
       cursor.position += 1;
-      renderScreen();
 
-      turnOnBacklight();
     }
+
+    renderScreen();
   },
   false
 );
@@ -349,6 +363,8 @@ hash.actualHeight = 3586 - hash.actualTop;
 hash.element.addEventListener(
   'mousedown',
   function() {
+    turnOnBacklight();
+
     var note = composerSong.notes[cursor.position - 1];
     if (note) {
       var prevNote = note.note;
@@ -357,10 +373,9 @@ hash.element.addEventListener(
         var now = audioContext.currentTime;
         composerSong.playNote(note, now);
       }
-      renderScreen();
-
-      turnOnBacklight();
     }
+
+    renderScreen();
   },
   false
 );
@@ -400,6 +415,8 @@ function registerNoteButton(note, button) {
 }
 
 function enterNote(whichNote, button) {
+  turnOnBacklight();
+
   if (notesRemaining > 0) {
     var note = new Note();
     note.duration = cursor.duration;
@@ -409,7 +426,6 @@ function enterNote(whichNote, button) {
     composerSong.notes.splice(cursor.position, 0, note);
     notesRemaining -= 1;
     cursor.position += 1;
-    renderScreen();
   }
 
   button.heldAction = window.setTimeout(
@@ -423,7 +439,7 @@ function enterNote(whichNote, button) {
     500
   );
 
-  turnOnBacklight();
+  renderScreen();
 }
 
 function initScreen() {
@@ -453,6 +469,19 @@ function turnOnBacklight() {
 }
 
 function renderScreen() {
+  // Display a shadow when not backlit.
+  if (backlit) {
+    context.shadowColor = "rgba(0, 0, 0, 0)";
+    context.shadowBlur = 0;
+    context.shadowOffsetX = 0;
+    context.shadowOffsetY = 0;
+  } else {
+    context.shadowColor = "rgba(0, 0, 0, 0.25)";
+    context.shadowBlur = 6;
+    context.shadowOffsetX = -6;
+    context.shadowOffsetY = 4;
+  }
+
   context.clearRect(0, 0, screen.element.width, screen.element.height);
   // Display the backlight when backlit.
   if (backlit) {
@@ -467,19 +496,6 @@ function renderScreen() {
   }
 
   context.fillStyle = "rgb(0, 0, 0)";
-  // Display a shadow when not backlit.
-  if (backlit) {
-    context.shadowColor = "rgba(0, 0, 0, 0)";
-    context.shadowBlur = 0;
-    context.shadowOffsetX = 0;
-    context.shadowOffsetY = 0;
-  } else {
-    context.shadowColor = "rgba(0, 0, 0, 0.25)";
-    context.shadowBlur = 6;
-    context.shadowOffsetX = -6;
-    context.shadowOffsetY = 4;
-  }
-
   renderBitmap(context, 1, 0, composerNotesBitmap);
   displayNotesRemaining(context);
   displayNotes(composerSong.notes);
@@ -633,15 +649,21 @@ function renderBitmap(context, destX, destY, bitmap) {
   for (var i = 0; i < bitmap.width; i++) {
     for (var j = 0; j < bitmap.height; j++) {
       if (bitmap.bitmap[j * bitmap.width + i] == 1) {
-        if (i < screen.pixelWidth &&
-            j < screen.pixelHeight &&
-            i >= 0 &&
-            j >= 0) {
+        if (i < screen.pixelWidth && j < screen.pixelHeight &&
+            i >= 0 && j >= 0) {
+          var x = (destX + i) * pixel.horizonalSpace +
+            (destX + i) * pixel.width;
+          var y = (destY + j) * pixel.verticalSpace +
+            (destY + j) * pixel.height;
+          var width = pixel.width;
+          var height = pixel.height;
+          var visibleRatioX = screen.visibleWidth / screen.actualWidth;
+          var visibleRatioY = screen.visibleHeight / screen.actualHeight;
           context.fillRect(
-            (destX + i) * pixel.horizonalSpace + (destX + i) * pixel.width,
-            (destY + j) * pixel.verticalSpace + (destY + j) * pixel.height,
-            pixel.width,
-            pixel.height
+            x * visibleRatioX + screen.visibleLeft - screen.actualLeft,
+            y * visibleRatioY + screen.visibleTop - screen.actualTop,
+            pixel.width * visibleRatioX,
+            pixel.height * visibleRatioY
           );
         }
       }
@@ -671,10 +693,18 @@ function resizePhone() {
   phone.left = window.innerWidth / 2 - phone.width / 2;
   phone.top = window.innerHeight / 2 - phone.height / 2;
   // Apply
-  phone.element.width = phone.width;
-  phone.element.height = phone.height;
-  phone.element.style.left = phone.left + "px";
-  phone.element.style.top = phone.top + "px";
+  if (phone.foregroundElement) {
+    phone.foregroundElement.width = phone.width;
+    phone.foregroundElement.height = phone.height;
+    phone.foregroundElement.style.left = phone.left + "px";
+    phone.foregroundElement.style.top = phone.top + "px";
+  }
+  if (phone.backgroundElement) {
+    phone.backgroundElement.width = phone.width;
+    phone.backgroundElement.height = phone.height;
+    phone.backgroundElement.style.left = phone.left + "px";
+    phone.backgroundElement.style.top = phone.top + "px";
+  }
 
   for (var i = 0; i < buttons.length; i++) {
     resizePhoneElement(buttons[i], phone);
