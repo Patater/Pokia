@@ -665,39 +665,15 @@ function displayNotesRemaining(context) {
   var notesRemainingStart = screen.pixelWidth - notesRemaining_0.width * 2;
 
   // Render tens place.
-  renderNotesRemainingDigit(context, notesRemainingStart, 0, tens);
+  renderBitmap(context, notesRemainingStart, 0, notesRemainingFont[tens]);
 
   // Render ones place.
-  renderNotesRemainingDigit(
+  renderBitmap(
     context,
     notesRemainingStart + notesRemaining_0.width,
     0,
-    ones
+    notesRemainingFont[ones]
   );
-}
-
-function renderNotesRemainingDigit(context, destX, destY, digit) {
-  if (digit === 0) {
-    renderBitmap(context, destX, destY, notesRemaining_0);
-  } else if (digit === 1) {
-    renderBitmap(context, destX, destY, notesRemaining_1);
-  } else if (digit === 2) {
-    renderBitmap(context, destX, destY, notesRemaining_2);
-  } else if (digit === 3) {
-    renderBitmap(context, destX, destY, notesRemaining_3);
-  } else if (digit === 4) {
-    renderBitmap(context, destX, destY, notesRemaining_4);
-  } else if (digit === 5) {
-    renderBitmap(context, destX, destY, notesRemaining_5);
-  } else if (digit === 6) {
-    renderBitmap(context, destX, destY, notesRemaining_6);
-  } else if (digit === 7) {
-    renderBitmap(context, destX, destY, notesRemaining_7);
-  } else if (digit === 8) {
-    renderBitmap(context, destX, destY, notesRemaining_8);
-  } else if (digit === 9) {
-    renderBitmap(context, destX, destY, notesRemaining_9);
-  }
 }
 
 function renderBitmap(context, destX, destY, bitmap) {
@@ -802,3 +778,10 @@ function resizePhoneElement(phoneElement, phone)
 // for details. And anyway, why do you want copy paste? This is skeuomorphism
 // taken to its obvious limits: an emulation of the real thing with all its
 // limitations.
+
+// XXX TODO use CSS media queries to load the correct images for the target
+// device.
+
+// XXX TODO Make the screen canvas native resolution to whatever it should be.
+// The browser should not have to resize the canvas. When it does, it looks
+// awful.
