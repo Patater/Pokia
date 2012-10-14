@@ -9,7 +9,7 @@
     opacity: 0.2;
     position: absolute;
   }
-  .screen {
+  .lcd {
     position: absolute;
   }
 </style>
@@ -19,10 +19,10 @@
 <canvas id="waveform" width="1" height="1"></canvas>
 <pre id="debug"></pre>
 <img id="phone-bg" style="position: absolute;"
-src="Nokia_1100_Backlit_Background.png" width="1" height="1">
-<canvas class="screen" id="screen" width="1149" height="843"></canvas>
+src="nookia-screenBG.png" width="1" height="1">
+<canvas class="lcd" id="lcd" width="1149" height="843"></canvas>
 <img id="phone-fg" style="position: absolute;"
-src="Nokia_1100_Backlit_Foreground.png" width="1" height="1">
+src="nookia-phoneFG.png" width="1" height="1">
 <button style="display: none;" class="button" id="power"></button>
 <button style="display: none;" class="button" id="soft"></button>
 <button style="display: none;" class="button" id="up"></button>
@@ -53,9 +53,9 @@ var debugMode = false;
 
 function init() {
   displayButtons();
-  initScreen();
+  initLCD();
   resizePhone();
-  renderScreen();
+  renderLCD();
   loadSong(composerSong);
   initSynthesizer();
 }

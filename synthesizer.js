@@ -60,7 +60,7 @@ Note.prototype.setComposerOctave = function(octave) {
 
 Note.prototype.setComposerNote = function(note, octave) {
   this.note = note;
-  this.isSharp = note in Song.sharpList;
+  this.isSharp = note.charAt(0) === '#';
   this.setComposerOctave(octave);
 
   if (note == "c") {
@@ -920,27 +920,3 @@ Song.sharpMap[Song.NOTE_DS7] = Song.NOTE_D7;
 Song.sharpMap[Song.NOTE_FS7] = Song.NOTE_F7;
 Song.sharpMap[Song.NOTE_GS7] = Song.NOTE_G7;
 Song.sharpMap[Song.NOTE_AS7] = Song.NOTE_A7;
-
-Song.sharpList = [];
-Song.sharpList.push(Song.NOTE_AS3);
-Song.sharpList.push(Song.NOTE_AS3);
-Song.sharpList.push(Song.NOTE_CS4);
-Song.sharpList.push(Song.NOTE_DS4);
-Song.sharpList.push(Song.NOTE_FS4);
-Song.sharpList.push(Song.NOTE_GS4);
-Song.sharpList.push(Song.NOTE_AS4);
-Song.sharpList.push(Song.NOTE_CS5);
-Song.sharpList.push(Song.NOTE_DS5);
-Song.sharpList.push(Song.NOTE_FS5);
-Song.sharpList.push(Song.NOTE_GS5);
-Song.sharpList.push(Song.NOTE_AS5);
-Song.sharpList.push(Song.NOTE_CS6);
-Song.sharpList.push(Song.NOTE_DS6);
-Song.sharpList.push(Song.NOTE_FS6);
-Song.sharpList.push(Song.NOTE_GS6);
-Song.sharpList.push(Song.NOTE_AS6);
-Song.sharpList.push(Song.NOTE_CS7);
-Song.sharpList.push(Song.NOTE_DS7);
-Song.sharpList.push(Song.NOTE_FS7);
-Song.sharpList.push(Song.NOTE_GS7);
-Song.sharpList.push(Song.NOTE_AS7);

@@ -9,20 +9,21 @@ phone.actualWidth = 1663;
 phone.actualHeight = 3857;
 phone.backgroundElement = document.getElementById('phone-bg');
 phone.foregroundElement = document.getElementById('phone-fg');
+phone.previousDesiredImageHeight = 1;
 
-var screen = {};
-screen.element = document.getElementById('screen');
-screen.actualLeft = 240;
-screen.actualTop = 880;
-screen.actualWidth = 1420 - screen.actualLeft;
-screen.actualHeight = 1800 - screen.actualTop;
-screen.visibleLeft = 304;
-screen.visibleTop = 950;
-screen.visibleWidth = 1376 - screen.visibleLeft;
-screen.visibleHeight = 1802 - screen.visibleTop;
-screen.pixelWidth = 96;
-screen.pixelHeight = 65;
-screen.on = true;
+var lcd = {};
+lcd.element = document.getElementById('lcd');
+lcd.actualLeft = 240;
+lcd.actualTop = 880;
+lcd.actualWidth = 1420 - lcd.actualLeft;
+lcd.actualHeight = 1800 - lcd.actualTop;
+lcd.visibleLeft = 304;
+lcd.visibleTop = 950;
+lcd.visibleWidth = 1376 - lcd.visibleLeft;
+lcd.visibleHeight = 1802 - lcd.visibleTop;
+lcd.pixelWidth = 96;
+lcd.pixelHeight = 65;
+lcd.on = true;
 
 var buttons = [];
 
@@ -39,8 +40,8 @@ power.element.addEventListener(
 
     power.heldAction = window.setTimeout(
       function () {
-        screen.on = !screen.on;
-        if (screen.on === false) {
+        lcd.on = !lcd.on;
+        if (lcd.on === false) {
           // Phone turned off, so turn off sound, too.
           composerSong.stop();
         } else {
@@ -49,12 +50,12 @@ power.element.addEventListener(
           notesRemaining = 50;
           cursor = new Cursor();
         }
-        renderScreen();
+        renderLCD();
       },
       500
     );
 
-    renderScreen();
+    renderLCD();
   },
   false
 );
@@ -79,7 +80,7 @@ soft.element.addEventListener(
     var now = audioContext.currentTime;
     composerSong.play(now);
     turnOnBacklight();
-    renderScreen();
+    renderLCD();
   },
   false
 );
@@ -100,12 +101,12 @@ up.element.addEventListener(
 
     var moveCursorUpAgain = function() {
       moveCursorUp();
-      renderScreen();
+      renderLCD();
       up.heldAction = window.setTimeout(moveCursorUpAgain, 150);
     }
     up.heldAction = window.setTimeout(moveCursorUpAgain, 500);
 
-    renderScreen();
+    renderLCD();
   },
   false
 );
@@ -145,12 +146,12 @@ clear.element.addEventListener(
         composerSong.notes = [];
         notesRemaining = 50;
         cursor = new Cursor();
-        renderScreen();
+        renderLCD();
       },
       500
     );
 
-    renderScreen();
+    renderLCD();
   },
   false
 );
@@ -178,12 +179,12 @@ down.element.addEventListener(
 
     var moveCursorDownAgain = function() {
       moveCursorDown();
-      renderScreen();
+      renderLCD();
       down.heldAction = window.setTimeout(moveCursorDownAgain, 150);
     }
     down.heldAction = window.setTimeout(moveCursorDownAgain, 500);
 
-    renderScreen();
+    renderLCD();
   },
   false
 );
@@ -286,7 +287,7 @@ eight.element.addEventListener(
       }
     }
 
-    renderScreen();
+    renderLCD();
   },
   false
 );
@@ -319,7 +320,7 @@ nine.element.addEventListener(
       }
     }
 
-    renderScreen();
+    renderLCD();
   },
   false
 );
@@ -341,13 +342,14 @@ asterisk.element.addEventListener(
       var octave = note.getComposerOctave();
       octave = octave % 3 + 1;
       cursor.composerOctave = octave;
+      console.log(note.note);
       note.setComposerNote(note.note, octave);
       composerSong.stop();
       var now = audioContext.currentTime;
       composerSong.playNote(note, now);
     }
 
-    renderScreen();
+    renderLCD();
   },
   false
 );
@@ -374,7 +376,7 @@ zero.element.addEventListener(
 
     }
 
-    renderScreen();
+    renderLCD();
   },
   false
 );
@@ -402,7 +404,7 @@ hash.element.addEventListener(
       }
     }
 
-    renderScreen();
+    renderLCD();
   },
   false
 );
@@ -462,20 +464,20 @@ function enterNote(whichNote, button) {
         composerSong.stop();
         var now = audioContext.currentTime;
         composerSong.playNote(note, now);
-        renderScreen();
+        renderLCD();
       },
       500
     );
   }
 
-  renderScreen();
+  renderLCD();
 }
 
-function initScreen() {
-  context = screen.element.getContext("2d");
-  context.clearRect(0, 0, screen.element.width, screen.element.height);
+function initLCD() {
+  context = lcd.element.getContext("2d");
+  context.clearRect(0, 0, lcd.element.width, lcd.element.height);
 
-  deadScreenInit(screen.pixelWidth, screen.pixelHeight);
+  deadLCDInit(lcd.pixelWidth, lcd.pixelHeight);
 
   blinkCursor();
 
@@ -484,7 +486,7 @@ function initScreen() {
 
 function blinkCursor() {
   cursor.isBlinkedOn = !cursor.isBlinkedOn;
-  renderScreen();
+  renderLCD();
   window.setTimeout(blinkCursor, 500);
 }
 
@@ -501,7 +503,48 @@ function turnOnBacklight() {
   backlightTimeoutAction = window.setTimeout(turnOffBacklight, 15000);
 }
 
-function renderScreen() {
+var phoneBackgrounds = [];
+phoneBackgrounds[480] = "Nokia_1100_Backlit_Background_480.png";
+phoneBackgrounds[600] = "Nokia_1100_Backlit_Background_480.png";
+phoneBackgrounds[720] = "Nokia_1100_Backlit_Background_480.png";
+phoneBackgrounds[768] = "Nokia_1100_Backlit_Background_480.png";
+phoneBackgrounds[960] = "Nokia_1100_Backlit_Background_480.png";
+phoneBackgrounds[1080] = "Nokia_1100_Backlit_Background_480.png";
+phoneBackgrounds[1136] = "Nokia_1100_Backlit_Background_480.png";
+phoneBackgrounds[1200] = "Nokia_1100_Backlit_Background_1600.png";
+phoneBackgrounds[1600] = "Nokia_1100_Backlit_Background_1600.png";
+phoneBackgrounds[3857] = "Nokia_1100_Backlit_Background_3857.png";
+
+var phoneForegrounds = [];
+phoneForegrounds[480] = "Nokia_1100_Backlit_Foreground_480.png";
+phoneForegrounds[600] = "Nokia_1100_Backlit_Foreground_480.png";
+phoneForegrounds[720] = "Nokia_1100_Backlit_Foreground_480.png";
+phoneForegrounds[768] = "Nokia_1100_Backlit_Foreground_480.png";
+phoneForegrounds[960] = "Nokia_1100_Backlit_Foreground_480.png";
+phoneForegrounds[1080] = "Nokia_1100_Backlit_Foreground_480.png";
+phoneForegrounds[1136] = "Nokia_1100_Backlit_Foreground_480.png";
+phoneForegrounds[1200] = "Nokia_1100_Backlit_Foreground_1600.png";
+phoneForegrounds[1600] = "Nokia_1100_Backlit_Foreground_1600.png";
+phoneForegrounds[3857] = "Nokia_1100_Backlit_Foreground_3857.png";
+
+function loadProperImages() {
+  var viewHeight = Math.min(window.innerHeight, screen.height);
+  var desiredImageHeight = 0;
+  for (var height in phoneBackgrounds) {
+    desiredImageHeight = height;
+    if (viewHeight <= height) {
+      break;
+    }
+  }
+  if (desiredImageHeight != phone.previousDesiredImageHeight) {
+    phone.backgroundElement.src = phoneBackgrounds[desiredImageHeight];
+    phone.foregroundElement.src = phoneForegrounds[desiredImageHeight];
+    phone.previousDesiredImageHeight = desiredImageHeight;
+  }
+}
+
+
+function renderLCD() {
   var ratioX = phone.width / phone.actualWidth;
   var ratioY = phone.height / phone.actualHeight;
 
@@ -510,28 +553,28 @@ function renderScreen() {
   context.shadowBlur = 0;
   context.shadowOffsetX = 0;
   context.shadowOffsetY = 0;
-  context.clearRect(0, 0, screen.element.width, screen.element.height);
+  context.clearRect(0, 0, lcd.element.width, lcd.element.height);
 
-  // If the screen is turned off, we are done.
-  if (screen.on !== true) {
+  // If the lcd is turned off, we are done.
+  if (lcd.on !== true) {
     return;
   }
 
   // Display the backlight when backlit.
   if (backlit) {
     context.fillStyle = "rgba(216, 235, 49, 0.20)";
-    // This doesn't bleed to the full surface of the screen, unfortunately.
-    // This can be done by making the screen background a separate image from
-    // the phone image, placing the canvas between the screen background and
+    // This doesn't bleed to the full surface of the lcd, unfortunately.
+    // This can be done by making the lcd background a separate image from
+    // the phone image, placing the canvas between the lcd background and
     // the phone like a sandwich. After doing this, the drawable area of the
     // canvas will be bigger than before, so we need to modify the code that
     // draws to the canvas to draw to the correct places.
-    context.fillRect(0, 0, screen.element.width, screen.element.height);
+    context.fillRect(0, 0, lcd.element.width, lcd.element.height);
   }
 
   // Display the visible area of the LCD.
   context.fillStyle = "rgba(20, 20, 20, 0.06)";
-  renderBitmap(context, 0, 0, deadScreen);
+  renderBitmap(context, 0, 0, deadLCD);
 
   // Display a shadow when not backlit when drawing pixels.
   if (!backlit) {
@@ -554,8 +597,8 @@ function displaySoftButton(context, name) {
   for (var i = 0; i < name.length; i++) {
     width += composerFont[name.charAt(i)].width;
   }
-  var destX = Math.floor(screen.pixelWidth / 2) - Math.floor(width / 2);
-  var destY = screen.pixelHeight - composer_y.height;
+  var destX = Math.floor(lcd.pixelWidth / 2) - Math.floor(width / 2);
+  var destY = lcd.pixelHeight - composer_y.height;
 
   displayComposerString(name, destX, destY);
 }
@@ -591,7 +634,7 @@ function displayNotes(notes) {
     lines[currentLineIndex].notes.push(notes[i]);
     var composer = toComposer(lines[currentLineIndex].notes).trim();
     var newWidth = getComposerStringWidth(composer);
-    if (newWidth > screen.pixelWidth) {
+    if (newWidth > lcd.pixelWidth) {
       lines[currentLineIndex].notes.splice(-1, 1);
       lines[currentLineIndex].endNoteIndex = i;
       currentLineIndex += 1;
@@ -667,7 +710,7 @@ function displayNotesRemaining(context) {
   var tens = Math.floor(notesRemaining / 10);
 
   // Note: The notesRemaining bitmap font is fixed-width.
-  var notesRemainingStart = screen.pixelWidth - notesRemaining_0.width * 2;
+  var notesRemainingStart = lcd.pixelWidth - notesRemaining_0.width * 2;
 
   // Render tens place.
   renderBitmap(context, notesRemainingStart, 0, notesRemainingFont[tens]);
@@ -685,16 +728,15 @@ function renderBitmap(context, destX, destY, bitmap) {
   if (!bitmap) {
     return;
   }
-  var ratioX = screen.width / screen.actualWidth;
-  var ratioY = screen.height / screen.actualHeight;
-  var visibleRatioX = (screen.visibleWidth / screen.actualWidth) * ratioX;
-  var visibleRatioY = (screen.visibleHeight / screen.actualHeight) * ratioY;
+  var ratioX = lcd.width / lcd.actualWidth;
+  var ratioY = lcd.height / lcd.actualHeight;
+  var visibleRatioX = (lcd.visibleWidth / lcd.actualWidth) * ratioX;
+  var visibleRatioY = (lcd.visibleHeight / lcd.actualHeight) * ratioY;
 
   for (var i = 0; i < bitmap.width; i++) {
     for (var j = 0; j < bitmap.height; j++) {
       if (bitmap.bitmap[j * bitmap.width + i] == 1) {
-        if (i < screen.pixelWidth && j < screen.pixelHeight &&
-            i >= 0 && j >= 0) {
+        if (i < lcd.pixelWidth && j < lcd.pixelHeight && i >= 0 && j >= 0) {
           var x = (destX + i) * pixel.horizonalSpace +
             (destX + i) * pixel.width;
           var y = (destY + j) * pixel.verticalSpace +
@@ -702,10 +744,8 @@ function renderBitmap(context, destX, destY, bitmap) {
           var width = pixel.width;
           var height = pixel.height;
           context.fillRect(
-            x * visibleRatioX + (screen.visibleLeft - screen.actualLeft) *
-              ratioX,
-            y * visibleRatioY + (screen.visibleTop - screen.actualTop) *
-              ratioY,
+            x * visibleRatioX + (lcd.visibleLeft - lcd.actualLeft) * ratioX,
+            y * visibleRatioY + (lcd.visibleTop - lcd.actualTop) * ratioY,
             pixel.width * visibleRatioX,
             pixel.height * visibleRatioY
           );
@@ -722,6 +762,9 @@ function displayButtons() {
 }
 
 function resizePhone() {
+  // XXX Uncomment me after you have the images from ben.
+  //loadProperImages();
+
   if (autoscale) {
     // Calculate for Phone
     var actualRatio = phone.actualWidth / phone.actualHeight;
@@ -760,31 +803,34 @@ function resizePhone() {
   for (var i = 0; i < buttons.length; i++) {
     resizePhoneElement(buttons[i], phone);
   }
-  resizeScreen(screen, phone);
+  resizeLCD(lcd, phone);
+
+  console.log("win: (" + window.innerWidth + ", " + window.innerHeight + ")");
+  console.log("fon: (" + phone.width + ", " + phone.height + ")");
 }
 
-function resizeScreen(screen, phone)
+function resizeLCD(lcd, phone)
 {
   var ratioX = phone.width / phone.actualWidth;
   var ratioY = phone.height / phone.actualHeight;
-  screen.left = screen.actualLeft * ratioX + phone.left;
-  screen.top = screen.actualTop * ratioY + phone.top;
-  screen.width = screen.actualWidth * ratioX;
-  screen.height = screen.actualHeight * ratioY;
+  lcd.left = lcd.actualLeft * ratioX + phone.left;
+  lcd.top = lcd.actualTop * ratioY + phone.top;
+  lcd.width = lcd.actualWidth * ratioX;
+  lcd.height = lcd.actualHeight * ratioY;
 
   // Apply
-  screen.element.style.left = screen.left + "px";
-  screen.element.style.top = screen.top + "px";
+  lcd.element.style.left = lcd.left + "px";
+  lcd.element.style.top = lcd.top + "px";
   var resized = false;
-  if (screen.width !== screen.element.width) {
-    screen.element.width = screen.width;
+  if (lcd.width !== lcd.element.width) {
+    lcd.element.width = lcd.width;
     resized = true;
   }
-  if (screen.height !== screen.element.height) {
-    screen.element.height = screen.height;
+  if (lcd.height !== lcd.element.height) {
+    lcd.element.height = lcd.height;
   }
   if (resized) {
-    context.clearRect(0, 0, screen.element.width, screen.element.height);
+    context.clearRect(0, 0, lcd.element.width, lcd.element.height);
   }
 }
 
@@ -816,6 +862,6 @@ function resizePhoneElement(phoneElement, phone)
 // XXX TODO use CSS media queries to load the correct images for the target
 // device.
 
-// XXX TODO Make the screen canvas native resolution to whatever it should be.
+// XXX TODO Make the lcd canvas native resolution to whatever it should be.
 // The browser should not have to resize the canvas. When it does, it looks
 // awful.

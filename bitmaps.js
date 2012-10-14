@@ -16,14 +16,14 @@ composerNotesBitmap.bitmap = [
   0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0,
 ];
 
-var deadScreen = {};
-deadScreen.bitmap = [];
-function deadScreenInit(width, height) {
-  deadScreen.width = width;
-  deadScreen.height = height;
+var deadLCD = {};
+deadLCD.bitmap = [];
+function deadLCDInit(width, height) {
+  deadLCD.width = width;
+  deadLCD.height = height;
   var size = width * height;
   for (var i = 0; i < size; i++) {
-    deadScreen.bitmap[i] = 1;
+    deadLCD.bitmap[i] = 1;
   }
 }
 
