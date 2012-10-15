@@ -849,18 +849,15 @@ function resizePhoneElement(phoneElement, phone)
 }
 
 function copyComposer(event) {
-  console.log("copyComposer");
-  console.log(composerSong.toComposer());
-  event.clipboardData.setData("text/plain", composerSong.toComposer());
+  event.clipboardData.setData("text/plain", composerSong.toComposer().trim());
   event.preventDefault();
 }
 
 function pasteComposer(event) {
-  console.log("pasteComposer");
   var data = event.clipboardData.getData('text/plain');
-  console.log(data);
 
   if (data) {
+    composerSong.stop();
     composerSong.notes = [];
     composerSong.parseComposer("Pokia", 140, data);
 
