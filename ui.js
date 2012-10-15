@@ -342,7 +342,6 @@ asterisk.element.addEventListener(
       var octave = note.getComposerOctave();
       octave = octave % 3 + 1;
       cursor.composerOctave = octave;
-      console.log(note.note);
       note.setComposerNote(note.note, octave);
       composerSong.stop();
       var now = audioContext.currentTime;
@@ -804,9 +803,6 @@ function resizePhone() {
     resizePhoneElement(buttons[i], phone);
   }
   resizeLCD(lcd, phone);
-
-  console.log("win: (" + window.innerWidth + ", " + window.innerHeight + ")");
-  console.log("fon: (" + phone.width + ", " + phone.height + ")");
 }
 
 function resizeLCD(lcd, phone)
