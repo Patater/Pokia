@@ -481,6 +481,8 @@ function initLCD() {
   blinkCursor();
 
   window.addEventListener('resize', resizePhone, false);
+  window.addEventListener('copy', copyComposer, false);
+  window.addEventListener('paste', pasteComposer, false);
 }
 
 function blinkCursor() {
@@ -846,11 +848,32 @@ function resizePhoneElement(phoneElement, phone)
   phoneElement.element.style.height = phoneElement.height + "px";
 }
 
-// TODO Overload ctrl v and ctrl c for setting and copying composerSong state.
-// Unfortunately, this turns out to be difficult, since browsers find it to be
-// a security issue or not very important. See
-// http://www.quirksmode.org/dom/events/cutcopypaste.html and
-// http://almaer.com/blog/supporting-the-system-clipboard-in-your-web-applications-what-a-pain
-// for details. And anyway, why do you want copy paste? This is skeuomorphism
-// taken to its obvious limits: an emulation of the real thing with all its
-// limitations.
+function copyComposer(event) {
+  console.log("copyComposer");
+  console.log(composerSong.toComposer());
+  event.clipboardData.setData("text/plain", composerSong.toComposer());
+  event.preventDefault();
+}
+
+function pasteComposer(event) {
+  console.log("pasteComposer");
+  var data = event.clipboardData.getData('text/plain');
+  console.log(data);
+
+  if (data) {
+    composerSong.notes = [];
+    composerSong.parseComposer("Pokia", 140, data);
+
+    cursor = new Cursor();
+    cursor.position = composerSong.notes.length;
+    cursor.composerOctave = 2;
+    cursor.duration = 8;
+    notesRemaining = 50 - composerSong.notes.length;
+    if (notesRemaining < 0) {
+      notesRemaining = 0;
+    }
+    renderLCD();
+  }
+
+  event.preventDefault();
+}
