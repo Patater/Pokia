@@ -5,8 +5,10 @@
 <title>Pokia</title>
 <style type="text/css">
   .button {
-    background-color: #ffffff;
-    opacity: 0.2;
+    position: absolute;
+  }
+  .img_button {
+    opacity: 0.01;
     position: absolute;
   }
   .lcd {
@@ -18,28 +20,49 @@
 
 <canvas id="waveform" width="1" height="1"></canvas>
 <pre id="debug"></pre>
-<img id="phone-bg" style="position: absolute;"
-src="nookia-screenBG.png" width="1" height="1">
+<img id="phone-screen" style="position: absolute;"
+src="POKIA-screen.png" width="1" height="1">
 <canvas class="lcd" id="lcd" width="1149" height="843"></canvas>
-<img id="phone-fg" style="position: absolute;"
-src="nookia-phoneFG.png" width="1" height="1">
-<button style="display: none;" class="button" id="power"></button>
-<button style="display: none;" class="button" id="soft"></button>
-<button style="display: none;" class="button" id="up"></button>
-<button style="display: none;" class="button" id="clear"></button>
-<button style="display: none;" class="button" id="down"></button>
-<button style="display: none;" class="button" id="one"></button>
-<button style="display: none;" class="button" id="two"></button>
-<button style="display: none;" class="button" id="three"></button>
-<button style="display: none;" class="button" id="four"></button>
-<button style="display: none;" class="button" id="five"></button>
-<button style="display: none;" class="button" id="six"></button>
-<button style="display: none;" class="button" id="seven"></button>
-<button style="display: none;" class="button" id="eight"></button>
-<button style="display: none;" class="button" id="nine"></button>
-<button style="display: none;" class="button" id="asterisk"></button>
-<button style="display: none;" class="button" id="zero"></button>
-<button style="display: none;" class="button" id="hash"></button>
+<img id="phone-shadowscreen" style="position: absolute;"
+src="POKIA-shadowscreen.png" width="1" height="1">
+<img id="phone-body" style="position: absolute;"
+src="POKIA-body.png" width="1" height="1">
+
+<img src="pad-power.png" class="img_button" id="power-img"/>
+<img src="pad-soft.png" class="img_button" id="soft-img"/>
+<img src="pad-up.png" class="img_button" id="up-img"/>
+<img src="pad-clear.png" class="img_button" id="clear-img"/>
+<img src="pad-down.png" class="img_button" id="down-img"/>
+<img src="pad-one.png" class="img_button" id="one-img"/>
+<img src="pad-two.png" class="img_button" id="two-img"/>
+<img src="pad-three.png" class="img_button" id="three-img"/>
+<img src="pad-four.png" class="img_button" id="four-img"/>
+<img src="pad-five.png" class="img_button" id="five-img"/>
+<img src="pad-six.png" class="img_button" id="six-img"/>
+<img src="pad-seven.png" class="img_button" id="seven-img"/>
+<img src="pad-eight.png" class="img_button" id="eight-img"/>
+<img src="pad-nine.png" class="img_button" id="nine-img"/>
+<img src="pad-asterisk.png" class="img_button" id="asterisk-img"/>
+<img src="pad-zero.png" class="img_button" id="zero-img"/>
+<img src="pad-hash.png" class="img_button" id="hash-img"/>
+
+<div class="button" id="power"></div>
+<div class="button" id="soft"></div>
+<div class="button" id="up"></div>
+<div class="button" id="clear"></div>
+<div class="button" id="down"></div>
+<div class="button" id="one"></div>
+<div class="button" id="two"></div>
+<div class="button" id="three"></div>
+<div class="button" id="four"></div>
+<div class="button" id="five"></div>
+<div class="button" id="six"></div>
+<div class="button" id="seven"></div>
+<div class="button" id="eight"></div>
+<div class="button" id="nine"></div>
+<div class="button" id="asterisk"></div>
+<div class="button" id="zero"></div>
+<div class="button" id="hash"></div>
 
 <script src="bitmaps.js"></script>
 <script src="synthesizer.js"></script>

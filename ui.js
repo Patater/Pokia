@@ -7,8 +7,9 @@ composerSong.defaultTempo = 112; // Default Nokia Composer tempo
 var phone = {};
 phone.actualWidth = 1663;
 phone.actualHeight = 3857;
-phone.backgroundElement = document.getElementById('phone-bg');
-phone.foregroundElement = document.getElementById('phone-fg');
+phone.backgroundElement = document.getElementById('phone-screen');
+phone.screenShadowElement = document.getElementById('phone-shadowscreen');
+phone.foregroundElement = document.getElementById('phone-body');
 phone.previousDesiredImageHeight = 1;
 
 var lcd = {};
@@ -29,6 +30,7 @@ var buttons = [];
 
 var power = {};
 power.element = document.getElementById('power');
+power.imageElement = document.getElementById('power-img');
 power.actualLeft = 220;
 power.actualTop = 1936;
 power.actualWidth = 627 - power.actualLeft;
@@ -36,6 +38,7 @@ power.actualHeight = 2194 - power.actualTop;
 power.element.addEventListener(
   'mousedown',
   function() {
+    pressButton(power);
     turnOnBacklight();
 
     power.heldAction = window.setTimeout(
@@ -62,6 +65,7 @@ power.element.addEventListener(
 power.element.addEventListener(
   'mouseup',
   function() {
+    unpressButton(power);
     window.clearTimeout(power.heldAction);
   },
   false
@@ -70,6 +74,7 @@ buttons.push(power);
 
 var soft = {};
 soft.element = document.getElementById('soft');
+soft.imageElement = document.getElementById('soft-img');
 soft.actualLeft = 616;
 soft.actualTop = 1964;
 soft.actualWidth = 1012 - soft.actualLeft;
@@ -77,6 +82,7 @@ soft.actualHeight = 2530 - soft.actualTop;
 soft.element.addEventListener(
   'mousedown',
   function() {
+    pressButton(soft);
     var now = audioContext.currentTime;
     composerSong.play(now);
     turnOnBacklight();
@@ -84,10 +90,18 @@ soft.element.addEventListener(
   },
   false
 );
+soft.element.addEventListener(
+  'mouseup',
+  function() {
+    unpressButton(soft);
+  },
+  false
+);
 buttons.push(soft);
 
 var up = {};
 up.element = document.getElementById('up');
+up.imageElement = document.getElementById('up-img');
 up.actualLeft = 1045;
 up.actualTop = 1964;
 up.actualWidth = 1402 - up.actualLeft;
@@ -95,6 +109,7 @@ up.actualHeight = 2194 - up.actualTop;
 up.element.addEventListener(
   'mousedown',
   function() {
+    pressButton(up);
     turnOnBacklight();
 
     moveCursorUp();
@@ -113,6 +128,7 @@ up.element.addEventListener(
 up.element.addEventListener(
   'mouseup',
   function() {
+    unpressButton(up);
     window.clearTimeout(up.heldAction);
   },
   false
@@ -121,6 +137,7 @@ buttons.push(up);
 
 var clear = {};
 clear.element = document.getElementById('clear');
+clear.imageElement = document.getElementById('clear-img');
 clear.actualLeft = 204;
 clear.actualTop = 2222;
 clear.actualWidth = 600 - clear.actualLeft;
@@ -128,6 +145,8 @@ clear.actualHeight = 2475 - clear.actualTop;
 clear.element.addEventListener(
   'mousedown',
   function() {
+    pressButton(clear);
+
     // Cancel any currently scheduled notes.
     composerSong.stop();
 
@@ -139,6 +158,10 @@ clear.element.addEventListener(
         composerSong.notes[cursor.position - 1];
         notesRemaining += 1;
         cursor.position -= 1;
+      }
+
+      if (notesRemaining === 50) {
+        cursor = new Cursor();
       }
     }
     clear.heldAction = window.setTimeout(
@@ -158,6 +181,7 @@ clear.element.addEventListener(
 clear.element.addEventListener(
   'mouseup',
   function() {
+    unpressButton(clear);
     window.clearTimeout(clear.heldAction);
   },
   false
@@ -166,6 +190,7 @@ buttons.push(clear);
 
 var down = {};
 down.element = document.getElementById('down');
+down.imageElement = document.getElementById('down-img');
 down.actualLeft = 1034;
 down.actualTop = 2233;
 down.actualWidth = 1436 - down.actualLeft;
@@ -173,6 +198,7 @@ down.actualHeight = 2486 - down.actualTop;
 down.element.addEventListener(
   'mousedown',
   function() {
+    pressButton(down);
     turnOnBacklight();
 
     moveCursorDown();
@@ -191,6 +217,7 @@ down.element.addEventListener(
 down.element.addEventListener(
   'mouseup',
   function() {
+    unpressButton(down);
     window.clearTimeout(down.heldAction);
   },
   false
@@ -199,6 +226,7 @@ buttons.push(down);
 
 var one = {};
 one.element = document.getElementById('one');
+one.imageElement = document.getElementById('one-img');
 one.actualLeft = 187;
 one.actualTop = 2519;
 one.actualWidth = 572 - one.actualLeft;
@@ -208,6 +236,7 @@ buttons.push(one);
 
 var two = {};
 two.element = document.getElementById('two');
+two.imageElement = document.getElementById('two-img');
 two.actualLeft = 622;
 two.actualTop = 2552;
 two.actualWidth = 1012 - two.actualLeft;
@@ -217,6 +246,7 @@ buttons.push(two);
 
 var three = {};
 three.element = document.getElementById('three');
+three.imageElement = document.getElementById('three-img');
 three.actualLeft = 1067;
 three.actualTop = 2530;
 three.actualWidth = 1452 - three.actualLeft;
@@ -226,6 +256,7 @@ buttons.push(three);
 
 var four = {};
 four.element = document.getElementById('four');
+four.imageElement = document.getElementById('four-img');
 four.actualLeft = 187;
 four.actualTop = 2800;
 four.actualWidth = 572 - four.actualLeft;
@@ -235,6 +266,7 @@ buttons.push(four);
 
 var five = {};
 five.element = document.getElementById('five');
+five.imageElement = document.getElementById('five-img');
 five.actualLeft = 616;
 five.actualTop = 2822;
 five.actualWidth = 1001 - five.actualLeft;
@@ -244,6 +276,7 @@ buttons.push(five);
 
 var six = {};
 six.element = document.getElementById('six');
+six.imageElement = document.getElementById('six-img');
 six.actualLeft = 1067;
 six.actualTop = 2805;
 six.actualWidth = 1446 - six.actualLeft;
@@ -253,6 +286,7 @@ buttons.push(six);
 
 var seven = {};
 seven.element = document.getElementById('seven');
+seven.imageElement = document.getElementById('seven-img');
 seven.actualLeft = 204;
 seven.actualTop = 3069;
 seven.actualWidth = 572 - seven.actualLeft;
@@ -262,6 +296,7 @@ buttons.push(seven);
 
 var eight = {};
 eight.element = document.getElementById('eight');
+eight.imageElement = document.getElementById('eight-img');
 eight.actualLeft = 616;
 eight.actualTop = 3096;
 eight.actualWidth = 996 - eight.actualLeft;
@@ -269,6 +304,7 @@ eight.actualHeight = 3350 - eight.actualTop;
 eight.element.addEventListener(
   'mousedown',
   function() {
+    pressButton(eight);
     turnOnBacklight();
 
     var note = composerSong.notes[cursor.position - 1];
@@ -291,10 +327,18 @@ eight.element.addEventListener(
   },
   false
 );
+eight.element.addEventListener(
+  'mouseup',
+  function() {
+    unpressButton(eight);
+  },
+  false
+);
 buttons.push(eight);
 
 var nine = {};
 nine.element = document.getElementById('nine');
+nine.imageElement = document.getElementById('nine-img');
 nine.actualLeft = 1056;
 nine.actualTop = 3074;
 nine.actualWidth = 1441 - nine.actualLeft;
@@ -302,6 +346,7 @@ nine.actualHeight = 3322 - nine.actualTop;
 nine.element.addEventListener(
   'mousedown',
   function() {
+    pressButton(nine);
     turnOnBacklight();
 
     var note = composerSong.notes[cursor.position - 1];
@@ -324,10 +369,18 @@ nine.element.addEventListener(
   },
   false
 );
+nine.element.addEventListener(
+  'mouseup',
+  function() {
+    unpressButton(nine);
+  },
+  false
+);
 buttons.push(nine);
 
 var asterisk = {};
 asterisk.element = document.getElementById('asterisk');
+asterisk.imageElement = document.getElementById('asterisk-img');
 asterisk.actualLeft = 187;
 asterisk.actualTop = 3322;
 asterisk.actualWidth = 572 - asterisk.actualLeft;
@@ -335,6 +388,7 @@ asterisk.actualHeight = 3575 - asterisk.actualTop;
 asterisk.element.addEventListener(
   'mousedown',
   function() {
+    pressButton(asterisk);
     turnOnBacklight();
 
     var note = composerSong.notes[cursor.position - 1];
@@ -352,10 +406,18 @@ asterisk.element.addEventListener(
   },
   false
 );
+asterisk.element.addEventListener(
+  'mouseup',
+  function() {
+    unpressButton(asterisk);
+  },
+  false
+);
 buttons.push(asterisk);
 
 var zero = {};
 zero.element = document.getElementById('zero');
+zero.imageElement = document.getElementById('zero-img');
 zero.actualLeft = 616;
 zero.actualTop = 3344;
 zero.actualWidth = 1001 - zero.actualLeft;
@@ -363,6 +425,7 @@ zero.actualHeight = 3597 - zero.actualTop;
 zero.element.addEventListener(
   'mousedown',
   function() {
+    pressButton(zero);
     turnOnBacklight();
 
     if (notesRemaining > 0) {
@@ -379,10 +442,18 @@ zero.element.addEventListener(
   },
   false
 );
+zero.element.addEventListener(
+  'mouseup',
+  function() {
+    unpressButton(zero);
+  },
+  false
+);
 buttons.push(zero);
 
 var hash = {};
 hash.element = document.getElementById('hash');
+hash.imageElement = document.getElementById('hash-img');
 hash.actualLeft = 1056;
 hash.actualTop = 3328;
 hash.actualWidth = 1436 - hash.actualLeft;
@@ -390,6 +461,7 @@ hash.actualHeight = 3586 - hash.actualTop;
 hash.element.addEventListener(
   'mousedown',
   function() {
+    pressButton(hash);
     turnOnBacklight();
 
     var note = composerSong.notes[cursor.position - 1];
@@ -404,6 +476,13 @@ hash.element.addEventListener(
     }
 
     renderLCD();
+  },
+  false
+);
+hash.element.addEventListener(
+  'mouseup',
+  function() {
+    unpressButton(hash);
   },
   false
 );
@@ -436,6 +515,7 @@ function registerNoteButton(note, button) {
   button.element.addEventListener(
     'mouseup',
     function() {
+      unpressButton(button);
       window.clearTimeout(button.heldAction);
     },
     false
@@ -443,6 +523,7 @@ function registerNoteButton(note, button) {
 }
 
 function enterNote(whichNote, button) {
+  pressButton(button);
   turnOnBacklight();
 
   if (notesRemaining > 0) {
@@ -495,9 +576,15 @@ var backlightTimeoutAction;
 var backlit = false;
 function turnOffBacklight() {
   backlit = false;
+
+  // Display the screen shadow
+  phone.screenShadowElement.style.display = "inherit";
 }
 function turnOnBacklight() {
   backlit = true;
+
+  // Hide the screen shadow.
+  phone.screenShadowElement.style.display = "none";
 
   // Turn off the backlight after 15 seconds.
   window.clearTimeout(backlightTimeoutAction);
@@ -539,6 +626,7 @@ function loadProperImages() {
   }
   if (desiredImageHeight != phone.previousDesiredImageHeight) {
     phone.backgroundElement.src = phoneBackgrounds[desiredImageHeight];
+    phone.screenShadowElement.src = phoneBackgrounds[desiredImageHeight];
     phone.foregroundElement.src = phoneForegrounds[desiredImageHeight];
     phone.previousDesiredImageHeight = desiredImageHeight;
   }
@@ -631,6 +719,7 @@ function displayNotes(notes) {
   lines[currentLineIndex] = {};
   lines[currentLineIndex].notes = [];
 
+  // TODO wrap lines not just on note boundaries, but also after '#'.
   for (var i = 0; i < notes.length; i++) {
     lines[currentLineIndex].notes.push(notes[i]);
     var composer = toComposer(lines[currentLineIndex].notes).trim();
@@ -762,6 +851,14 @@ function displayButtons() {
   }
 }
 
+function pressButton(button) {
+  button.imageElement.style.opacity = 1.00;
+}
+
+function unpressButton(button) {
+  button.imageElement.style.opacity = 0.01;
+}
+
 function resizePhone() {
   // XXX Uncomment me after you have the images from ben.
   //loadProperImages();
@@ -789,22 +886,28 @@ function resizePhone() {
   }
   // Apply
   if (phone.foregroundElement) {
-    phone.foregroundElement.width = phone.width;
-    phone.foregroundElement.height = phone.height;
-    phone.foregroundElement.style.left = phone.left + "px";
-    phone.foregroundElement.style.top = phone.top + "px";
+    resizeImage(phone.foregroundElement, phone);
   }
   if (phone.backgroundElement) {
-    phone.backgroundElement.width = phone.width;
-    phone.backgroundElement.height = phone.height;
-    phone.backgroundElement.style.left = phone.left + "px";
-    phone.backgroundElement.style.top = phone.top + "px";
+    resizeImage(phone.backgroundElement, phone);
+  }
+  if (phone.screenShadowElement) {
+    resizeImage(phone.screenShadowElement, phone);
   }
 
   for (var i = 0; i < buttons.length; i++) {
     resizePhoneElement(buttons[i], phone);
+    resizeImage(buttons[i].imageElement, phone);
   }
   resizeLCD(lcd, phone);
+}
+
+function resizeImage(imageElement, phone)
+{
+  imageElement.width = phone.width;
+  imageElement.height = phone.height;
+  imageElement.style.left = phone.left + "px";
+  imageElement.style.top = phone.top + "px";
 }
 
 function resizeLCD(lcd, phone)
@@ -874,3 +977,9 @@ function pasteComposer(event) {
 
   event.preventDefault();
 }
+
+// TODO Cursor insert notes based on the previous note's duration and octave.
+// It should not have its own memory for note durations or octaves.
+
+// TODO When composer goes to sleep, the cursor should not be visible anymore.
+
