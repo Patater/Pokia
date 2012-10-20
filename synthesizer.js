@@ -1,3 +1,7 @@
+// Build with closure compiler.
+// java -jar compiler.jar --compilation_level ADVANCED_OPTIMIZATIONS
+// --jscomp_off=internetExplorerChecks --js synthesizer.js > synthesizer-min.js
+
 var audioContext;
 var nokiawave;
 var globalGain;
@@ -5,6 +9,9 @@ var songGain;
 var wavetable;
 var frequencyData;
 
+/**
+ * @constructor
+ */
 Note = function() {
   this.isSharp = false;
   this.octave = 4;
@@ -192,6 +199,9 @@ Note.prototype.setComposerNote = function(note, octave) {
   }
 }
 
+/**
+ * @constructor
+ */
 Song = function() {
   // http://merwin.bespin.org/t4a/specs/nokia_rtttl.txt
   this.defaultOctave = 6;
