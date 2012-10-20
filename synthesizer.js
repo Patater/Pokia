@@ -15,7 +15,7 @@ Note = function() {
   this.duration = Song.QUARTER_NOTE;
 
   // Time until the next note can play.
-  this.spacing = 0.01;
+  this.spacing = 0.007;
 
   // If this is true, then frequency will be ignored and we'll "rest" instead
   // of playing for the specified duration.
@@ -539,8 +539,7 @@ Song.prototype.stop = function() {
 }
 
 Song.prototype.playNote = function(note, when) {
-  // 4.6 sounds more like the real phone than 4.0.
-  var beatLength = 4.6 * 60.0 / this.defaultTempo;
+  var beatLength = 4.0 * 60.0 / this.defaultTempo;
   var duration = beatLength / note.duration;
   if (note.dot === '.') {
     duration *= Song.DOT;
