@@ -1006,7 +1006,16 @@ function pasteComposer(event) {
   if (data) {
     composerSong.stop();
     composerSong.notes = [];
-    composerSong.parseComposer("Pokia", 140, data);
+
+    // Figure out if the paste is RTTTL or Nokia Composer format.
+    var regexRTTTL = /([a-zA-Z0-9]+):/;
+    if (regexRTTTL.test(data)) {
+      composerSong.parseRTTTL(data);
+      updateTempo();
+    } else {
+      // Assume it is Nokia Composer
+      composerSong.parseComposer("Pokia", composerSong.tempo, data);
+    }
 
     cursor.position = composerSong.notes.length;
     cursor.updateFromPreviousNote();
