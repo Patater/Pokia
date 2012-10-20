@@ -338,10 +338,18 @@ Song.prototype.parseNote = function(note) {
     i++;
   }
   // i needs to point to the end of a note
-  var whichNote = note.substring(start, i);
+  var whichNote = note.substring(start, i).toUpperCase();
   start = i;
-  // Until we reach a non-dot
-  while (regexDot.test(note.charAt(i))) {
+
+  // If we have a dot
+  if (note.charAt(i) === '.') {
+    noteToAdd.toggleDot();
+    i++;
+    start = i;
+  }
+
+  // Until we reach a non-number
+  while (regexNum.test(note.charAt(i))) {
     i++;
   }
   // i must point to the end of the note text
@@ -489,10 +497,6 @@ Song.prototype.parseNote = function(note) {
     } else if (octave == "7") {
       noteToAdd.frequency = Song.NOTE_B7;
     }
-  }
-
-  if (note.charAt(i - 1) == ".") {
-    noteToAdd.toggleDot();
   }
 
   this.notes.push(noteToAdd);
