@@ -1,7 +1,3 @@
-// Build with closure compiler.
-// java -jar compiler.jar --compilation_level ADVANCED_OPTIMIZATIONS
-// --jscomp_off=internetExplorerChecks --js synthesizer.js > synthesizer-min.js
-
 var audioContext;
 var nokiawave;
 var globalGain;
@@ -12,7 +8,7 @@ var frequencyData;
 /**
  * @constructor
  */
-Note = function() {
+var Note = function() {
   this.isSharp = false;
   this.octave = 4;
   this.note = 'c';
@@ -202,7 +198,7 @@ Note.prototype.setComposerNote = function(note, octave) {
 /**
  * @constructor
  */
-Song = function() {
+var Song = function() {
   // http://merwin.bespin.org/t4a/specs/nokia_rtttl.txt
   this.defaultOctave = 6;
   this.defaultDuration = 4;
@@ -586,6 +582,7 @@ Song.prototype.pause = function() {
 function initSynthesizer() {
   try {
     audioContext = new webkitAudioContext();
+    audioContext.fake = false;
   } catch(e) {
     alert(
       "Web Audio API is not supported in this browser.\n\nWhy aren't you" +

@@ -1,7 +1,3 @@
-// Build with closure compiler.
-// java -jar compiler.jar --compilation_level ADVANCED_OPTIMIZATIONS
-// --jscomp_off=internetExplorerChecks --js ui.js > ui-min.js
-
 var autoscale = true;
 var notesRemaining = 50;
 var context;
