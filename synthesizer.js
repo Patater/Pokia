@@ -225,7 +225,7 @@ function toComposer(notes) {
 Song.prototype.parseComposer = function(name, tempo, composer) {
   var spaceTokens = composer.split(" ");
   this.name = name;
-  this.tempo = tempo;
+  this.tempo = parseInt(tempo, 10);
 
   for (var i = 0; i < spaceTokens.length; i++) {
     this.parseComposerNote(spaceTokens[i]);

@@ -54,7 +54,7 @@ power.element.addEventListener(
           // Start with a fresh state.
           turnOnBacklight();
           composerSong.notes = [];
-          notesRemaining = 50;
+          updateNotesRemaining();
           cursor.position = 0;
           cursor.updateFromPreviousNote();
         }
@@ -170,7 +170,7 @@ clear.element.addEventListener(
       if (cursor.position > 0) {
         composerSong.notes.splice(cursor.position - 1, 1);
         composerSong.notes[cursor.position - 1];
-        notesRemaining += 1;
+        updateNotesRemaining();
         cursor.position -= 1;
       }
       cursor.updateFromPreviousNote();
@@ -178,7 +178,7 @@ clear.element.addEventListener(
     clear.heldAction = window.setTimeout(
       function() {
         composerSong.notes = [];
-        notesRemaining = 50;
+        updateNotesRemaining();
         cursor.position = 0;
         cursor.updateFromPreviousNote();
         renderLCD();
@@ -460,7 +460,7 @@ zero.element.addEventListener(
       note.pause = true;
       note.duration = cursor.duration;
       composerSong.notes.splice(cursor.position, 0, note);
-      notesRemaining -= 1;
+      updateNotesRemaining();
       cursor.position += 1;
 
     }
@@ -578,7 +578,7 @@ function enterNote(whichNote, button) {
     var now = audioContext.currentTime;
     composerSong.playNote(note, now);
     composerSong.notes.splice(cursor.position, 0, note);
-    notesRemaining -= 1;
+    updateNotesRemaining();
     cursor.position += 1;
 
     button.heldAction = window.setTimeout(
@@ -1010,14 +1010,28 @@ function pasteComposer(event) {
 
     cursor.position = composerSong.notes.length;
     cursor.updateFromPreviousNote();
-    notesRemaining = 50 - composerSong.notes.length;
-    if (notesRemaining < 0) {
-      notesRemaining = 0;
-    }
+    updateNotesRemaining();
     renderLCD();
   }
 
   event.preventDefault();
+}
+
+function updateTempo() {
+  var tempoSelect = document.getElementById('tempo');
+  var currentTempo = composerSong.tempo;
+
+  // If the current tempo in not in the list, add it and then point the
+  // dropdown at it.
+  if (tempos.indexOf(currentTempo) < 0) {
+    tempos.push(currentTempo);
+    tempos.sort(
+      function(a, b) {
+        return a - b;
+      }
+    );
+  }
+  tempoSelect.selectedIndex = tempos.indexOf(currentTempo);
 }
 
 function initControls() {
@@ -1038,6 +1052,13 @@ function initControls() {
 
   var controls = document.getElementById('extra-controls');
   controls.style.display = "inherit";
+}
+
+function updateNotesRemaining() {
+  notesRemaining = 50 - composerSong.notes.length;
+  if (notesRemaining < 0) {
+    notesRemaining = 0;
+  }
 }
 
 // TODO When composer goes to sleep, the cursor should not be visible anymore.
