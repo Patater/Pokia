@@ -10,7 +10,7 @@ Note = function() {
   this.octave = 4;
   this.note = 'c';
   this.dot = '';
-  this.frequency = Song.NOTE_C4;
+  this.frequency = Song.NOTE_C5;
 
   this.duration = Song.QUARTER_NOTE;
 
@@ -704,7 +704,7 @@ function playMetronome(when, tempo, duration)
   // 4 beats per whole note, 60 seconds per minute
   var beatLength = 4.0 * 60.0 / tempo;
   var clickDuration = 0.005;
-  var clickFrequency = 440;
+  var clickFrequency = Song.NOTE_C5;
 
   var then = when;
   while (then <= when + duration)
