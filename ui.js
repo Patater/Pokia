@@ -814,6 +814,12 @@ function displayNotes(notes) {
     lines[currentLineIndex].endNoteIndex = i + 1;
   }
 
+  // Position the cursor.
+  cursor.line = 0;
+  while (cursor.position > lines[cursor.line].endNoteIndex) {
+    cursor.line += 1;
+  }
+
   // Figure out which lines to display.
   var startLine = cursor.line - 2;
   if (startLine < 0) {
@@ -821,11 +827,6 @@ function displayNotes(notes) {
   }
   var endLine = startLine + 3;
 
-  // Position the cursor.
-  cursor.line = 0;
-  while (cursor.position > lines[cursor.line].endNoteIndex) {
-    cursor.line += 1;
-  }
   var line = lines[cursor.line];
   if (line.notes.length > 0) {
     var localX = cursor.position - (line.endNoteIndex - line.notes.length);
@@ -838,8 +839,6 @@ function displayNotes(notes) {
   }
 
   // Display the lines.
-  // XXX Figure out why it takes forever for the lines to scroll up when adding
-  // or sharping a note that causes a scroll.
   for (var i = startLine; i < endLine; i++) {
     var line = lines[i];
     if (line) {
