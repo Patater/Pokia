@@ -41,6 +41,7 @@ power.element.addEventListener(
     pressButton(power);
     if (lcd.on) {
       turnOnBacklight();
+      startBlinkingCursor();
     }
 
     power.heldAction = window.setTimeout(
@@ -53,6 +54,7 @@ power.element.addEventListener(
         } else {
           // Start with a fresh state.
           turnOnBacklight();
+          startBlinkingCursor();
           composerSong.notes = [];
           updateNotesRemaining();
           cursor.position = 0;
@@ -94,6 +96,7 @@ soft.element.addEventListener(
     var now = audioContext.currentTime;
     composerSong.play(now);
     turnOnBacklight();
+    startBlinkingCursor();
     renderLCD();
   },
   false
@@ -122,6 +125,7 @@ up.element.addEventListener(
       return;
     }
     turnOnBacklight();
+    startBlinkingCursor();
 
     moveCursorUp();
 
@@ -165,6 +169,7 @@ clear.element.addEventListener(
     composerSong.stop();
 
     turnOnBacklight();
+    startBlinkingCursor();
 
     if (notesRemaining < 50) {
       if (cursor.position > 0) {
@@ -215,6 +220,7 @@ down.element.addEventListener(
       return;
     }
     turnOnBacklight();
+    startBlinkingCursor();
 
     moveCursorDown();
 
@@ -324,6 +330,7 @@ eight.element.addEventListener(
       return;
     }
     turnOnBacklight();
+    startBlinkingCursor();
 
     var note = composerSong.notes[cursor.position - 1];
     if (note) {
@@ -369,6 +376,7 @@ nine.element.addEventListener(
       return;
     }
     turnOnBacklight();
+    startBlinkingCursor();
 
     var note = composerSong.notes[cursor.position - 1];
     if (note) {
@@ -414,6 +422,7 @@ asterisk.element.addEventListener(
       return;
     }
     turnOnBacklight();
+    startBlinkingCursor();
 
     var note = composerSong.notes[cursor.position - 1];
     if (note) {
@@ -454,6 +463,7 @@ zero.element.addEventListener(
       return;
     }
     turnOnBacklight();
+    startBlinkingCursor();
 
     if (notesRemaining > 0) {
       var note = new Note();
@@ -493,6 +503,7 @@ hash.element.addEventListener(
       return;
     }
     turnOnBacklight();
+    startBlinkingCursor();
 
     var note = composerSong.notes[cursor.position - 1];
     if (note) {
@@ -568,6 +579,7 @@ function enterNote(whichNote, button) {
     return;
   }
   turnOnBacklight();
+  startBlinkingCursor();
 
   if (notesRemaining > 0) {
     cursor.updateFromPreviousNote();
@@ -603,17 +615,40 @@ function initLCD() {
 
   deadLCDInit(lcd.pixelWidth, lcd.pixelHeight);
 
-  blinkCursor();
+  startBlinkingCursor();
 
   window.addEventListener('resize', resizePhone, false);
   window.addEventListener('copy', copyComposer, false);
   window.addEventListener('paste', pasteComposer, false);
 }
 
-function blinkCursor() {
+function firstBlinkCursor() {
+  cursor.isBlinkedOn = !cursor.isBlinkedOn;
+  cursor.blinkAction = window.setTimeout(renderingBlinkCursor, 500);
+}
+
+function renderingBlinkCursor() {
   cursor.isBlinkedOn = !cursor.isBlinkedOn;
   renderLCD();
-  cursor.action = window.setTimeout(blinkCursor, 500);
+  cursor.blinkAction = window.setTimeout(renderingBlinkCursor, 500);
+}
+
+function startBlinkingCursor() {
+  // If the cursor is not currently blinking, start it blinking again.
+  if (!cursor.blinkAction) {
+    firstBlinkCursor();
+  }
+  // Stop displaying a blinking cursor after 1 minute.
+  window.clearTimeout(cursor.stopBlinkAction);
+  cursor.stopBlinkAction = window.setTimeout(stopBlinkingCursor, 60000);
+}
+
+function stopBlinkingCursor() {
+  window.clearTimeout(cursor.blinkAction);
+  cursor.blinkAction = null;
+
+  cursor.isBlinkedOn = false;
+  renderLCD();
 }
 
 var backlightTimeoutAction;
@@ -1020,6 +1055,8 @@ function pasteComposer(event) {
     cursor.position = composerSong.notes.length;
     cursor.updateFromPreviousNote();
     updateNotesRemaining();
+
+    startBlinkingCursor();
     renderLCD();
   }
 
@@ -1069,8 +1106,6 @@ function updateNotesRemaining() {
     notesRemaining = 0;
   }
 }
-
-// TODO When composer goes to sleep, the cursor should not be visible anymore.
 
 // The following is a list of tempos that the Nokia composer can play, with one
 // extra added (240) for the Nokia tune.
