@@ -515,6 +515,11 @@ Song.prototype.stop = function() {
     // Don't try to do anything if we have a fake audio context.
     return;
   }
+
+  // Turn off the note.
+  var now = audioContext.currentTime;
+  nokiawave.noteOff(now);
+
   // Disconnect nokiawave from its output.
   nokiawave.disconnect();
 
@@ -534,7 +539,6 @@ Song.prototype.stop = function() {
   nokiawave.connect(songGain);
   songGain.connect(globalGain);
 
-  var now = audioContext.currentTime;
   nokiawave.noteOn(now);
 }
 
@@ -922,3 +926,9 @@ Song.sharpMap[Song.NOTE_DS7] = Song.NOTE_D7;
 Song.sharpMap[Song.NOTE_FS7] = Song.NOTE_F7;
 Song.sharpMap[Song.NOTE_GS7] = Song.NOTE_G7;
 Song.sharpMap[Song.NOTE_AS7] = Song.NOTE_A7;
+
+
+// TODO There is a bug that happens when the phone is left on overnight. The
+// sound gets really weird and not right. I am turning the note off in stop,
+// hoping that that might help, but it might not. We need to figure out why
+// this bug happens and fix it or workaround it if it is not our bug.
