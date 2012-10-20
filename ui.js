@@ -1022,3 +1022,24 @@ function pasteComposer(event) {
 
 // TODO When composer goes to sleep, the cursor should not be visible anymore.
 
+// The following is a list of tempos that the Nokia composer can play, with one
+// extra added (240) for the Nokia tune.
+var tempos = [
+  40,
+  45,
+  50,
+  56,
+  63,
+  70,
+  80,
+  90,
+  100,
+  112,
+  125,
+  140,
+  160,
+  180,
+  200,
+  225,
+  240,
+];
