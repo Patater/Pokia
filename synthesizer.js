@@ -196,7 +196,7 @@ Song = function() {
   // http://merwin.bespin.org/t4a/specs/nokia_rtttl.txt
   this.defaultOctave = 6;
   this.defaultDuration = 4;
-  this.defaultTempo = 63;
+  this.tempo = 63;
 
   this.notes = [];
 }
@@ -225,7 +225,7 @@ function toComposer(notes) {
 Song.prototype.parseComposer = function(name, tempo, composer) {
   var spaceTokens = composer.split(" ");
   this.name = name;
-  this.defaultTempo = tempo;
+  this.tempo = tempo;
 
   for (var i = 0; i < spaceTokens.length; i++) {
     this.parseComposerNote(spaceTokens[i]);
@@ -302,7 +302,7 @@ Song.prototype.parseDefaults = function(defaults) {
     } else if (commaTokens[i][0] == "d") {
       this.defaultDuration = parseInt(commaTokens[i].substring(2), 10);
     } else if (commaTokens[i][0] == "b") {
-      this.defaultTempo = parseInt(commaTokens[i].substring(2), 10);
+      this.tempo = parseInt(commaTokens[i].substring(2), 10);
     }
   }
 }
@@ -543,7 +543,7 @@ Song.prototype.stop = function() {
 }
 
 Song.prototype.playNote = function(note, when) {
-  var beatLength = 4.0 * 60.0 / this.defaultTempo;
+  var beatLength = 4.0 * 60.0 / this.tempo;
   var duration = beatLength / note.duration;
   if (note.dot === '.') {
     duration *= Song.DOT;

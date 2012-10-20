@@ -11,6 +11,19 @@
     opacity: 0.01;
     position: absolute;
   }
+  .controls {
+    padding-top: 0.1em;
+    padding-bottom: 0.1em;
+    padding-left: 0.4em;
+    padding-right: 0.4em;
+
+    position: absolute;
+    z-index: 2;
+    bottom: 0px;
+    left: 0px;
+
+    background-color: #aaa;
+  }
   .lcd {
     position: absolute;
   }
@@ -70,6 +83,12 @@ id="asterisk-img"/>
 <div width="1" height="1" class="button" id="zero"></div>
 <div width="1" height="1" class="button" id="hash"></div>
 
+<div id="extra-controls" class="controls" style="display: none;">
+<label for="tempo">Tempo:</label>
+<select id="tempo">
+</select>
+</div>
+
 <script src="bitmaps.js"></script>
 <script src="synthesizer.js"></script>
 <script src="ui.js"></script>
@@ -85,8 +104,9 @@ function init() {
   initLCD();
   resizePhone();
   renderLCD();
-  loadSong(composerSong);
   initSynthesizer();
+  loadSong(composerSong);
+  initControls();
 }
 
 function loadSong(song)

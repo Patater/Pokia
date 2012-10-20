@@ -2,7 +2,7 @@ var autoscale = true;
 var notesRemaining = 50;
 var context;
 var composerSong = new Song();
-composerSong.defaultTempo = 112; // Default Nokia Composer tempo
+composerSong.tempo = 112; // Default Nokia Composer tempo
 
 var phone = {};
 phone.actualWidth = 1663;
@@ -1018,6 +1018,26 @@ function pasteComposer(event) {
   }
 
   event.preventDefault();
+}
+
+function initControls() {
+  var currentTempo = composerSong.tempo;
+  var tempoSelect = document.getElementById('tempo');
+  tempoSelect.onchange = function() {
+    composerSong.tempo = tempos[tempoSelect.selectedIndex];
+  };
+  for (var i = 0; i < tempos.length; i++) {
+    var tempoOption = document.createElement('option');
+    tempoOption.value = tempos[i];
+    tempoOption.text = tempos[i];
+    tempoSelect.appendChild(tempoOption);
+    if (tempos[i] === currentTempo) {
+      tempoSelect.selectedIndex = i;
+    }
+  }
+
+  var controls = document.getElementById('extra-controls');
+  controls.style.display = "inherit";
 }
 
 // TODO When composer goes to sleep, the cursor should not be visible anymore.
