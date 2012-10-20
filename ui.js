@@ -55,7 +55,8 @@ power.element.addEventListener(
           turnOnBacklight();
           composerSong.notes = [];
           notesRemaining = 50;
-          cursor = new Cursor();
+          cursor.position = 0;
+          cursor.updateFromPreviousNote();
         }
         renderLCD();
       },
@@ -172,16 +173,14 @@ clear.element.addEventListener(
         notesRemaining += 1;
         cursor.position -= 1;
       }
-
-      if (notesRemaining === 50) {
-        cursor = new Cursor();
-      }
+      cursor.updateFromPreviousNote();
     }
     clear.heldAction = window.setTimeout(
       function() {
         composerSong.notes = [];
         notesRemaining = 50;
-        cursor = new Cursor();
+        cursor.position = 0;
+        cursor.updateFromPreviousNote();
         renderLCD();
       },
       500
@@ -527,6 +526,16 @@ var Cursor = function() {
   this.destX = 0;
   this.line = 0;
 }
+Cursor.prototype.updateFromPreviousNote = function() {
+  var cursorNote = composerSong.notes[this.position - 1];
+  if (cursorNote) {
+    this.composerOctave = cursorNote.getComposerOctave();
+    this.duration = cursorNote.duration;
+  } else {
+    this.composerOctave = 1;
+    this.duration = 4;
+  }
+}
 var cursor = new Cursor();
 
 var pixel = {};
@@ -561,6 +570,7 @@ function enterNote(whichNote, button) {
   turnOnBacklight();
 
   if (notesRemaining > 0) {
+    cursor.updateFromPreviousNote();
     var note = new Note();
     note.duration = cursor.duration;
     note.setComposerNote(whichNote, cursor.composerOctave);
@@ -998,10 +1008,8 @@ function pasteComposer(event) {
     composerSong.notes = [];
     composerSong.parseComposer("Pokia", 140, data);
 
-    cursor = new Cursor();
     cursor.position = composerSong.notes.length;
-    cursor.composerOctave = 2;
-    cursor.duration = 8;
+    cursor.updateFromPreviousNote();
     notesRemaining = 50 - composerSong.notes.length;
     if (notesRemaining < 0) {
       notesRemaining = 0;
@@ -1011,9 +1019,6 @@ function pasteComposer(event) {
 
   event.preventDefault();
 }
-
-// TODO Cursor insert notes based on the previous note's duration and octave.
-// It should not have its own memory for note durations or octaves.
 
 // TODO When composer goes to sleep, the cursor should not be visible anymore.
 
