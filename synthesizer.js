@@ -317,8 +317,7 @@ Song.prototype.parseSong = function(song) {
 Song.prototype.parseNote = function(note) {
   var noteToAdd = new Note();
   var regexNum = /\d/;
-  var regexNote = /[PCDEFGAB#]/;
-  var regexDot = /./;
+  var regexNote = /[pPcCdDeEfFgGaAbB#]/;
   var i = 0;
   var start = 0;
   // Until we reach a non-digit
