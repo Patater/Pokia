@@ -222,6 +222,17 @@ function toComposer(notes) {
   return composer;
 }
 
+Song.prototype.parse = function(data) {
+  // Figure out if the paste is RTTTL or Nokia Composer format.
+  var regexRTTTL = /([a-zA-Z0-9]+):/;
+  if (regexRTTTL.test(data)) {
+    this.parseRTTTL(data);
+  } else {
+    // Assume it is Nokia Composer
+    this.parseComposer("Pokia Paste", composerSong.tempo, data);
+  }
+}
+
 Song.prototype.parseComposer = function(name, tempo, composer) {
   var spaceTokens = composer.split(" ");
   this.name = name;

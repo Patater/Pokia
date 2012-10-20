@@ -1039,28 +1039,23 @@ function pasteComposer(event) {
   var data = event.clipboardData.getData('text/plain');
 
   if (data) {
-    composerSong.stop();
-    composerSong.notes = [];
-
-    // Figure out if the paste is RTTTL or Nokia Composer format.
-    var regexRTTTL = /([a-zA-Z0-9]+):/;
-    if (regexRTTTL.test(data)) {
-      composerSong.parseRTTTL(data);
-      updateTempo();
-    } else {
-      // Assume it is Nokia Composer
-      composerSong.parseComposer("Pokia", composerSong.tempo, data);
-    }
-
-    cursor.position = composerSong.notes.length;
-    cursor.updateFromPreviousNote();
-    updateNotesRemaining();
-
+    loadSong(composerSong, data);
     startBlinkingCursor();
     renderLCD();
   }
 
   event.preventDefault();
+}
+
+function loadSong(song, notes)
+{
+  composerSong.stop();
+  composerSong.notes = [];
+  song.parse(notes);
+  updateTempo();
+  cursor.position = song.notes.length;
+  cursor.updateFromPreviousNote();
+  updateNotesRemaining();
 }
 
 function updateTempo() {

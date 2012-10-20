@@ -106,29 +106,21 @@ function init() {
   initLCD();
   resizePhone();
   initSynthesizer();
-  loadSong(composerSong);
+  composerSong.tempo = 125;
+  loadSong(composerSong, composerAxelF);
   initControls();
   renderLCD();
 }
 
-function loadSong(song)
-{
-  song.parseRTTTL(rtttlBloodyTears);
-  cursor.position = song.notes.length;
-  cursor.composerOctave = 2;
-  cursor.duration = 8;
-  notesRemaining = 50 - song.notes.length;
-  if (notesRemaining < 0) {
-    notesRemaining = 0;
-  }
-}
+// Axel F - Harold Faltermeyer
+// http://nokia.nigelcoldwell.co.uk/tunes.html
+var composerAxelF = "4g2 8.#a2 16g2 16- 16g2 8c3 8g2 8f2 4g2 8.d3 16g2 16-" +
+" 16g2 8#d3 8d3 8#a2 8g2 8d3 8g3 16g2 16f2 16- 16f2 8d2 8a2 2.g2";
 
-var rtttlBloodyTears = "BloodyTears:d=4,o=5,b=125:8d#,16g#,2f,8d#,8c#,8d#.," +
-"8g#.,f.,8d#,8c#,8d#,16g#,2f,8d#,8f,8f#.,g#.,8f.,f#";
-
-var rtttlElectricChocobo = "ff7_chocobo1:d=4,o=5,b=160:8d6,8p,8b,8g,8e,8d6," +
-"8b,8g,8b,8p,8g,8p,b,8p,8a,8g,16g,16a,8g,8f,8g,p,8f,8g,16g,16b,16d6,16p," +
-"16e6,16p,f6";
+// RTTTL Nokia Tune
+// https://en.wikipedia.org/wiki/Nokia_tune
+var rtttlNokiaTune =
+"Nokia:o=5,d=8,b=240:E6,D6,4F#,4G#,C#6,B,4D,4E,B,A,4C#,4E,2A.";
 
 </script>
 
