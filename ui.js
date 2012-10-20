@@ -1,3 +1,6 @@
+// Build with closure compiler.
+// java -jar compiler.jar --compilation_level ADVANCED_OPTIMIZATIONS
+//   --jscomp_off=internetExplorerChecks --js ui.js > ui-min.js
 var autoscale = true;
 var notesRemaining = 50;
 var context;
@@ -174,7 +177,6 @@ clear.element.addEventListener(
     if (notesRemaining < 50) {
       if (cursor.position > 0) {
         composerSong.notes.splice(cursor.position - 1, 1);
-        composerSong.notes[cursor.position - 1];
         updateNotesRemaining();
         cursor.position -= 1;
       }
@@ -529,6 +531,9 @@ hash.element.addEventListener(
 );
 buttons.push(hash);
 
+/**
+ * @constructor
+ */
 var Cursor = function() {
   this.position = 0;
   this.isBlinkedOn = true;
