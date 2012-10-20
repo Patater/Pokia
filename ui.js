@@ -39,7 +39,9 @@ power.element.addEventListener(
   'mousedown',
   function() {
     pressButton(power);
-    turnOnBacklight();
+    if (lcd.on) {
+      turnOnBacklight();
+    }
 
     power.heldAction = window.setTimeout(
       function () {
@@ -47,8 +49,10 @@ power.element.addEventListener(
         if (lcd.on === false) {
           // Phone turned off, so turn off sound, too.
           composerSong.stop();
+          turnOffBacklight();
         } else {
           // Start with a fresh state.
+          turnOnBacklight();
           composerSong.notes = [];
           notesRemaining = 50;
           cursor = new Cursor();
@@ -83,6 +87,9 @@ soft.element.addEventListener(
   'mousedown',
   function() {
     pressButton(soft);
+    if (!lcd.on) {
+      return;
+    }
     var now = audioContext.currentTime;
     composerSong.play(now);
     turnOnBacklight();
@@ -110,6 +117,9 @@ up.element.addEventListener(
   'mousedown',
   function() {
     pressButton(up);
+    if (!lcd.on) {
+      return;
+    }
     turnOnBacklight();
 
     moveCursorUp();
@@ -146,6 +156,9 @@ clear.element.addEventListener(
   'mousedown',
   function() {
     pressButton(clear);
+    if (!lcd.on) {
+      return;
+    }
 
     // Cancel any currently scheduled notes.
     composerSong.stop();
@@ -199,6 +212,9 @@ down.element.addEventListener(
   'mousedown',
   function() {
     pressButton(down);
+    if (!lcd.on) {
+      return;
+    }
     turnOnBacklight();
 
     moveCursorDown();
@@ -305,6 +321,9 @@ eight.element.addEventListener(
   'mousedown',
   function() {
     pressButton(eight);
+    if (!lcd.on) {
+      return;
+    }
     turnOnBacklight();
 
     var note = composerSong.notes[cursor.position - 1];
@@ -347,6 +366,9 @@ nine.element.addEventListener(
   'mousedown',
   function() {
     pressButton(nine);
+    if (!lcd.on) {
+      return;
+    }
     turnOnBacklight();
 
     var note = composerSong.notes[cursor.position - 1];
@@ -389,6 +411,9 @@ asterisk.element.addEventListener(
   'mousedown',
   function() {
     pressButton(asterisk);
+    if (!lcd.on) {
+      return;
+    }
     turnOnBacklight();
 
     var note = composerSong.notes[cursor.position - 1];
@@ -426,6 +451,9 @@ zero.element.addEventListener(
   'mousedown',
   function() {
     pressButton(zero);
+    if (!lcd.on) {
+      return;
+    }
     turnOnBacklight();
 
     if (notesRemaining > 0) {
@@ -462,6 +490,9 @@ hash.element.addEventListener(
   'mousedown',
   function() {
     pressButton(hash);
+    if (!lcd.on) {
+      return;
+    }
     turnOnBacklight();
 
     var note = composerSong.notes[cursor.position - 1];
@@ -524,6 +555,9 @@ function registerNoteButton(note, button) {
 
 function enterNote(whichNote, button) {
   pressButton(button);
+  if (!lcd.on) {
+    return;
+  }
   turnOnBacklight();
 
   if (notesRemaining > 0) {
