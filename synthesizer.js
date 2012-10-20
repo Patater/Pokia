@@ -539,7 +539,8 @@ Song.prototype.stop = function() {
 }
 
 Song.prototype.playNote = function(note, when) {
-  var beatLength = 4.0 * 60.0 / this.defaultTempo;
+  // 4.6 sounds more like the real phone than 4.0.
+  var beatLength = 4.6 * 60.0 / this.defaultTempo;
   var duration = beatLength / note.duration;
   if (note.dot === '.') {
     duration *= Song.DOT;
