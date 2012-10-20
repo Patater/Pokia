@@ -613,7 +613,7 @@ function initLCD() {
 function blinkCursor() {
   cursor.isBlinkedOn = !cursor.isBlinkedOn;
   renderLCD();
-  window.setTimeout(blinkCursor, 500);
+  cursor.action = window.setTimeout(blinkCursor, 500);
 }
 
 var backlightTimeoutAction;
