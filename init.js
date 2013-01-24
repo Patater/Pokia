@@ -1,8 +1,3 @@
-// Build with closure compiler.
-// java -jar compiler.jar --compilation_level ADVANCED_OPTIMIZATIONS
-// --jscomp_off=internetExplorerChecks --js init.js --js bitmaps.js --js ui.js
-// --js synthesizer.js --js w3c_audio.js > pokia-min.js
-
 window.addEventListener('load', init, false);
 
 var debugMode = false;
