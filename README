@@ -1,0 +1,12 @@
+See <http://www.patater.com/pokia> for general information.
+
+See COPYING for licensing information.
+
+In order to build this project, you need a version of Java that can run the
+Closure Compiler <https://developers.google.com/closure/compiler/> and the
+Closure Linter (gjslint) <https://developers.google.com/closure/utilities/>
+installed and in your path.
+
+P.S. Sorry about the messy commit history. I was sloppy thinking I'd just
+rebase it all later. But now I'm lazy, and the project is pretty much done, so
+I'd rather do other things.
