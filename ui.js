@@ -45,7 +45,7 @@ power.element.addEventListener(
     }
 
     power.heldAction = window.setTimeout(
-      function () {
+      function() {
         lcd.on = !lcd.on;
         if (lcd.on === false) {
           // Phone turned off, so turn off sound, too.
@@ -133,7 +133,7 @@ up.element.addEventListener(
       moveCursorUp();
       renderLCD();
       up.heldAction = window.setTimeout(moveCursorUpAgain, 150);
-    }
+    };
     up.heldAction = window.setTimeout(moveCursorUpAgain, 500);
 
     renderLCD();
@@ -227,7 +227,7 @@ down.element.addEventListener(
       moveCursorDown();
       renderLCD();
       down.heldAction = window.setTimeout(moveCursorDownAgain, 150);
-    }
+    };
     down.heldAction = window.setTimeout(moveCursorDownAgain, 500);
 
     renderLCD();
@@ -538,7 +538,7 @@ var Cursor = function() {
   this.duration = 4;
   this.destX = 0;
   this.line = 0;
-}
+};
 Cursor.prototype.updateFromPreviousNote = function() {
   var cursorNote = composerSong.notes[this.position - 1];
   if (cursorNote) {
@@ -548,7 +548,7 @@ Cursor.prototype.updateFromPreviousNote = function() {
     this.composerOctave = 1;
     this.duration = 4;
   }
-}
+};
 var cursor = new Cursor();
 
 var pixel = {};
@@ -612,7 +612,7 @@ function enterNote(whichNote, button) {
 }
 
 function initLCD() {
-  context = lcd.element.getContext("2d");
+  context = lcd.element.getContext('2d');
   context.clearRect(0, 0, lcd.element.width, lcd.element.height);
 
   deadLCDInit(lcd.pixelWidth, lcd.pixelHeight);
@@ -659,13 +659,13 @@ function turnOffBacklight() {
   backlit = false;
 
   // Display the screen shadow
-  phone.screenShadowElement.style.display = "inherit";
+  phone.screenShadowElement.style.display = 'inherit';
 }
 function turnOnBacklight() {
   backlit = true;
 
   // Hide the screen shadow.
-  phone.screenShadowElement.style.display = "none";
+  phone.screenShadowElement.style.display = 'none';
 
   // Turn off the backlight after 15 seconds.
   window.clearTimeout(backlightTimeoutAction);
@@ -673,28 +673,28 @@ function turnOnBacklight() {
 }
 
 var phoneBackgrounds = [];
-phoneBackgrounds[480] = "Nokia_1100_Backlit_Background_480.png";
-phoneBackgrounds[600] = "Nokia_1100_Backlit_Background_480.png";
-phoneBackgrounds[720] = "Nokia_1100_Backlit_Background_480.png";
-phoneBackgrounds[768] = "Nokia_1100_Backlit_Background_480.png";
-phoneBackgrounds[960] = "Nokia_1100_Backlit_Background_480.png";
-phoneBackgrounds[1080] = "Nokia_1100_Backlit_Background_480.png";
-phoneBackgrounds[1136] = "Nokia_1100_Backlit_Background_480.png";
-phoneBackgrounds[1200] = "Nokia_1100_Backlit_Background_1600.png";
-phoneBackgrounds[1600] = "Nokia_1100_Backlit_Background_1600.png";
-phoneBackgrounds[3857] = "Nokia_1100_Backlit_Background_3857.png";
+phoneBackgrounds[480] = 'Nokia_1100_Backlit_Background_480.png';
+phoneBackgrounds[600] = 'Nokia_1100_Backlit_Background_480.png';
+phoneBackgrounds[720] = 'Nokia_1100_Backlit_Background_480.png';
+phoneBackgrounds[768] = 'Nokia_1100_Backlit_Background_480.png';
+phoneBackgrounds[960] = 'Nokia_1100_Backlit_Background_480.png';
+phoneBackgrounds[1080] = 'Nokia_1100_Backlit_Background_480.png';
+phoneBackgrounds[1136] = 'Nokia_1100_Backlit_Background_480.png';
+phoneBackgrounds[1200] = 'Nokia_1100_Backlit_Background_1600.png';
+phoneBackgrounds[1600] = 'Nokia_1100_Backlit_Background_1600.png';
+phoneBackgrounds[3857] = 'Nokia_1100_Backlit_Background_3857.png';
 
 var phoneForegrounds = [];
-phoneForegrounds[480] = "Nokia_1100_Backlit_Foreground_480.png";
-phoneForegrounds[600] = "Nokia_1100_Backlit_Foreground_480.png";
-phoneForegrounds[720] = "Nokia_1100_Backlit_Foreground_480.png";
-phoneForegrounds[768] = "Nokia_1100_Backlit_Foreground_480.png";
-phoneForegrounds[960] = "Nokia_1100_Backlit_Foreground_480.png";
-phoneForegrounds[1080] = "Nokia_1100_Backlit_Foreground_480.png";
-phoneForegrounds[1136] = "Nokia_1100_Backlit_Foreground_480.png";
-phoneForegrounds[1200] = "Nokia_1100_Backlit_Foreground_1600.png";
-phoneForegrounds[1600] = "Nokia_1100_Backlit_Foreground_1600.png";
-phoneForegrounds[3857] = "Nokia_1100_Backlit_Foreground_3857.png";
+phoneForegrounds[480] = 'Nokia_1100_Backlit_Foreground_480.png';
+phoneForegrounds[600] = 'Nokia_1100_Backlit_Foreground_480.png';
+phoneForegrounds[720] = 'Nokia_1100_Backlit_Foreground_480.png';
+phoneForegrounds[768] = 'Nokia_1100_Backlit_Foreground_480.png';
+phoneForegrounds[960] = 'Nokia_1100_Backlit_Foreground_480.png';
+phoneForegrounds[1080] = 'Nokia_1100_Backlit_Foreground_480.png';
+phoneForegrounds[1136] = 'Nokia_1100_Backlit_Foreground_480.png';
+phoneForegrounds[1200] = 'Nokia_1100_Backlit_Foreground_1600.png';
+phoneForegrounds[1600] = 'Nokia_1100_Backlit_Foreground_1600.png';
+phoneForegrounds[3857] = 'Nokia_1100_Backlit_Foreground_3857.png';
 
 function loadProperImages() {
   var viewHeight = Math.min(window.innerHeight, screen.height);
@@ -719,7 +719,7 @@ function renderLCD() {
   var ratioY = phone.height / phone.actualHeight;
 
   // Disable the drop shadow.
-  context.shadowColor = "rgba(0, 0, 0, 0)";
+  context.shadowColor = 'rgba(0, 0, 0, 0)';
   context.shadowBlur = 0;
   context.shadowOffsetX = 0;
   context.shadowOffsetY = 0;
@@ -732,7 +732,7 @@ function renderLCD() {
 
   // Display the backlight when backlit.
   if (backlit) {
-    context.fillStyle = "rgba(216, 235, 49, 0.40)";
+    context.fillStyle = 'rgba(216, 235, 49, 0.40)';
     // This doesn't bleed to the full surface of the lcd, unfortunately.
     // This can be done by making the lcd background a separate image from
     // the phone image, placing the canvas between the lcd background and
@@ -743,23 +743,23 @@ function renderLCD() {
   }
 
   // Display the visible area of the LCD.
-  context.fillStyle = "rgba(20, 20, 20, 0.05)";
+  context.fillStyle = 'rgba(20, 20, 20, 0.05)';
   renderBitmap(context, 0, 0, deadLCD);
 
   // Display a shadow when not backlit when drawing pixels.
   if (!backlit) {
-    context.shadowColor = "rgba(0, 0, 0, 0.25)";
+    context.shadowColor = 'rgba(0, 0, 0, 0.25)';
     context.shadowBlur = 6;
     context.shadowOffsetX = -6 * ratioX;
     context.shadowOffsetY = 4 * ratioY;
   }
 
-  context.fillStyle = "rgb(0, 0, 0)";
+  context.fillStyle = 'rgb(0, 0, 0)';
   renderBitmap(context, 1, 0, composerNotesBitmap);
   displayNotesRemaining(context);
   displayNotes(composerSong.notes);
   displayCursor(context);
-  displaySoftButton(context, "Play");
+  displaySoftButton(context, 'Play');
 }
 
 function displaySoftButton(context, name) {
@@ -927,7 +927,7 @@ function renderBitmap(context, destX, destY, bitmap) {
 
 function displayButtons() {
   for (var i = 0; i < buttons.length; i++) {
-    buttons[i].element.style.display = "inherit";
+    buttons[i].element.style.display = 'inherit';
   }
 }
 
@@ -986,8 +986,8 @@ function resizeImage(imageElement, phone)
 {
   imageElement.width = phone.width;
   imageElement.height = phone.height;
-  imageElement.style.left = phone.left + "px";
-  imageElement.style.top = phone.top + "px";
+  imageElement.style.left = phone.left + 'px';
+  imageElement.style.top = phone.top + 'px';
 }
 
 function resizeLCD(lcd, phone)
@@ -1000,8 +1000,8 @@ function resizeLCD(lcd, phone)
   lcd.height = lcd.actualHeight * ratioY;
 
   // Apply
-  lcd.element.style.left = lcd.left + "px";
-  lcd.element.style.top = lcd.top + "px";
+  lcd.element.style.left = lcd.left + 'px';
+  lcd.element.style.top = lcd.top + 'px';
   var resized = false;
   if (lcd.width !== lcd.element.width) {
     lcd.element.width = lcd.width;
@@ -1025,14 +1025,14 @@ function resizePhoneElement(phoneElement, phone)
   phoneElement.height = phoneElement.actualHeight * ratioY;
 
   // Apply
-  phoneElement.element.style.left = phoneElement.left + "px";
-  phoneElement.element.style.top = phoneElement.top + "px";
-  phoneElement.element.style.width = phoneElement.width + "px";
-  phoneElement.element.style.height = phoneElement.height + "px";
+  phoneElement.element.style.left = phoneElement.left + 'px';
+  phoneElement.element.style.top = phoneElement.top + 'px';
+  phoneElement.element.style.width = phoneElement.width + 'px';
+  phoneElement.element.style.height = phoneElement.height + 'px';
 }
 
 function copyComposer(event) {
-  event.clipboardData.setData("text/plain", composerSong.toComposer().trim());
+  event.clipboardData.setData('text/plain', composerSong.toComposer().trim());
   event.preventDefault();
 }
 
@@ -1093,7 +1093,7 @@ function initControls() {
   }
 
   var controls = document.getElementById('extra-controls');
-  controls.style.display = "inherit";
+  controls.style.display = 'inherit';
 }
 
 function updateNotesRemaining() {
@@ -1122,5 +1122,5 @@ var tempos = [
   180,
   200,
   225,
-  240,
+  240
 ];

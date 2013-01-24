@@ -5,6 +5,8 @@ var songGain;
 var wavetable;
 var frequencyData;
 
+
+
 /**
  * @constructor
  */
@@ -23,7 +25,7 @@ var Note = function() {
   // If this is true, then frequency will be ignored and we'll "rest" instead
   // of playing for the specified duration.
   this.pause = false;
-}
+};
 
 Note.prototype.toggleDot = function() {
   if (this.dot === '') {
@@ -31,7 +33,7 @@ Note.prototype.toggleDot = function() {
   } else {
     this.dot = '';
   }
-}
+};
 
 Note.prototype.toggleSharp = function() {
   var sharpToggled = Song.sharpMap[this.frequency];
@@ -43,30 +45,30 @@ Note.prototype.toggleSharp = function() {
     // when the Note can be used for RTTTL, too.
     if (this.isSharp) {
       // We are now sharp, so prepend a hash.
-      this.note = "#" + this.note;
+      this.note = '#' + this.note;
     } else {
       // We are no longer sharp, so omit an assumed hash.
       this.note = this.note.charAt(1);
     }
   }
-}
+};
 
 Note.prototype.getComposerOctave = function() {
   // Nokia Composer's octave 1 is actually octave 5.
   return this.octave - 4;
-}
+};
 
 Note.prototype.setComposerOctave = function(octave) {
   // Nokia Composer's octave 1 is actually octave 5.
   this.octave = parseInt(octave) + 4;
-}
+};
 
 Note.prototype.setComposerNote = function(note, octave) {
   this.note = note;
   this.isSharp = note.charAt(0) === '#';
   this.setComposerOctave(octave);
 
-  if (note == "c") {
+  if (note == 'c') {
     if (this.octave == 5) {
       this.frequency = Song.NOTE_C5;
     } else if (this.octave == 6) {
@@ -76,7 +78,7 @@ Note.prototype.setComposerNote = function(note, octave) {
     } else {
       this.pause = true;
     }
-  } else if (note == "#c") {
+  } else if (note == '#c') {
     if (this.octave == 5) {
       this.frequency = Song.NOTE_CS5;
     } else if (this.octave == 6) {
@@ -86,7 +88,7 @@ Note.prototype.setComposerNote = function(note, octave) {
     } else {
       this.pause = true;
     }
-  } else if (note == "d") {
+  } else if (note == 'd') {
     if (this.octave == 5) {
       this.frequency = Song.NOTE_D5;
     } else if (this.octave == 6) {
@@ -96,7 +98,7 @@ Note.prototype.setComposerNote = function(note, octave) {
     } else {
       this.pause = true;
     }
-  } else if (note == "#d") {
+  } else if (note == '#d') {
     if (this.octave == 5) {
       this.frequency = Song.NOTE_DS5;
     } else if (this.octave == 6) {
@@ -106,7 +108,7 @@ Note.prototype.setComposerNote = function(note, octave) {
     } else {
       this.pause = true;
     }
-  } else if (note == "e") {
+  } else if (note == 'e') {
     if (this.octave == 5) {
       this.frequency = Song.NOTE_E5;
     } else if (this.octave == 6) {
@@ -116,7 +118,7 @@ Note.prototype.setComposerNote = function(note, octave) {
     } else {
       this.pause = true;
     }
-  } else if (note == "f") {
+  } else if (note == 'f') {
     if (this.octave == 5) {
       this.frequency = Song.NOTE_F5;
     } else if (this.octave == 6) {
@@ -126,7 +128,7 @@ Note.prototype.setComposerNote = function(note, octave) {
     } else {
       this.pause = true;
     }
-  } else if (note == "#f") {
+  } else if (note == '#f') {
     if (this.octave == 5) {
       this.frequency = Song.NOTE_FS5;
     } else if (this.octave == 6) {
@@ -136,7 +138,7 @@ Note.prototype.setComposerNote = function(note, octave) {
     } else {
       this.pause = true;
     }
-  } else if (note == "g") {
+  } else if (note == 'g') {
     if (this.octave == 5) {
       this.frequency = Song.NOTE_G5;
     } else if (this.octave == 6) {
@@ -146,7 +148,7 @@ Note.prototype.setComposerNote = function(note, octave) {
     } else {
       this.pause = true;
     }
-  } else if (note == "#g") {
+  } else if (note == '#g') {
     if (this.octave == 5) {
       this.frequency = Song.NOTE_GS5;
     } else if (this.octave == 6) {
@@ -156,7 +158,7 @@ Note.prototype.setComposerNote = function(note, octave) {
     } else {
       this.pause = true;
     }
-  } else if (note == "a") {
+  } else if (note == 'a') {
     if (this.octave == 4) {
       this.frequency = Song.NOTE_A4;
     } else if (this.octave == 5) {
@@ -168,7 +170,7 @@ Note.prototype.setComposerNote = function(note, octave) {
     } else {
       this.pause = true;
     }
-  } else if (note == "#a") {
+  } else if (note == '#a') {
     if (this.octave == 4) {
       this.frequency = Song.NOTE_AS4;
     } else if (this.octave == 5) {
@@ -180,7 +182,7 @@ Note.prototype.setComposerNote = function(note, octave) {
     } else {
       this.pause = true;
     }
-  } else if (note == "b") {
+  } else if (note == 'b') {
     if (this.octave == 4) {
       this.frequency = Song.NOTE_B4;
     } else if (this.octave == 5) {
@@ -193,7 +195,9 @@ Note.prototype.setComposerNote = function(note, octave) {
       this.pause = true;
     }
   }
-}
+};
+
+
 
 /**
  * @constructor
@@ -205,14 +209,14 @@ var Song = function() {
   this.tempo = 63;
 
   this.notes = [];
-}
+};
 
 Song.prototype.toComposer = function() {
   return toComposer(this.notes);
-}
+};
 
 function toComposer(notes) {
-  var composer = "";
+  var composer = '';
   for (var i = 0; i < notes.length; i++) {
     var note = notes[i];
     composer += note.duration;
@@ -223,7 +227,7 @@ function toComposer(notes) {
       composer += note.note;
       composer += note.getComposerOctave();
     }
-    composer += " ";
+    composer += ' ';
   }
   return composer;
 }
@@ -235,19 +239,19 @@ Song.prototype.parse = function(data) {
     this.parseRTTTL(data);
   } else {
     // Assume it is Nokia Composer
-    this.parseComposer("Pokia Paste", composerSong.tempo, data);
+    this.parseComposer('Pokia Paste', composerSong.tempo, data);
   }
-}
+};
 
 Song.prototype.parseComposer = function(name, tempo, composer) {
-  var spaceTokens = composer.split(" ");
+  var spaceTokens = composer.split(' ');
   this.name = name;
   this.tempo = parseInt(tempo, 10);
 
   for (var i = 0; i < spaceTokens.length; i++) {
     this.parseComposerNote(spaceTokens[i]);
   }
-}
+};
 
 // 4- 4.c2 4.#c2 ("4.-" doesn't seem possible to enter)
 // optional: . #
@@ -265,7 +269,7 @@ Song.prototype.parseComposerNote = function(note) {
   // i may point to the first non-digit or the beginning of the string
   var duration = note.substring(start, i);
   start = i;
-  if (duration != "") {
+  if (duration != '') {
     noteToAdd.duration = parseInt(duration, 10);
   } else {
     // Don't add an invalid note.
@@ -273,14 +277,14 @@ Song.prototype.parseComposerNote = function(note) {
   }
 
   // Is current character a '.'?
-  if (note.charAt(i) == ".") {
+  if (note.charAt(i) == '.') {
     noteToAdd.toggleDot();
     i++;
     start = i;
   }
 
   // Is current character a '-'?
-  if (note.charAt(i) == "-") {
+  if (note.charAt(i) == '-') {
     noteToAdd.pause = true;
     this.notes.push(noteToAdd);
     return;
@@ -302,34 +306,34 @@ Song.prototype.parseComposerNote = function(note) {
   noteToAdd.setComposerNote(whichNote, parseInt(octave, 10));
 
   this.notes.push(noteToAdd);
-}
+};
 
 Song.prototype.parseRTTTL = function(rtttl) {
-  var colonTokens = rtttl.split(":");
+  var colonTokens = rtttl.split(':');
   this.name = colonTokens[0];
   this.parseDefaults(colonTokens[1]);
   this.parseSong(colonTokens[2]);
-}
+};
 
 Song.prototype.parseDefaults = function(defaults) {
-  var commaTokens = defaults.split(",");
+  var commaTokens = defaults.split(',');
   for (var i = 0; i < commaTokens.length; i++) {
-    if (commaTokens[i][0] == "o") {
+    if (commaTokens[i][0] == 'o') {
       this.defaultOctave = parseInt(commaTokens[i].substring(2), 10);
-    } else if (commaTokens[i][0] == "d") {
+    } else if (commaTokens[i][0] == 'd') {
       this.defaultDuration = parseInt(commaTokens[i].substring(2), 10);
-    } else if (commaTokens[i][0] == "b") {
+    } else if (commaTokens[i][0] == 'b') {
       this.tempo = parseInt(commaTokens[i].substring(2), 10);
     }
   }
-}
+};
 
 Song.prototype.parseSong = function(song) {
-  var commaTokens = song.split(",");
+  var commaTokens = song.split(',');
   for (var i = 0; i < commaTokens.length; i++) {
     this.parseNote(commaTokens[i]);
   }
-}
+};
 
 Song.prototype.parseNote = function(note) {
   var noteToAdd = new Note();
@@ -344,7 +348,7 @@ Song.prototype.parseNote = function(note) {
   // i may point to the first non-digit or the beginning of the string
   var duration = note.substring(start, i);
   start = i;
-  if (duration != "") {
+  if (duration != '') {
     noteToAdd.duration = parseInt(duration, 10);
   } else {
     noteToAdd.duration = this.defaultDuration;
@@ -375,149 +379,149 @@ Song.prototype.parseNote = function(note) {
     octave = this.defaultOctave;
   }
   noteToAdd.octave = parseInt(octave, 10);
-  if (whichNote == "P") {
+  if (whichNote == 'P') {
     noteToAdd.pause = true;
-  } else if (whichNote == "C") {
+  } else if (whichNote == 'C') {
     noteToAdd.note = 'c';
-    if (octave == "4") {
+    if (octave == '4') {
       noteToAdd.frequency = Song.NOTE_C4;
-    } else if (octave == "5") {
+    } else if (octave == '5') {
       noteToAdd.frequency = Song.NOTE_C5;
-    } else if (octave == "6") {
+    } else if (octave == '6') {
       noteToAdd.frequency = Song.NOTE_C6;
-    } else if (octave == "7") {
+    } else if (octave == '7') {
       noteToAdd.frequency = Song.NOTE_C7;
     }
-  } else if (whichNote == "C#") {
+  } else if (whichNote == 'C#') {
     noteToAdd.note = 'c';
     noteToAdd.toggleSharp();
-    if (octave == "4") {
+    if (octave == '4') {
       noteToAdd.frequency = Song.NOTE_CS4;
-    } else if (octave == "5") {
+    } else if (octave == '5') {
       noteToAdd.frequency = Song.NOTE_CS5;
-    } else if (octave == "6") {
+    } else if (octave == '6') {
       noteToAdd.frequency = Song.NOTE_CS6;
-    } else if (octave == "7") {
+    } else if (octave == '7') {
       noteToAdd.frequency = Song.NOTE_CS7;
     }
-  } else if (whichNote == "D") {
+  } else if (whichNote == 'D') {
     noteToAdd.note = 'd';
-    if (octave == "4") {
+    if (octave == '4') {
       noteToAdd.frequency = Song.NOTE_D4;
-    } else if (octave == "5") {
+    } else if (octave == '5') {
       noteToAdd.frequency = Song.NOTE_D5;
-    } else if (octave == "6") {
+    } else if (octave == '6') {
       noteToAdd.frequency = Song.NOTE_D6;
-    } else if (octave == "7") {
+    } else if (octave == '7') {
       noteToAdd.frequency = Song.NOTE_D7;
     }
-  } else if (whichNote == "D#") {
+  } else if (whichNote == 'D#') {
     noteToAdd.note = 'd';
     noteToAdd.toggleSharp();
-    if (octave == "4") {
+    if (octave == '4') {
       noteToAdd.frequency = Song.NOTE_DS4;
-    } else if (octave == "5") {
+    } else if (octave == '5') {
       noteToAdd.frequency = Song.NOTE_DS5;
-    } else if (octave == "6") {
+    } else if (octave == '6') {
       noteToAdd.frequency = Song.NOTE_DS6;
-    } else if (octave == "7") {
+    } else if (octave == '7') {
       noteToAdd.frequency = Song.NOTE_DS7;
     }
-  } else if (whichNote == "E") {
+  } else if (whichNote == 'E') {
     noteToAdd.note = 'e';
-    if (octave == "4") {
+    if (octave == '4') {
       noteToAdd.frequency = Song.NOTE_E4;
-    } else if (octave == "5") {
+    } else if (octave == '5') {
       noteToAdd.frequency = Song.NOTE_E5;
-    } else if (octave == "6") {
+    } else if (octave == '6') {
       noteToAdd.frequency = Song.NOTE_E6;
-    } else if (octave == "7") {
+    } else if (octave == '7') {
       noteToAdd.frequency = Song.NOTE_E7;
     }
-  } else if (whichNote == "F") {
+  } else if (whichNote == 'F') {
     noteToAdd.note = 'f';
-    if (octave == "4") {
+    if (octave == '4') {
       noteToAdd.frequency = Song.NOTE_F4;
-    } else if (octave == "5") {
+    } else if (octave == '5') {
       noteToAdd.frequency = Song.NOTE_F5;
-    } else if (octave == "6") {
+    } else if (octave == '6') {
       noteToAdd.frequency = Song.NOTE_F6;
-    } else if (octave == "7") {
+    } else if (octave == '7') {
       noteToAdd.frequency = Song.NOTE_F7;
     }
-  } else if (whichNote == "F#") {
+  } else if (whichNote == 'F#') {
     noteToAdd.note = 'f';
     noteToAdd.toggleSharp();
-    if (octave == "4") {
+    if (octave == '4') {
       noteToAdd.frequency = Song.NOTE_FS4;
-    } else if (octave == "5") {
+    } else if (octave == '5') {
       noteToAdd.frequency = Song.NOTE_FS5;
-    } else if (octave == "6") {
+    } else if (octave == '6') {
       noteToAdd.frequency = Song.NOTE_FS6;
-    } else if (octave == "7") {
+    } else if (octave == '7') {
       noteToAdd.frequency = Song.NOTE_FS7;
     }
-  } else if (whichNote == "G") {
+  } else if (whichNote == 'G') {
     noteToAdd.note = 'g';
-    if (octave == "4") {
+    if (octave == '4') {
       noteToAdd.frequency = Song.NOTE_G4;
-    } else if (octave == "5") {
+    } else if (octave == '5') {
       noteToAdd.frequency = Song.NOTE_G5;
-    } else if (octave == "6") {
+    } else if (octave == '6') {
       noteToAdd.frequency = Song.NOTE_G6;
-    } else if (octave == "7") {
+    } else if (octave == '7') {
       noteToAdd.frequency = Song.NOTE_G7;
     }
-  } else if (whichNote == "G#") {
+  } else if (whichNote == 'G#') {
     noteToAdd.note = 'g';
     noteToAdd.toggleSharp();
-    if (octave == "4") {
+    if (octave == '4') {
       noteToAdd.frequency = Song.NOTE_GS4;
-    } else if (octave == "5") {
+    } else if (octave == '5') {
       noteToAdd.frequency = Song.NOTE_GS5;
-    } else if (octave == "6") {
+    } else if (octave == '6') {
       noteToAdd.frequency = Song.NOTE_GS6;
-    } else if (octave == "7") {
+    } else if (octave == '7') {
       noteToAdd.frequency = Song.NOTE_GS7;
     }
-  } else if (whichNote == "A") {
+  } else if (whichNote == 'A') {
     noteToAdd.note = 'a';
-    if (octave == "4") {
+    if (octave == '4') {
       noteToAdd.frequency = Song.NOTE_A4;
-    } else if (octave == "5") {
+    } else if (octave == '5') {
       noteToAdd.frequency = Song.NOTE_A5;
-    } else if (octave == "6") {
+    } else if (octave == '6') {
       noteToAdd.frequency = Song.NOTE_A6;
-    } else if (octave == "7") {
+    } else if (octave == '7') {
       noteToAdd.frequency = Song.NOTE_A7;
     }
-  } else if (whichNote == "A#") {
+  } else if (whichNote == 'A#') {
     noteToAdd.note = 'a';
     noteToAdd.toggleSharp();
-    if (octave == "4") {
+    if (octave == '4') {
       noteToAdd.frequency = Song.NOTE_AS4;
-    } else if (octave == "5") {
+    } else if (octave == '5') {
       noteToAdd.frequency = Song.NOTE_AS5;
-    } else if (octave == "6") {
+    } else if (octave == '6') {
       noteToAdd.frequency = Song.NOTE_AS6;
-    } else if (octave == "7") {
+    } else if (octave == '7') {
       noteToAdd.frequency = Song.NOTE_AS7;
     }
-  } else if (whichNote == "B") {
+  } else if (whichNote == 'B') {
     noteToAdd.note = 'b';
-    if (octave == "4") {
+    if (octave == '4') {
       noteToAdd.frequency = Song.NOTE_B4;
-    } else if (octave == "5") {
+    } else if (octave == '5') {
       noteToAdd.frequency = Song.NOTE_B5;
-    } else if (octave == "6") {
+    } else if (octave == '6') {
       noteToAdd.frequency = Song.NOTE_B6;
-    } else if (octave == "7") {
+    } else if (octave == '7') {
       noteToAdd.frequency = Song.NOTE_B7;
     }
   }
 
   this.notes.push(noteToAdd);
-}
+};
 
 Song.prototype.play = function(when) {
   // Cancel all other scheduled notes.
@@ -528,7 +532,7 @@ Song.prototype.play = function(when) {
     var note = this.notes[i];
     then += this.playNote(note, then);
   }
-}
+};
 
 Song.prototype.stop = function() {
   if (audioContext.fake === true) {
@@ -560,7 +564,7 @@ Song.prototype.stop = function() {
   songGain.connect(globalGain);
 
   nokiawave.noteOn(now);
-}
+};
 
 Song.prototype.playNote = function(note, when) {
   var beatLength = 4.0 * 60.0 / this.tempo;
@@ -574,19 +578,19 @@ Song.prototype.playNote = function(note, when) {
     beep(when + note.spacing, note.frequency, duration);
   }
   return duration + note.spacing;
-}
+};
 
 Song.prototype.pause = function() {
-}
+};
 
 function initSynthesizer() {
   try {
     audioContext = new webkitAudioContext();
     audioContext.fake = false;
-  } catch(e) {
+  } catch (e) {
     alert(
-      "Web Audio API is not supported in this browser.\n\nWhy aren't you" +
-      " using Google Chrome for desktop yet?"
+        "Web Audio API is not supported in this browser.\n\nWhy aren't you" +
+        ' using Google Chrome for desktop yet?'
     );
     // Hacks to make composing work without webaudio (and without sound).
     audioContext = {};
@@ -632,8 +636,8 @@ function loadWaveTable(wavetableArray, oscillator) {
   // Copy into more efficient Float32Arrays.
   var n = wavetableArray.real.length;
   frequencyData = {
-    "real": new Float32Array(n),
-    "imag": new Float32Array(n)
+    'real': new Float32Array(n),
+    'imag': new Float32Array(n)
   };
 
   for (var i = 0; i < n; ++i) {
@@ -641,16 +645,19 @@ function loadWaveTable(wavetableArray, oscillator) {
     frequencyData.imag[i] = wavetableArray.imag[i];
   }
 
-  wavetable = audioContext.createWaveTable(frequencyData.real, frequencyData.imag);
+  wavetable = audioContext.createWaveTable(
+      frequencyData.real,
+      frequencyData.imag
+      );
   oscillator.setWaveTable(wavetable);
 }
 
 // Modified from http://www.javascripter.net/faq/plotafunctiongraph.htm
 // TODO: Plot x from 0 to 2 * Math.PI and y from -2 to 2
 function plotWaveform(wavetableArray) {
-  var canvas = document.getElementById("waveform");
+  var canvas = document.getElementById('waveform');
   var axes = {};
-  var context = canvas.getContext("2d");
+  var context = canvas.getContext('2d');
   //axes.x0 = 0.5 + 0.5 * canvas.width;
   axes.x0 = 0;
   axes.y0 = 0 + 0.5 * canvas.height;
@@ -659,12 +666,12 @@ function plotWaveform(wavetableArray) {
 
   showAxes(context, axes);
   funGraph(context, axes,
-    function(x) { return wavetableAtTime(wavetableArray, x); },
-    "rgb(13, 13, 13)", 2
+      function(x) { return wavetableAtTime(wavetableArray, x); },
+      'rgb(13, 13, 13)', 2
   );
 }
 
-function funGraph (context, axes, func, color, thick) {
+function funGraph(context, axes, func, color, thick) {
   var xx;
   var yy;
   var dx = 1;
@@ -697,13 +704,13 @@ function showAxes(context, axes) {
  var xmin = axes.doNegativeX ? 0 : x0;
 
  context.beginPath();
- context.strokeStyle = "rgb(128,128,128)";
- context.moveTo(xmin,y0);
+ context.strokeStyle = 'rgb(128,128,128)';
+ context.moveTo(xmin, y0);
 
- context.lineTo(w,y0);  // X axis
- context.moveTo(x0,0);
+ context.lineTo(w, y0);  // X axis
+ context.moveTo(x0, 0);
 
- context.lineTo(x0,h);  // Y axis
+ context.lineTo(x0, h);  // Y axis
  context.stroke();
 }
 
@@ -734,9 +741,9 @@ function playMetronome(when, tempo, duration)
 }
 
 function printWavetableSweep(wavetableArray, start, end, steps) {
-  var debug = document.getElementById("debug");
+  var debug = document.getElementById('debug');
   for (var i = start; i < end; i += (end - start) / steps) {
-    debug.textContent += wavetableAtTime(wavetableArray, i) + "\n";
+    debug.textContent += wavetableAtTime(wavetableArray, i) + '\n';
   }
 }
 
@@ -804,7 +811,7 @@ var nokiaSampleFFT32 = {
     0,
     0,
     0,
-    0,
+    0
   ],
   'imag': [
     -37.94,
@@ -838,9 +845,9 @@ var nokiaSampleFFT32 = {
     -81.61,
     0,
     0,
-    0,
-  ],
-}
+    0
+  ]
+};
 
 
 // http://www.phy.mtu.edu/~suits/notefreqs.html
