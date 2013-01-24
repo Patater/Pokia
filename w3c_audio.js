@@ -123,6 +123,18 @@ AudioContext.prototype.createChannelMerger = function() {};
 AudioContext.prototype.createDynamicsCompressor = function() {};
 
 /**
+ * @return {Oscillator}
+ */
+AudioContext.prototype.createOscillator = function() {};
+
+/**
+ * @return {WaveTable}
+ * @param {Float32Array} real
+ * @param {Float32Array} imag
+ */
+AudioContext.prototype.createWaveTable = function(real, imag) {};
+
+/**
  * @constructor
  */
 var AudioNode = function() {};
@@ -315,6 +327,94 @@ AudioBufferSourceNode.prototype.noteOff = function(when) {};
  * @extends {AudioSourceNode}
  */
 var MediaElementAudioSourceNode = function() {};
+
+/**
+ * @constructor
+ * @extends {AudioSourceNode}
+ */
+var Oscillator = function() {};
+
+/**
+ * @const
+ * @type {number}
+ */
+Oscillator.prototype.SINE = 0;
+
+/**
+ * @const
+ * @type {number}
+ */
+Oscillator.prototype.SQUARE = 1;
+
+/**
+ * @const
+ * @type {number}
+ */
+Oscillator.prototype.SAWTOOTH = 2;
+
+/**
+ * @const
+ * @type {number}
+ */
+Oscillator.prototype.TRIANGLE = 3;
+
+/**
+ * @const
+ * @type {number}
+ */
+Oscillator.prototype.CUSTOM = 4;
+
+/** @type {number} */
+Oscillator.prototype.type;
+
+/**
+ * @const
+ * @type {number}
+ */
+Oscillator.prototype.UNSCHEDULED_STATE = 0;
+
+/**
+ * @const
+ * @type {number}
+ */
+Oscillator.prototype.SCHEDULED_STATE = 1;
+
+/**
+ * @const
+ * @type {number}
+ */
+Oscillator.prototype.PLAYING_STATE = 2;
+
+/**
+ * @const
+ * @type {number}
+ */
+Oscillator.prototype.FINISHED_STATE = 3;
+
+/** @type {number} */
+Oscillator.prototype.playbackState;
+
+/** @type {AudioParam} */
+Oscillator.prototype.frequency;
+
+/** @type {AudioParam} */
+Oscillator.prototype.detune;
+
+/**
+ * @param {number} when
+ */
+Oscillator.prototype.noteOn = function(when) {};
+
+/**
+ * @param {number} when
+ */
+Oscillator.prototype.noteOff = function(when) {};
+
+/**
+ * @param {WaveTable} waveTable
+ */
+Oscillator.prototype.setWaveTable = function(waveTable) {};
+
 
 /**
  * @constructor
@@ -647,6 +747,11 @@ var WaveShaperNode = function() {};
 
 /** @type {Float32Array} */
 WaveShaperNode.prototype.curve;
+
+/**
+ * @constructor
+ */
+var WaveTable = function() {};
 
 /**
  * Definitions for the Web Audio API with webkit prefix.
