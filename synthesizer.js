@@ -20,7 +20,9 @@ var Note = function() {
   this.duration = Song.QUARTER_NOTE;
 
   // Time until the next note can play.
-  this.spacing = 0.007;
+  // XXX This might actually depend on the tempo.
+  //this.spacing = 0.007; // 125
+  this.spacing = 0.02; // 180
 
   // If this is true, then frequency will be ignored and we'll "rest" instead
   // of playing for the specified duration.
@@ -41,8 +43,8 @@ Note.prototype.toggleSharp = function() {
     this.frequency = sharpToggled;
     this.isSharp = !this.isSharp;
 
-    // XXX I don't like this because we are storing composer specific stuff here
-    // when the Note can be used for RTTTL, too.
+    // XXX I don't like this because we are storing composer specific stuff
+    // here when the Note can be used for RTTTL, too.
     if (this.isSharp) {
       // We are now sharp, so prepend a hash.
       this.note = '#' + this.note;
@@ -590,7 +592,7 @@ function initSynthesizer() {
   } catch (e) {
     alert(
         "Web Audio API is not supported in this browser.\n\nWhy aren't you" +
-        ' using Google Chrome for desktop yet?'
+        ' using Google Chrome for desktop or iOS yet?'
     );
     // Hacks to make composing work without webaudio (and without sound).
     audioContext = {};
@@ -635,10 +637,9 @@ function initSynthesizer() {
 function loadWaveTable(wavetableArray, oscillator) {
   // Copy into more efficient Float32Arrays.
   var n = wavetableArray.real.length;
-  frequencyData = {
-    'real': new Float32Array(n),
-    'imag': new Float32Array(n)
-  };
+  frequencyData = {};
+  frequencyData.real = new Float32Array(n);
+  frequencyData.imag = new Float32Array(n);
 
   for (var i = 0; i < n; ++i) {
     frequencyData.real[i] = wavetableArray.real[i];
@@ -658,7 +659,6 @@ function plotWaveform(wavetableArray) {
   var canvas = document.getElementById('waveform');
   var axes = {};
   var context = canvas.getContext('2d');
-  //axes.x0 = 0.5 + 0.5 * canvas.width;
   axes.x0 = 0;
   axes.y0 = 0 + 0.5 * canvas.height;
   axes.scale = 40;
@@ -697,21 +697,21 @@ function funGraph(context, axes, func, color, thick) {
 }
 
 function showAxes(context, axes) {
- var x0 = axes.x0;
- var w = context.canvas.width;
- var y0 = axes.y0;
- var h = context.canvas.height;
- var xmin = axes.doNegativeX ? 0 : x0;
+  var x0 = axes.x0;
+  var w = context.canvas.width;
+  var y0 = axes.y0;
+  var h = context.canvas.height;
+  var xmin = axes.doNegativeX ? 0 : x0;
 
- context.beginPath();
- context.strokeStyle = 'rgb(128,128,128)';
- context.moveTo(xmin, y0);
+  context.beginPath();
+  context.strokeStyle = 'rgb(128,128,128)';
+  context.moveTo(xmin, y0);
 
- context.lineTo(w, y0);  // X axis
- context.moveTo(x0, 0);
+  context.lineTo(w, y0);  // X axis
+  context.moveTo(x0, 0);
 
- context.lineTo(x0, h);  // Y axis
- context.stroke();
+  context.lineTo(x0, h);  // Y axis
+  context.stroke();
 }
 
 
@@ -778,76 +778,75 @@ function wavetableAtTime(wavetableArray, t) {
 // Fourier series co-efficients for a damped square wave. I'm not sure if this
 // response is characteristic of the Nokia sound for all frequencies the
 // classic Nokia phone can generate.
-var nokiaSampleFFT32 = {
-  'real': [
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0
-  ],
-  'imag': [
-    -37.94,
-    -40.96,
-    -40.96,
-    -49.22,
-    -49.22,
-    -43.27,
-    -38.59,
-    -41.41,
-    -49.88,
-    -52.91,
-    -47.16,
-    -39.06,
-    -42.05,
-    -53.96,
-    -60.83,
-    -56.99,
-    -54.95,
-    -65.73,
-    -70.99,
-    -67.25,
-    -70.98,
-    -72.94,
-    -71.99,
-    -71.80,
-    -76.07,
-    -76.28,
-    -79.35,
-    -78.06,
-    -81.61,
-    0,
-    0,
-    0
-  ]
-};
+var nokiaSampleFFT32 = {};
+nokiaSampleFFT32.real = [
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0
+];
+nokiaSampleFFT32.imag = [
+  -37.94,
+  -40.96,
+  -40.96,
+  -49.22,
+  -49.22,
+  -43.27,
+  -38.59,
+  -41.41,
+  -49.88,
+  -52.91,
+  -47.16,
+  -39.06,
+  -42.05,
+  -53.96,
+  -60.83,
+  -56.99,
+  -54.95,
+  -65.73,
+  -70.99,
+  -67.25,
+  -70.98,
+  -72.94,
+  -71.99,
+  -71.80,
+  -76.07,
+  -76.28,
+  -79.35,
+  -78.06,
+  -81.61,
+  0,
+  0,
+  0
+];
 
 
 // http://www.phy.mtu.edu/~suits/notefreqs.html

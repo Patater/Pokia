@@ -1,3 +1,4 @@
+var rainbowBacklight = false;
 var autoscale = true;
 var notesRemaining = 50;
 var context;
@@ -10,6 +11,9 @@ phone.actualHeight = 3857;
 phone.backgroundElement = document.getElementById('phone-screen');
 phone.screenShadowElement = document.getElementById('phone-shadowscreen');
 phone.foregroundElement = document.getElementById('phone-body');
+phone.backgroundPrefix = 'POKIA-screen-';
+phone.screenShadowPrefix = 'POKIA-shadow-';
+phone.foregroundPrefix = 'POKIA-body-';
 phone.previousDesiredImageHeight = 1;
 
 var lcd = {};
@@ -29,6 +33,7 @@ lcd.on = true;
 var buttons = [];
 
 var power = {};
+power.prefix = 'POKIA-power-';
 power.element = document.getElementById('power');
 power.imageElement = document.getElementById('power-img');
 power.actualLeft = 220;
@@ -36,50 +41,51 @@ power.actualTop = 1936;
 power.actualWidth = 627 - power.actualLeft;
 power.actualHeight = 2194 - power.actualTop;
 power.element.addEventListener(
-  'mousedown',
-  function() {
-    pressButton(power);
-    if (lcd.on) {
-      turnOnBacklight();
-      startBlinkingCursor();
-    }
+    'mousedown',
+    function(event) {
+      event.preventDefault();
+      pressButton(power);
+      if (lcd.on) {
+        turnOnBacklight();
+        startBlinkingCursor();
+      }
 
-    power.heldAction = window.setTimeout(
-      function() {
-        lcd.on = !lcd.on;
-        if (lcd.on === false) {
-          // Phone turned off, so turn off sound, too.
-          composerSong.stop();
-          turnOffBacklight();
-        } else {
-          // Start with a fresh state.
-          turnOnBacklight();
-          startBlinkingCursor();
-          composerSong.notes = [];
-          updateNotesRemaining();
-          cursor.position = 0;
-          cursor.updateFromPreviousNote();
-        }
-        renderLCD();
-      },
-      500
-    );
+      power.heldAction = window.setTimeout(
+          function() {
+            lcd.on = !lcd.on;
+            if (lcd.on === false) {
+              // Phone turned off, so turn off sound, too.
+              composerSong.stop();
+              turnOffBacklight();
+            } else {
+              // Start with a fresh state.
+              turnOnBacklight();
+              startBlinkingCursor();
+              composerSong.notes = [];
+              updateNotesRemaining();
+              cursor.position = 0;
+              cursor.updateFromPreviousNote();
+            }
+            renderLCD();
+          },
+          500
+          );
 
-    renderLCD();
-  },
-  false
+      renderLCD();
+    },
+    false
 );
-power.element.addEventListener(
-  'mouseup',
-  function() {
-    unpressButton(power);
-    window.clearTimeout(power.heldAction);
-  },
-  false
-);
+power.exit = function(event) {
+  event.preventDefault();
+  unpressButton(power);
+  window.clearTimeout(power.heldAction);
+};
+power.element.addEventListener('mouseup', power.exit, false);
+power.element.addEventListener('mouseout', power.exit, false);
 buttons.push(power);
 
 var soft = {};
+soft.prefix = 'POKIA-soft-';
 soft.element = document.getElementById('soft');
 soft.imageElement = document.getElementById('soft-img');
 soft.actualLeft = 616;
@@ -87,30 +93,31 @@ soft.actualTop = 1964;
 soft.actualWidth = 1012 - soft.actualLeft;
 soft.actualHeight = 2530 - soft.actualTop;
 soft.element.addEventListener(
-  'mousedown',
-  function() {
-    pressButton(soft);
-    if (!lcd.on) {
-      return;
-    }
-    var now = audioContext.currentTime;
-    composerSong.play(now);
-    turnOnBacklight();
-    startBlinkingCursor();
-    renderLCD();
-  },
-  false
+    'mousedown',
+    function(event) {
+      event.preventDefault();
+      pressButton(soft);
+      if (!lcd.on) {
+        return;
+      }
+      var now = audioContext.currentTime;
+      composerSong.play(now);
+      turnOnBacklight();
+      startBlinkingCursor();
+      renderLCD();
+    },
+    false
 );
-soft.element.addEventListener(
-  'mouseup',
-  function() {
-    unpressButton(soft);
-  },
-  false
-);
+soft.exit = function(event) {
+  event.preventDefault();
+  unpressButton(soft);
+};
+soft.element.addEventListener('mouseup', soft.exit, false);
+soft.element.addEventListener('mouseout', soft.exit, false);
 buttons.push(soft);
 
 var up = {};
+up.prefix = 'POKIA-up-';
 up.element = document.getElementById('up');
 up.imageElement = document.getElementById('up-img');
 up.actualLeft = 1045;
@@ -118,39 +125,40 @@ up.actualTop = 1964;
 up.actualWidth = 1402 - up.actualLeft;
 up.actualHeight = 2194 - up.actualTop;
 up.element.addEventListener(
-  'mousedown',
-  function() {
-    pressButton(up);
-    if (!lcd.on) {
-      return;
-    }
-    turnOnBacklight();
-    startBlinkingCursor();
+    'mousedown',
+    function(event) {
+      event.preventDefault();
+      pressButton(up);
+      if (!lcd.on) {
+        return;
+      }
+      turnOnBacklight();
+      startBlinkingCursor();
 
-    moveCursorUp();
-
-    var moveCursorUpAgain = function() {
       moveCursorUp();
-      renderLCD();
-      up.heldAction = window.setTimeout(moveCursorUpAgain, 150);
-    };
-    up.heldAction = window.setTimeout(moveCursorUpAgain, 500);
 
-    renderLCD();
-  },
-  false
+      var moveCursorUpAgain = function() {
+        moveCursorUp();
+        renderLCD();
+        up.heldAction = window.setTimeout(moveCursorUpAgain, 150);
+      };
+      up.heldAction = window.setTimeout(moveCursorUpAgain, 500);
+
+      renderLCD();
+    },
+    false
 );
-up.element.addEventListener(
-  'mouseup',
-  function() {
-    unpressButton(up);
-    window.clearTimeout(up.heldAction);
-  },
-  false
-);
+up.exit = function(event) {
+  event.preventDefault();
+  unpressButton(up);
+  window.clearTimeout(up.heldAction);
+};
+up.element.addEventListener('mouseup', up.exit, false);
+up.element.addEventListener('mouseout', up.exit, false);
 buttons.push(up);
 
 var clear = {};
+clear.prefix = 'POKIA-clear-';
 clear.element = document.getElementById('clear');
 clear.imageElement = document.getElementById('clear-img');
 clear.actualLeft = 204;
@@ -158,53 +166,54 @@ clear.actualTop = 2222;
 clear.actualWidth = 600 - clear.actualLeft;
 clear.actualHeight = 2475 - clear.actualTop;
 clear.element.addEventListener(
-  'mousedown',
-  function() {
-    pressButton(clear);
-    if (!lcd.on) {
-      return;
-    }
-
-    // Cancel any currently scheduled notes.
-    composerSong.stop();
-
-    turnOnBacklight();
-    startBlinkingCursor();
-
-    if (notesRemaining < 50) {
-      if (cursor.position > 0) {
-        composerSong.notes.splice(cursor.position - 1, 1);
-        updateNotesRemaining();
-        cursor.position -= 1;
+    'mousedown',
+    function(event) {
+      event.preventDefault();
+      pressButton(clear);
+      if (!lcd.on) {
+        return;
       }
-      cursor.updateFromPreviousNote();
-    }
-    clear.heldAction = window.setTimeout(
-      function() {
-        composerSong.notes = [];
-        updateNotesRemaining();
-        cursor.position = 0;
-        cursor.updateFromPreviousNote();
-        renderLCD();
-      },
-      500
-    );
 
-    renderLCD();
-  },
-  false
+      // Cancel any currently scheduled notes.
+      composerSong.stop();
+
+      turnOnBacklight();
+      startBlinkingCursor();
+
+      if (notesRemaining < 50) {
+        if (cursor.position > 0) {
+          composerSong.notes.splice(cursor.position - 1, 1);
+          updateNotesRemaining();
+          cursor.position -= 1;
+        }
+        cursor.updateFromPreviousNote();
+      }
+      clear.heldAction = window.setTimeout(
+          function() {
+            composerSong.notes = [];
+            updateNotesRemaining();
+            cursor.position = 0;
+            cursor.updateFromPreviousNote();
+            renderLCD();
+          },
+          500
+          );
+
+      renderLCD();
+    },
+    false
 );
-clear.element.addEventListener(
-  'mouseup',
-  function() {
-    unpressButton(clear);
-    window.clearTimeout(clear.heldAction);
-  },
-  false
-);
+clear.exit = function(event) {
+  event.preventDefault();
+  unpressButton(clear);
+  window.clearTimeout(clear.heldAction);
+};
+clear.element.addEventListener('mouseup', clear.exit, false);
+clear.element.addEventListener('mouseout', clear.exit, false);
 buttons.push(clear);
 
 var down = {};
+down.prefix = 'POKIA-down-';
 down.element = document.getElementById('down');
 down.imageElement = document.getElementById('down-img');
 down.actualLeft = 1034;
@@ -212,39 +221,40 @@ down.actualTop = 2233;
 down.actualWidth = 1436 - down.actualLeft;
 down.actualHeight = 2486 - down.actualTop;
 down.element.addEventListener(
-  'mousedown',
-  function() {
-    pressButton(down);
-    if (!lcd.on) {
-      return;
-    }
-    turnOnBacklight();
-    startBlinkingCursor();
+    'mousedown',
+    function(event) {
+      event.preventDefault();
+      pressButton(down);
+      if (!lcd.on) {
+        return;
+      }
+      turnOnBacklight();
+      startBlinkingCursor();
 
-    moveCursorDown();
-
-    var moveCursorDownAgain = function() {
       moveCursorDown();
-      renderLCD();
-      down.heldAction = window.setTimeout(moveCursorDownAgain, 150);
-    };
-    down.heldAction = window.setTimeout(moveCursorDownAgain, 500);
 
-    renderLCD();
-  },
-  false
+      var moveCursorDownAgain = function() {
+        moveCursorDown();
+        renderLCD();
+        down.heldAction = window.setTimeout(moveCursorDownAgain, 150);
+      };
+      down.heldAction = window.setTimeout(moveCursorDownAgain, 500);
+
+      renderLCD();
+    },
+    false
 );
-down.element.addEventListener(
-  'mouseup',
-  function() {
-    unpressButton(down);
-    window.clearTimeout(down.heldAction);
-  },
-  false
-);
+down.exit = function(event) {
+  event.preventDefault();
+  unpressButton(down);
+  window.clearTimeout(down.heldAction);
+};
+down.element.addEventListener('mouseup', down.exit, false);
+down.element.addEventListener('mouseout', down.exit, false);
 buttons.push(down);
 
 var one = {};
+one.prefix = 'POKIA-one-';
 one.element = document.getElementById('one');
 one.imageElement = document.getElementById('one-img');
 one.actualLeft = 187;
@@ -255,6 +265,7 @@ registerNoteButton('c', one);
 buttons.push(one);
 
 var two = {};
+two.prefix = 'POKIA-two-';
 two.element = document.getElementById('two');
 two.imageElement = document.getElementById('two-img');
 two.actualLeft = 622;
@@ -265,6 +276,7 @@ registerNoteButton('d', two);
 buttons.push(two);
 
 var three = {};
+three.prefix = 'POKIA-three-';
 three.element = document.getElementById('three');
 three.imageElement = document.getElementById('three-img');
 three.actualLeft = 1067;
@@ -275,6 +287,7 @@ registerNoteButton('e', three);
 buttons.push(three);
 
 var four = {};
+four.prefix = 'POKIA-four-';
 four.element = document.getElementById('four');
 four.imageElement = document.getElementById('four-img');
 four.actualLeft = 187;
@@ -285,6 +298,7 @@ registerNoteButton('f', four);
 buttons.push(four);
 
 var five = {};
+five.prefix = 'POKIA-five-';
 five.element = document.getElementById('five');
 five.imageElement = document.getElementById('five-img');
 five.actualLeft = 616;
@@ -295,6 +309,7 @@ registerNoteButton('g', five);
 buttons.push(five);
 
 var six = {};
+six.prefix = 'POKIA-six-';
 six.element = document.getElementById('six');
 six.imageElement = document.getElementById('six-img');
 six.actualLeft = 1067;
@@ -305,6 +320,7 @@ registerNoteButton('a', six);
 buttons.push(six);
 
 var seven = {};
+seven.prefix = 'POKIA-seven-';
 seven.element = document.getElementById('seven');
 seven.imageElement = document.getElementById('seven-img');
 seven.actualLeft = 204;
@@ -315,6 +331,7 @@ registerNoteButton('b', seven);
 buttons.push(seven);
 
 var eight = {};
+eight.prefix = 'POKIA-eight-';
 eight.element = document.getElementById('eight');
 eight.imageElement = document.getElementById('eight-img');
 eight.actualLeft = 616;
@@ -322,45 +339,46 @@ eight.actualTop = 3096;
 eight.actualWidth = 996 - eight.actualLeft;
 eight.actualHeight = 3350 - eight.actualTop;
 eight.element.addEventListener(
-  'mousedown',
-  function() {
-    pressButton(eight);
-    if (!lcd.on) {
-      return;
-    }
-    turnOnBacklight();
-    startBlinkingCursor();
+    'mousedown',
+    function(event) {
+      event.preventDefault();
+      pressButton(eight);
+      if (!lcd.on) {
+        return;
+      }
+      turnOnBacklight();
+      startBlinkingCursor();
 
-    var note = composerSong.notes[cursor.position - 1];
-    if (note) {
-      note.duration *= 2;
-      if (note.duration > 32) {
-        note.duration = 1;
+      var note = composerSong.notes[cursor.position - 1];
+      if (note) {
+        note.duration *= 2;
+        if (note.duration > 32) {
+          note.duration = 1;
+        }
+
+        // Only change the cursor duration if we are on a note, not a rest.
+        if (!note.pause) {
+          cursor.duration = note.duration;
+          composerSong.stop();
+          var now = audioContext.currentTime;
+          composerSong.playNote(note, now);
+        }
       }
 
-      // Only change the cursor duration if we are on a note, not a rest.
-      if (!note.pause) {
-        cursor.duration = note.duration;
-        composerSong.stop();
-        var now = audioContext.currentTime;
-        composerSong.playNote(note, now);
-      }
-    }
-
-    renderLCD();
-  },
-  false
+      renderLCD();
+    },
+    false
 );
-eight.element.addEventListener(
-  'mouseup',
-  function() {
-    unpressButton(eight);
-  },
-  false
-);
+eight.exit = function(event) {
+  event.preventDefault();
+  unpressButton(eight);
+};
+eight.element.addEventListener('mouseup', eight.exit, false);
+eight.element.addEventListener('mouseout', eight.exit, false);
 buttons.push(eight);
 
 var nine = {};
+nine.prefix = 'POKIA-nine-';
 nine.element = document.getElementById('nine');
 nine.imageElement = document.getElementById('nine-img');
 nine.actualLeft = 1056;
@@ -368,45 +386,46 @@ nine.actualTop = 3074;
 nine.actualWidth = 1441 - nine.actualLeft;
 nine.actualHeight = 3322 - nine.actualTop;
 nine.element.addEventListener(
-  'mousedown',
-  function() {
-    pressButton(nine);
-    if (!lcd.on) {
-      return;
-    }
-    turnOnBacklight();
-    startBlinkingCursor();
+    'mousedown',
+    function(event) {
+      event.preventDefault();
+      pressButton(nine);
+      if (!lcd.on) {
+        return;
+      }
+      turnOnBacklight();
+      startBlinkingCursor();
 
-    var note = composerSong.notes[cursor.position - 1];
-    if (note) {
-      note.duration /= 2;
-      if (note.duration < 1) {
-        note.duration = 32;
+      var note = composerSong.notes[cursor.position - 1];
+      if (note) {
+        note.duration /= 2;
+        if (note.duration < 1) {
+          note.duration = 32;
+        }
+
+        // Only change the cursor duration if we are on a note, not a rest.
+        if (!note.pause) {
+          cursor.duration = note.duration;
+          composerSong.stop();
+          var now = audioContext.currentTime;
+          composerSong.playNote(note, now);
+        }
       }
 
-      // Only change the cursor duration if we are on a note, not a rest.
-      if (!note.pause) {
-        cursor.duration = note.duration;
-        composerSong.stop();
-        var now = audioContext.currentTime;
-        composerSong.playNote(note, now);
-      }
-    }
-
-    renderLCD();
-  },
-  false
+      renderLCD();
+    },
+    false
 );
-nine.element.addEventListener(
-  'mouseup',
-  function() {
-    unpressButton(nine);
-  },
-  false
-);
+nine.exit = function(event) {
+  event.preventDefault();
+  unpressButton(nine);
+};
+nine.element.addEventListener('mouseup', nine.exit, false);
+nine.element.addEventListener('mouseout', nine.exit, false);
 buttons.push(nine);
 
 var asterisk = {};
+asterisk.prefix = 'POKIA-asterisk-';
 asterisk.element = document.getElementById('asterisk');
 asterisk.imageElement = document.getElementById('asterisk-img');
 asterisk.actualLeft = 187;
@@ -414,40 +433,41 @@ asterisk.actualTop = 3322;
 asterisk.actualWidth = 572 - asterisk.actualLeft;
 asterisk.actualHeight = 3575 - asterisk.actualTop;
 asterisk.element.addEventListener(
-  'mousedown',
-  function() {
-    pressButton(asterisk);
-    if (!lcd.on) {
-      return;
-    }
-    turnOnBacklight();
-    startBlinkingCursor();
+    'mousedown',
+    function(event) {
+      event.preventDefault();
+      pressButton(asterisk);
+      if (!lcd.on) {
+        return;
+      }
+      turnOnBacklight();
+      startBlinkingCursor();
 
-    var note = composerSong.notes[cursor.position - 1];
-    if (note) {
-      var octave = note.getComposerOctave();
-      octave = octave % 3 + 1;
-      cursor.composerOctave = octave;
-      note.setComposerNote(note.note, octave);
-      composerSong.stop();
-      var now = audioContext.currentTime;
-      composerSong.playNote(note, now);
-    }
+      var note = composerSong.notes[cursor.position - 1];
+      if (note) {
+        var octave = note.getComposerOctave();
+        octave = octave % 3 + 1;
+        cursor.composerOctave = octave;
+        note.setComposerNote(note.note, octave);
+        composerSong.stop();
+        var now = audioContext.currentTime;
+        composerSong.playNote(note, now);
+      }
 
-    renderLCD();
-  },
-  false
+      renderLCD();
+    },
+    false
 );
-asterisk.element.addEventListener(
-  'mouseup',
-  function() {
-    unpressButton(asterisk);
-  },
-  false
-);
+asterisk.exit = function(event) {
+  event.preventDefault();
+  unpressButton(asterisk);
+};
+asterisk.element.addEventListener('mouseup', asterisk.exit, false);
+asterisk.element.addEventListener('mouseout', asterisk.exit, false);
 buttons.push(asterisk);
 
 var zero = {};
+zero.prefix = 'POKIA-zero-';
 zero.element = document.getElementById('zero');
 zero.imageElement = document.getElementById('zero-img');
 zero.actualLeft = 616;
@@ -455,39 +475,40 @@ zero.actualTop = 3344;
 zero.actualWidth = 1001 - zero.actualLeft;
 zero.actualHeight = 3597 - zero.actualTop;
 zero.element.addEventListener(
-  'mousedown',
-  function() {
-    pressButton(zero);
-    if (!lcd.on) {
-      return;
-    }
-    turnOnBacklight();
-    startBlinkingCursor();
+    'mousedown',
+    function(event) {
+      event.preventDefault();
+      pressButton(zero);
+      if (!lcd.on) {
+        return;
+      }
+      turnOnBacklight();
+      startBlinkingCursor();
 
-    if (notesRemaining > 0) {
-      var note = new Note();
-      note.pause = true;
-      note.duration = cursor.duration;
-      composerSong.notes.splice(cursor.position, 0, note);
-      updateNotesRemaining();
-      cursor.position += 1;
+      if (notesRemaining > 0) {
+        var note = new Note();
+        note.pause = true;
+        note.duration = cursor.duration;
+        composerSong.notes.splice(cursor.position, 0, note);
+        updateNotesRemaining();
+        cursor.position += 1;
 
-    }
+      }
 
-    renderLCD();
-  },
-  false
+      renderLCD();
+    },
+    false
 );
-zero.element.addEventListener(
-  'mouseup',
-  function() {
-    unpressButton(zero);
-  },
-  false
-);
+zero.exit = function(event) {
+  event.preventDefault();
+  unpressButton(zero);
+};
+zero.element.addEventListener('mouseup', zero.exit, false);
+zero.element.addEventListener('mouseout', zero.exit, false);
 buttons.push(zero);
 
 var hash = {};
+hash.prefix = 'POKIA-hash-';
 hash.element = document.getElementById('hash');
 hash.imageElement = document.getElementById('hash-img');
 hash.actualLeft = 1056;
@@ -495,38 +516,40 @@ hash.actualTop = 3328;
 hash.actualWidth = 1436 - hash.actualLeft;
 hash.actualHeight = 3586 - hash.actualTop;
 hash.element.addEventListener(
-  'mousedown',
-  function() {
-    pressButton(hash);
-    if (!lcd.on) {
-      return;
-    }
-    turnOnBacklight();
-    startBlinkingCursor();
-
-    var note = composerSong.notes[cursor.position - 1];
-    if (note) {
-      var prevNote = note.note;
-      note.toggleSharp();
-      if (prevNote !== note.note) {
-        composerSong.stop();
-        var now = audioContext.currentTime;
-        composerSong.playNote(note, now);
+    'mousedown',
+    function(event) {
+      event.preventDefault();
+      pressButton(hash);
+      if (!lcd.on) {
+        return;
       }
-    }
+      turnOnBacklight();
+      startBlinkingCursor();
 
-    renderLCD();
-  },
-  false
+      var note = composerSong.notes[cursor.position - 1];
+      if (note) {
+        var prevNote = note.note;
+        note.toggleSharp();
+        if (prevNote !== note.note) {
+          composerSong.stop();
+          var now = audioContext.currentTime;
+          composerSong.playNote(note, now);
+        }
+      }
+
+      renderLCD();
+    },
+    false
 );
-hash.element.addEventListener(
-  'mouseup',
-  function() {
-    unpressButton(hash);
-  },
-  false
-);
+hash.exit = function(event) {
+  event.preventDefault();
+  unpressButton(hash);
+};
+hash.element.addEventListener('mouseup', hash.exit, false);
+hash.element.addEventListener('mouseout', hash.exit, false);
 buttons.push(hash);
+
+
 
 /**
  * @constructor
@@ -559,20 +582,20 @@ pixel.verticalSpace = 2;
 
 function registerNoteButton(note, button) {
   button.element.addEventListener(
-    'mousedown',
-    function() {
-      return enterNote(note, button);
-    },
-    false
+      'mousedown',
+      function(event) {
+        event.preventDefault();
+        return enterNote(note, button);
+      },
+      false
   );
-  button.element.addEventListener(
-    'mouseup',
-    function() {
-      unpressButton(button);
-      window.clearTimeout(button.heldAction);
-    },
-    false
-  );
+  button.exit = function(event) {
+    event.preventDefault();
+    unpressButton(button);
+    window.clearTimeout(button.heldAction);
+  };
+  button.element.addEventListener('mouseup', button.exit, false);
+  button.element.addEventListener('mouseout', button.exit, false);
 }
 
 function enterNote(whichNote, button) {
@@ -596,16 +619,16 @@ function enterNote(whichNote, button) {
     cursor.position += 1;
 
     button.heldAction = window.setTimeout(
-      function() {
-        var note = composerSong.notes[cursor.position - 1];
-        note.toggleDot();
-        composerSong.stop();
-        var now = audioContext.currentTime;
-        composerSong.playNote(note, now);
-        renderLCD();
-      },
-      500
-    );
+        function() {
+          var note = composerSong.notes[cursor.position - 1];
+          note.toggleDot();
+          composerSong.stop();
+          var now = audioContext.currentTime;
+          composerSong.playNote(note, now);
+          renderLCD();
+        },
+        500
+        );
   }
 
   renderLCD();
@@ -618,6 +641,10 @@ function initLCD() {
   deadLCDInit(lcd.pixelWidth, lcd.pixelHeight);
 
   startBlinkingCursor();
+
+  if (rainbowBacklight) {
+    shiftRainbowBacklight();
+  }
 
   window.addEventListener('resize', resizePhone, false);
   window.addEventListener('copy', copyComposer, false);
@@ -672,47 +699,62 @@ function turnOnBacklight() {
   backlightTimeoutAction = window.setTimeout(turnOffBacklight, 15000);
 }
 
-var phoneBackgrounds = [];
-phoneBackgrounds[480] = 'Nokia_1100_Backlit_Background_480.png';
-phoneBackgrounds[600] = 'Nokia_1100_Backlit_Background_480.png';
-phoneBackgrounds[720] = 'Nokia_1100_Backlit_Background_480.png';
-phoneBackgrounds[768] = 'Nokia_1100_Backlit_Background_480.png';
-phoneBackgrounds[960] = 'Nokia_1100_Backlit_Background_480.png';
-phoneBackgrounds[1080] = 'Nokia_1100_Backlit_Background_480.png';
-phoneBackgrounds[1136] = 'Nokia_1100_Backlit_Background_480.png';
-phoneBackgrounds[1200] = 'Nokia_1100_Backlit_Background_1600.png';
-phoneBackgrounds[1600] = 'Nokia_1100_Backlit_Background_1600.png';
-phoneBackgrounds[3857] = 'Nokia_1100_Backlit_Background_3857.png';
-
-var phoneForegrounds = [];
-phoneForegrounds[480] = 'Nokia_1100_Backlit_Foreground_480.png';
-phoneForegrounds[600] = 'Nokia_1100_Backlit_Foreground_480.png';
-phoneForegrounds[720] = 'Nokia_1100_Backlit_Foreground_480.png';
-phoneForegrounds[768] = 'Nokia_1100_Backlit_Foreground_480.png';
-phoneForegrounds[960] = 'Nokia_1100_Backlit_Foreground_480.png';
-phoneForegrounds[1080] = 'Nokia_1100_Backlit_Foreground_480.png';
-phoneForegrounds[1136] = 'Nokia_1100_Backlit_Foreground_480.png';
-phoneForegrounds[1200] = 'Nokia_1100_Backlit_Foreground_1600.png';
-phoneForegrounds[1600] = 'Nokia_1100_Backlit_Foreground_1600.png';
-phoneForegrounds[3857] = 'Nokia_1100_Backlit_Foreground_3857.png';
+var resolutions = [
+  480,
+  600,
+  720,
+  768,
+  960,
+  1080,
+  1136,
+  1200,
+  1600,
+  3857
+];
 
 function loadProperImages() {
   var viewHeight = Math.min(window.innerHeight, screen.height);
   var desiredImageHeight = 0;
-  for (var height in phoneBackgrounds) {
-    desiredImageHeight = height;
-    if (viewHeight <= height) {
+  for (var i = 0; i < resolutions.length; i++) {
+    desiredImageHeight = resolutions[i];
+    if (viewHeight <= desiredImageHeight) {
       break;
     }
   }
   if (desiredImageHeight != phone.previousDesiredImageHeight) {
-    phone.backgroundElement.src = phoneBackgrounds[desiredImageHeight];
-    phone.screenShadowElement.src = phoneBackgrounds[desiredImageHeight];
-    phone.foregroundElement.src = phoneForegrounds[desiredImageHeight];
+    phone.backgroundElement.src = 'images/' + phone.backgroundPrefix +
+        desiredImageHeight + '.png';
+    phone.screenShadowElement.src = 'images/' + phone.screenShadowPrefix +
+        desiredImageHeight + '.png';
+    phone.foregroundElement.src = 'images/' + phone.foregroundPrefix +
+        desiredImageHeight + '.png';
+
+    for (var i = 0; i < buttons.length; i++) {
+      buttons[i].imageElement.src = 'images/' + buttons[i].prefix +
+          desiredImageHeight + '.png';
+    }
+
     phone.previousDesiredImageHeight = desiredImageHeight;
   }
 }
 
+var backlightColorHSV = {};
+backlightColorHSV.h = 0;
+backlightColorHSV.s = 100;
+backlightColorHSV.v = 100;
+var rainbowAction;
+function shiftRainbowBacklight() {
+  if (backlit) {
+    backlightColorHSV.h += composerSong.tempo / 60;
+    if (backlightColorHSV.h > 359) {
+      backlightColorHSV.h = 0;
+    }
+
+    renderLCD();
+  }
+  window.clearTimeout(rainbowAction);
+  rainbowAction = window.setTimeout(shiftRainbowBacklight, 10);
+}
 
 function renderLCD() {
   var ratioX = phone.width / phone.actualWidth;
@@ -732,7 +774,19 @@ function renderLCD() {
 
   // Display the backlight when backlit.
   if (backlit) {
-    context.fillStyle = 'rgba(216, 235, 49, 0.40)';
+    var backlightColor;
+    if (rainbowBacklight) {
+      backlightColor = hsvToRgb(
+          backlightColorHSV.h,
+          backlightColorHSV.s,
+          backlightColorHSV.v
+          );
+    } else {
+      backlightColor = [216, 235, 49];
+    }
+
+    context.fillStyle = 'rgba(' + backlightColor[0] +
+        ', ' + backlightColor[1] + ', ' + backlightColor[2] + ', 0.40)';
     // This doesn't bleed to the full surface of the lcd, unfortunately.
     // This can be done by making the lcd background a separate image from
     // the phone image, placing the canvas between the lcd background and
@@ -887,10 +941,10 @@ function displayNotesRemaining(context) {
 
   // Render ones place.
   renderBitmap(
-    context,
-    notesRemainingStart + notesRemaining_0.width,
-    0,
-    notesRemainingFont[ones]
+      context,
+      notesRemainingStart + notesRemaining_0.width,
+      0,
+      notesRemainingFont[ones]
   );
 }
 
@@ -908,16 +962,16 @@ function renderBitmap(context, destX, destY, bitmap) {
       if (bitmap.bitmap[j * bitmap.width + i] == 1) {
         if (i < lcd.pixelWidth && j < lcd.pixelHeight && i >= 0 && j >= 0) {
           var x = (destX + i) * pixel.horizonalSpace +
-            (destX + i) * pixel.width;
+              (destX + i) * pixel.width;
           var y = (destY + j) * pixel.verticalSpace +
-            (destY + j) * pixel.height;
+              (destY + j) * pixel.height;
           var width = pixel.width;
           var height = pixel.height;
           context.fillRect(
-            x * visibleRatioX + (lcd.visibleLeft - lcd.actualLeft) * ratioX,
-            y * visibleRatioY + (lcd.visibleTop - lcd.actualTop) * ratioY,
-            pixel.width * visibleRatioX,
-            pixel.height * visibleRatioY
+              x * visibleRatioX + (lcd.visibleLeft - lcd.actualLeft) * ratioX,
+              y * visibleRatioY + (lcd.visibleTop - lcd.actualTop) * ratioY,
+              pixel.width * visibleRatioX,
+              pixel.height * visibleRatioY
           );
         }
       }
@@ -940,8 +994,7 @@ function unpressButton(button) {
 }
 
 function resizePhone() {
-  // XXX Uncomment me after you have the images from ben.
-  //loadProperImages();
+  loadProperImages();
 
   if (autoscale) {
     // Calculate for Phone
@@ -980,6 +1033,8 @@ function resizePhone() {
     resizeImage(buttons[i].imageElement, phone);
   }
   resizeLCD(lcd, phone);
+
+  renderLCD();
 }
 
 function resizeImage(imageElement, phone)
@@ -1068,9 +1123,9 @@ function updateTempo() {
   if (tempos.indexOf(currentTempo) < 0) {
     tempos.push(currentTempo);
     tempos.sort(
-      function(a, b) {
-        return a - b;
-      }
+        function(a, b) {
+          return a - b;
+        }
     );
   }
   tempoSelect.selectedIndex = tempos.indexOf(currentTempo);
@@ -1124,3 +1179,84 @@ var tempos = [
   225,
   240
 ];
+
+
+/**
+ * HSV to RGB color conversion
+ * http://snipplr.com/view/14590/hsv-to-rgb/
+ *
+ * H runs from 0 to 360 degrees
+ * S and V run from 0 to 100
+ *
+ * Ported from the excellent java algorithm by Eugene Vishnevsky at:
+ * http://www.cs.rit.edu/~ncs/color/t_convert.html
+ */
+function hsvToRgb(h, s, v) {
+  var r, g, b;
+  var i;
+  var f, p, q, t;
+
+  // Make sure our arguments stay in-range
+  h = Math.max(0, Math.min(360, h));
+  s = Math.max(0, Math.min(100, s));
+  v = Math.max(0, Math.min(100, v));
+
+  // We accept saturation and value arguments from 0 to 100 because that's
+  // how Photoshop represents those values. Internally, however, the
+  // saturation and value are calculated from a range of 0 to 1. We make
+  // That conversion here.
+  s /= 100;
+  v /= 100;
+
+  if (s == 0) {
+    // Achromatic (grey)
+    r = g = b = v;
+    return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+  }
+
+  h /= 60; // sector 0 to 5
+  i = Math.floor(h);
+  f = h - i; // factorial part of h
+  p = v * (1 - s);
+  q = v * (1 - s * f);
+  t = v * (1 - s * (1 - f));
+
+  switch (i) {
+    case 0:
+      r = v;
+      g = t;
+      b = p;
+      break;
+
+    case 1:
+      r = q;
+      g = v;
+      b = p;
+      break;
+
+    case 2:
+      r = p;
+      g = v;
+      b = t;
+      break;
+
+    case 3:
+      r = p;
+      g = q;
+      b = v;
+      break;
+
+    case 4:
+      r = t;
+      g = p;
+      b = v;
+      break;
+
+    default: // case 5:
+      r = v;
+      g = p;
+      b = q;
+  }
+
+  return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+}
