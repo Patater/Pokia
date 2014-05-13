@@ -544,7 +544,7 @@ Song.prototype.stop = function() {
 
   // Turn off the note.
   var now = audioContext.currentTime;
-  nokiawave.noteOff(now);
+  nokiawave.stop(now);
 
   // Disconnect nokiawave from its output.
   nokiawave.disconnect();
@@ -559,13 +559,13 @@ Song.prototype.stop = function() {
 
   // Create a new one, hoping that the old one will go away and that no more
   // sounds will come out of it.
-  songGain = audioContext.createGainNode();
+  songGain = audioContext.createGain();
   songGain.gain.value = 0;
 
   nokiawave.connect(songGain);
   songGain.connect(globalGain);
 
-  nokiawave.noteOn(now);
+  nokiawave.start(now);
 };
 
 Song.prototype.playNote = function(note, when) {
@@ -590,33 +590,38 @@ function initSynthesizer() {
     audioContext = new webkitAudioContext();
     audioContext.fake = false;
   } catch (e) {
-    alert(
-        "Web Audio API is not supported in this browser.\n\nWhy aren't you" +
-        ' using Google Chrome for desktop or iOS yet?'
-    );
-    // Hacks to make composing work without webaudio (and without sound).
-    audioContext = {};
-    audioContext.currentTime = 0;
-    audioContext.fake = true;
-    songGain = {};
-    songGain.gain = {};
-    songGain.gain.setValueAtTime = function() {};
-    songGain.disconnect = function() {};
-    nokiawave = {};
-    nokiawave.frequency = {};
-    nokiawave.frequency.setValueAtTime = function() {};
-    nokiawave.disconnect = function() {};
-    return;
+    try {
+      audioContext = new AudioContext();
+      audioContext.fake = false;
+    } catch (e) {
+      alert(
+          "Web Audio API is not supported in this browser.\n\nWhy aren't you" +
+          ' using Google Chrome for desktop or iOS yet?'
+      );
+      // Hacks to make composing work without webaudio (and without sound).
+      audioContext = {};
+      audioContext.currentTime = 0;
+      audioContext.fake = true;
+      songGain = {};
+      songGain.gain = {};
+      songGain.gain.setValueAtTime = function() {};
+      songGain.disconnect = function() {};
+      nokiawave = {};
+      nokiawave.frequency = {};
+      nokiawave.frequency.setValueAtTime = function() {};
+      nokiawave.disconnect = function() {};
+      return;
+    }
   }
   nokiawave = audioContext.createOscillator();
   //var generatedSeries = generateSquareSeries(4096);
   //var generatedSeries = generateNokiaSeries(4096);
   var generatedSeries = nokiaSampleFFT32;
   loadWaveTable(generatedSeries, nokiawave);
-  globalGain = audioContext.createGainNode();
+  globalGain = audioContext.createGain();
   globalGain.gain.value = 0.6;
 
-  songGain = audioContext.createGainNode();
+  songGain = audioContext.createGain();
   songGain.gain.value = 0;
 
   nokiawave.connect(songGain);
@@ -624,7 +629,7 @@ function initSynthesizer() {
   globalGain.connect(audioContext.destination);
 
   var now = audioContext.currentTime;
-  nokiawave.noteOn(now);
+  nokiawave.start(now);
 
   if (debugMode) {
     printWavetableSweep(generatedSeries, 0, 2 * Math.PI, 256);
@@ -646,11 +651,11 @@ function loadWaveTable(wavetableArray, oscillator) {
     frequencyData.imag[i] = wavetableArray.imag[i];
   }
 
-  wavetable = audioContext.createWaveTable(
+  wavetable = audioContext.createPeriodicWave(
       frequencyData.real,
       frequencyData.imag
       );
-  oscillator.setWaveTable(wavetable);
+  oscillator.setPeriodicWave(wavetable);
 }
 
 // Modified from http://www.javascripter.net/faq/plotafunctiongraph.htm

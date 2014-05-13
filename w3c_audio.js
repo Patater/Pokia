@@ -41,20 +41,6 @@ AudioContext.prototype.currentTime;
 AudioContext.prototype.listener;
 
 /**
- * AudioContext.prototype.createBuffer() has 2 syntax:
- *   * Regular method:
- *     createBuffer = function(numberOfChannels, length, sampleRate) {};
- *
- *   * ArrayBuffer method:
- *     createBuffer = function(buffer, mixToMono) {};
- *
- * @param {number|ArrayBuffer} a
- * @param {number|boolean} b
- * @param {number=} sampleRate
- */
-AudioContext.prototype.createBuffer = function(a, b, sampleRate) {};
-
-/**
  * @param {ArrayBuffer} audioData
  * @param {Function} successCallback
  * @param {Function=} errorCallback
@@ -73,7 +59,7 @@ AudioContext.prototype.createBufferSource = function() {};
  * @param {number} numberOfOuputs
  * @return {JavaScriptAudioNode}
  */
-AudioContext.prototype.createJavaScriptNode = function(bufferSize,
+AudioContext.prototype.createJavaScript = function(bufferSize,
     numberOfInputs, numberOfOuputs) {};
 
 /**
@@ -84,13 +70,13 @@ AudioContext.prototype.createAnalyser = function() {};
 /**
  * @return {AudioGainNode}
  */
-AudioContext.prototype.createGainNode = function() {};
+AudioContext.prototype.createGain = function() {};
 
 /**
  * @param {number=} maxDelayTime
  * @return {DelayNode}
  */
-AudioContext.prototype.createDelayNode = function(maxDelayTime) {};
+AudioContext.prototype.createDelay = function(maxDelayTime) {};
 
 /**
  * @return {BiquadFilterNode}
@@ -128,11 +114,11 @@ AudioContext.prototype.createDynamicsCompressor = function() {};
 AudioContext.prototype.createOscillator = function() {};
 
 /**
- * @return {WaveTable}
+ * @return {PeriodicWave}
  * @param {Float32Array} real
  * @param {Float32Array} imag
  */
-AudioContext.prototype.createWaveTable = function(real, imag) {};
+AudioContext.prototype.createPeriodicWave = function(real, imag) {};
 
 /**
  * @constructor
@@ -221,7 +207,7 @@ AudioParam.prototype.exponentialRampToValueAtTime = function(value, time) {};
  * @param {number} time
  * @param {number} timeConstant
  */
-AudioParam.prototype.setTargetValueAtTime = function(targetValue, time,
+AudioParam.prototype.setTargetAtTime = function(targetValue, time,
     timeConstant) {};
 
 /**
@@ -265,9 +251,6 @@ DelayNode.prototype.delayTime;
  */
 var AudioBuffer = function() {};
 
-/** @type {AudioGain} */
-AudioBuffer.prototype.gain;
-
 /** @type {number} */
 AudioBuffer.prototype.sampleRate;
 
@@ -295,9 +278,6 @@ var AudioBufferSourceNode = function() {};
 /** @type {AudioBuffer} */
 AudioBufferSourceNode.prototype.buffer;
 
-/** @type {number} */
-AudioBufferSourceNode.prototype.gain;
-
 /** @type {AudioParam} */
 AudioBufferSourceNode.prototype.playbackRate;
 
@@ -307,7 +287,7 @@ AudioBufferSourceNode.prototype.loop;
 /**
  * @param {number} when
  */
-AudioBufferSourceNode.prototype.noteOn = function(when) {};
+AudioBufferSourceNode.prototype.start = function(when) {};
 
 /**
  * @param {number} when
@@ -320,7 +300,7 @@ AudioBufferSourceNode.prototype.noteGrainOn = function(when, grainOffset,
 /**
  * @param {number} when
  */
-AudioBufferSourceNode.prototype.noteOff = function(when) {};
+AudioBufferSourceNode.prototype.stop = function(when) {};
 
 /**
  * @constructor
@@ -333,36 +313,6 @@ var MediaElementAudioSourceNode = function() {};
  * @extends {AudioSourceNode}
  */
 var Oscillator = function() {};
-
-/**
- * @const
- * @type {number}
- */
-Oscillator.prototype.SINE = 0;
-
-/**
- * @const
- * @type {number}
- */
-Oscillator.prototype.SQUARE = 1;
-
-/**
- * @const
- * @type {number}
- */
-Oscillator.prototype.SAWTOOTH = 2;
-
-/**
- * @const
- * @type {number}
- */
-Oscillator.prototype.TRIANGLE = 3;
-
-/**
- * @const
- * @type {number}
- */
-Oscillator.prototype.CUSTOM = 4;
 
 /** @type {number} */
 Oscillator.prototype.type;
@@ -391,9 +341,6 @@ Oscillator.prototype.PLAYING_STATE = 2;
  */
 Oscillator.prototype.FINISHED_STATE = 3;
 
-/** @type {number} */
-Oscillator.prototype.playbackState;
-
 /** @type {AudioParam} */
 Oscillator.prototype.frequency;
 
@@ -403,17 +350,17 @@ Oscillator.prototype.detune;
 /**
  * @param {number} when
  */
-Oscillator.prototype.noteOn = function(when) {};
+Oscillator.prototype.start = function(when) {};
 
 /**
  * @param {number} when
  */
-Oscillator.prototype.noteOff = function(when) {};
+Oscillator.prototype.stop = function(when) {};
 
 /**
- * @param {WaveTable} waveTable
+ * @param {PeriodicWave} periodicWave
  */
-Oscillator.prototype.setWaveTable = function(waveTable) {};
+Oscillator.prototype.setPeriodicWave = function(periodicWave) {};
 
 
 /**
@@ -455,42 +402,6 @@ AudioProcessingEvent.prototype.outputBuffer;
  * @extends {AudioNode}
  */
 var AudioPannerNode = function() {};
-
-/**
- * @const
- * @type {number}
- */
-AudioPannerNode.prototype.EQUALPOWER = 0;
-
-/**
- * @const
- * @type {number}
- */
-AudioPannerNode.prototype.HRTF = 1;
-
-/**
- * @const
- * @type {number}
- */
-AudioPannerNode.prototype.SOUNDFIELD = 2;
-
-/**
- * @const
- * @type {number}
- */
-AudioPannerNode.prototype.LINEAR_DISTANCE = 0;
-
-/**
- * @const
- * @type {number}
- */
-AudioPannerNode.prototype.INVERSE_DISTANCE = 1;
-
-/**
- * @const
- * @type {number}
- */
-AudioPannerNode.prototype.EXPONENTIAL_DISTANCE = 2;
 
 /** @type {number} */
 AudioPannerNode.prototype.panningModel;
@@ -671,54 +582,6 @@ DynamicsCompressorNode.prototype.release;
  */
 var BiquadFilterNode = function() {};
 
-/**
- * @const
- * @type {number}
- */
-BiquadFilterNode.prototype.LOWPASS = 0;
-
-/**
- * @const
- * @type {number}
- */
-BiquadFilterNode.prototype.HIGHPASS = 1;
-
-/**
- * @const
- * @type {number}
- */
-BiquadFilterNode.prototype.BANDPASS = 2;
-
-/**
- * @const
- * @type {number}
- */
-BiquadFilterNode.prototype.LOWSHELF = 3;
-
-/**
- * @const
- * @type {number}
- */
-BiquadFilterNode.prototype.HIGHSHELF = 4;
-
-/**
- * @const
- * @type {number}
- */
-BiquadFilterNode.prototype.PEAKING = 5;
-
-/**
- * @const
- * @type {number}
- */
-BiquadFilterNode.prototype.NOTCH = 6;
-
-/**
- * @const
- * @type {number}
- */
-BiquadFilterNode.prototype.ALLPASS = 7;
-
 /** @type {number} */
 BiquadFilterNode.prototype.type;
 
@@ -751,7 +614,7 @@ WaveShaperNode.prototype.curve;
 /**
  * @constructor
  */
-var WaveTable = function() {};
+var PeriodicWave = function() {};
 
 /**
  * Definitions for the Web Audio API with webkit prefix.
